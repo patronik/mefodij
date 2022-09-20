@@ -47,11 +47,6 @@ Atom::Atom(bool val)
    boolVal = val;
 }
 
-shared_ptr<Atom> Atom::clone() {
-    // for cloning we call copy constructor of Atom class 
-    return make_shared<Atom>(*this);
-}
-
 void Atom::setVar(shared_ptr<Atom> atom)
 {
     varRef = atom;

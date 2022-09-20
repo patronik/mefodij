@@ -39,8 +39,6 @@ public:
   const static wstring typeNull;
   const static wstring typeCast;
 
-  shared_ptr<Atom> clone();
-
   static vector<wstring> castTypes;
 
   void setVar(shared_ptr<Atom> atom);

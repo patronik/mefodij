@@ -198,7 +198,7 @@ class Interpreter : public Parser
     void evaluateStatements();
 public:
   Interpreter();
-  void evaluate(wstring code = L"", int pos = 0);
+  wstring evaluate(wstring code = L"", int pos = 0);
 };
 
 #endif

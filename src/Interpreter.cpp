@@ -402,7 +402,7 @@ bool Interpreter::parseArrayAtom(wstring varName, shared_ptr<Atom> atom)
         target = target->elementAt(elementKeys[key]->toString());
     }
 
-    *atom = *target->clone();
+    *atom = *target;
     atom->setVar(target);
     return true;
 }
@@ -479,7 +479,8 @@ bool Interpreter::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> atom)
             storage.set(varName, make_shared<Atom>());
         }
 
-        *atom = *storage.get(varName)->clone();
+        // copy variable value to atom
+        *atom = *storage.get(varName);
         atom->setVar(storage.get(varName));
         return true;
     }
@@ -1150,7 +1151,7 @@ void Interpreter::evaluateStatements()
     }
 }
 
-void Interpreter::evaluate(wstring code, int pos)
+wstring Interpreter::evaluate(wstring code, int pos)
 {
     src = code;
     pos = pos;
@@ -1171,4 +1172,9 @@ void Interpreter::evaluate(wstring code, int pos)
             break;
         }
     }
+
+    if (isReturn) {
+        return lastResult->toString();
+    }
+    return L"";
 }
