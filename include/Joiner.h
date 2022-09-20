@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <memory>
 
+#include "tools.h"
 #include "Atom.h"
 
 using namespace std;
@@ -19,6 +20,7 @@ class Joiner
     virtual void validate(wstring op);
 
     public:
+    Joiner(vector<wstring> ops);
     virtual void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right) = 0;
 };
 

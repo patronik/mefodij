@@ -8,7 +8,7 @@ class IntDoubleJoiner : public Joiner
 {
  
  public:
-
+ IntDoubleJoiner();
  void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
 };

@@ -167,7 +167,7 @@ wstring Atom::getCast()
         throw runtime_error("Wrong atom type");
     }
     return castVal;
-    } 
+} 
 
 bool Atom::issetAt(wstring key)
 {

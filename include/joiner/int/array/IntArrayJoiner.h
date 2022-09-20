@@ -8,7 +8,7 @@ class IntArrayJoiner : public Joiner
 {
  
  public:
-
+ IntArrayJoiner();
  void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
 };
