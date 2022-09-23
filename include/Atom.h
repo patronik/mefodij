@@ -71,6 +71,7 @@ public:
   void preOperator(wstring op);
   void postOperator(wstring op);
   void unaryOperator(wstring op);
+  void cast(wstring typeTo);
 };
 
 #endif

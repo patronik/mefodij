@@ -6,49 +6,36 @@ unique_ptr<BoolIntJoiner> Interpreter::boolIntJoiner = make_unique<BoolIntJoiner
 unique_ptr<BoolNullJoiner> Interpreter::boolNullJoiner = make_unique<BoolNullJoiner>();
 unique_ptr<BoolArrayJoiner> Interpreter::boolArrayJoiner = make_unique<BoolArrayJoiner>();
 unique_ptr<BoolDoubleJoiner> Interpreter::boolDoubleJoiner = make_unique<BoolDoubleJoiner>();
-unique_ptr<BoolCastJoiner> Interpreter::boolCastJoiner = make_unique<BoolCastJoiner>();
 unique_ptr<BoolStringJoiner> Interpreter::boolStringJoiner = make_unique<BoolStringJoiner>();
 unique_ptr<IntBoolJoiner> Interpreter::intBoolJoiner = make_unique<IntBoolJoiner>();
 unique_ptr<IntIntJoiner> Interpreter::intIntJoiner = make_unique<IntIntJoiner>();
 unique_ptr<IntNullJoiner> Interpreter::intNullJoiner = make_unique<IntNullJoiner>();
 unique_ptr<IntArrayJoiner> Interpreter::intArrayJoiner = make_unique<IntArrayJoiner>();
 unique_ptr<IntDoubleJoiner> Interpreter::intDoubleJoiner = make_unique<IntDoubleJoiner>();
-unique_ptr<IntCastJoiner> Interpreter::intCastJoiner = make_unique<IntCastJoiner>();
 unique_ptr<IntStringJoiner> Interpreter::intStringJoiner = make_unique<IntStringJoiner>();
 unique_ptr<NullBoolJoiner> Interpreter::nullBoolJoiner = make_unique<NullBoolJoiner>();
 unique_ptr<NullIntJoiner> Interpreter::nullIntJoiner = make_unique<NullIntJoiner>();
 unique_ptr<NullNullJoiner> Interpreter::nullNullJoiner = make_unique<NullNullJoiner>();
 unique_ptr<NullArrayJoiner> Interpreter::nullArrayJoiner = make_unique<NullArrayJoiner>();
 unique_ptr<NullDoubleJoiner> Interpreter::nullDoubleJoiner = make_unique<NullDoubleJoiner>();
-unique_ptr<NullCastJoiner> Interpreter::nullCastJoiner = make_unique<NullCastJoiner>();
 unique_ptr<NullStringJoiner> Interpreter::nullStringJoiner = make_unique<NullStringJoiner>();
 unique_ptr<ArrayBoolJoiner> Interpreter::arrayBoolJoiner = make_unique<ArrayBoolJoiner>();
 unique_ptr<ArrayIntJoiner> Interpreter::arrayIntJoiner = make_unique<ArrayIntJoiner>();
 unique_ptr<ArrayNullJoiner> Interpreter::arrayNullJoiner = make_unique<ArrayNullJoiner>();
 unique_ptr<ArrayArrayJoiner> Interpreter::arrayArrayJoiner = make_unique<ArrayArrayJoiner>();
 unique_ptr<ArrayDoubleJoiner> Interpreter::arrayDoubleJoiner = make_unique<ArrayDoubleJoiner>();
-unique_ptr<ArrayCastJoiner> Interpreter::arrayCastJoiner = make_unique<ArrayCastJoiner>();
 unique_ptr<ArrayStringJoiner> Interpreter::arrayStringJoiner = make_unique<ArrayStringJoiner>();
 unique_ptr<DoubleBoolJoiner> Interpreter::doubleBoolJoiner = make_unique<DoubleBoolJoiner>();
 unique_ptr<DoubleIntJoiner> Interpreter::doubleIntJoiner = make_unique<DoubleIntJoiner>();
 unique_ptr<DoubleNullJoiner> Interpreter::doubleNullJoiner = make_unique<DoubleNullJoiner>();
 unique_ptr<DoubleArrayJoiner> Interpreter::doubleArrayJoiner = make_unique<DoubleArrayJoiner>();
 unique_ptr<DoubleDoubleJoiner> Interpreter::doubleDoubleJoiner = make_unique<DoubleDoubleJoiner>();
-unique_ptr<DoubleCastJoiner> Interpreter::doubleCastJoiner = make_unique<DoubleCastJoiner>();
 unique_ptr<DoubleStringJoiner> Interpreter::doubleStringJoiner = make_unique<DoubleStringJoiner>();
-unique_ptr<CastBoolJoiner> Interpreter::castBoolJoiner = make_unique<CastBoolJoiner>();
-unique_ptr<CastIntJoiner> Interpreter::castIntJoiner = make_unique<CastIntJoiner>();
-unique_ptr<CastNullJoiner> Interpreter::castNullJoiner = make_unique<CastNullJoiner>();
-unique_ptr<CastArrayJoiner> Interpreter::castArrayJoiner = make_unique<CastArrayJoiner>();
-unique_ptr<CastDoubleJoiner> Interpreter::castDoubleJoiner = make_unique<CastDoubleJoiner>();
-unique_ptr<CastCastJoiner> Interpreter::castCastJoiner = make_unique<CastCastJoiner>();
-unique_ptr<CastStringJoiner> Interpreter::castStringJoiner = make_unique<CastStringJoiner>();
 unique_ptr<StringBoolJoiner> Interpreter::stringBoolJoiner = make_unique<StringBoolJoiner>();
 unique_ptr<StringIntJoiner> Interpreter::stringIntJoiner = make_unique<StringIntJoiner>();
 unique_ptr<StringNullJoiner> Interpreter::stringNullJoiner = make_unique<StringNullJoiner>();
 unique_ptr<StringArrayJoiner> Interpreter::stringArrayJoiner = make_unique<StringArrayJoiner>();
 unique_ptr<StringDoubleJoiner> Interpreter::stringDoubleJoiner = make_unique<StringDoubleJoiner>();
-unique_ptr<StringCastJoiner> Interpreter::stringCastJoiner = make_unique<StringCastJoiner>();
 unique_ptr<StringStringJoiner> Interpreter::stringStringJoiner = make_unique<StringStringJoiner>();
 
 void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -65,8 +52,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::intBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"int" && right->getType() == L"null") {
         Interpreter::intNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"cast") {
-        Interpreter::intCastJoiner->join(left, op, right);
     } else if (left->getType() == L"double" && right->getType() == L"int") {
         Interpreter::doubleIntJoiner->join(left, op, right);
     } else if (left->getType() == L"double" && right->getType() == L"double") {
@@ -79,8 +64,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::doubleBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"double" && right->getType() == L"null") {
         Interpreter::doubleNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"cast") {
-        Interpreter::doubleCastJoiner->join(left, op, right);
     } else if (left->getType() == L"string" && right->getType() == L"int") {
         Interpreter::stringIntJoiner->join(left, op, right);
     } else if (left->getType() == L"string" && right->getType() == L"double") {
@@ -93,8 +76,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::stringBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"string" && right->getType() == L"null") {
         Interpreter::stringNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"cast") {
-        Interpreter::stringCastJoiner->join(left, op, right);
     } else if (left->getType() == L"array" && right->getType() == L"int") {
         Interpreter::arrayIntJoiner->join(left, op, right);
     } else if (left->getType() == L"array" && right->getType() == L"double") {
@@ -107,8 +88,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::arrayBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"array" && right->getType() == L"null") {
         Interpreter::arrayNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"cast") {
-        Interpreter::arrayCastJoiner->join(left, op, right);
     } else if (left->getType() == L"bool" && right->getType() == L"int") {
         Interpreter::boolIntJoiner->join(left, op, right);
     } else if (left->getType() == L"bool" && right->getType() == L"double") {
@@ -121,8 +100,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::boolBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"bool" && right->getType() == L"null") {
         Interpreter::boolNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"cast") {
-        Interpreter::boolCastJoiner->join(left, op, right);
     } else if (left->getType() == L"null" && right->getType() == L"int") {
         Interpreter::nullIntJoiner->join(left, op, right);
     } else if (left->getType() == L"null" && right->getType() == L"double") {
@@ -135,22 +112,6 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         Interpreter::nullBoolJoiner->join(left, op, right);
     } else if (left->getType() == L"null" && right->getType() == L"null") {
         Interpreter::nullNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"cast") {
-        Interpreter::nullCastJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"int") {
-        Interpreter::castIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"double") {
-        Interpreter::castDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"string") {
-        Interpreter::castStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"array") {
-        Interpreter::castArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"bool") {
-        Interpreter::castBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"null") {
-        Interpreter::castNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"cast" && right->getType() == L"cast") {
-        Interpreter::castCastJoiner->join(left, op, right);
     } else {
         throw runtime_error(
             "Joiner for type " + wideStrToStr(left->getType())
@@ -809,7 +770,7 @@ bool Interpreter::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> ato
         if (subResult->getType() == Atom::typeCast) {
             // Type casting
             *atom = *parseAtom();
-            Interpreter::joinAtoms(subResult, L"cast", atom);
+            atom->cast(subResult->getCast());
         } else {
             // Subexpression
             *atom = *subResult;

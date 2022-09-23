@@ -4,11 +4,11 @@
 
 #include "../../../Joiner.h"
 
-class NullArrayJoiner : public Joiner 
+class NullArrayJoiner: public Joiner 
 {
  
  public:
-
+ NullArrayJoiner();
  void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
 };

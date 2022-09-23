@@ -353,3 +353,81 @@ void Atom::unaryOperator(wstring op)
         throw runtime_error("Not supported unary operator " + string(op.begin(), op.end()));
     }
 }
+
+void Atom::cast(wstring typeTo)
+{
+    if (type == Atom::typeString) {
+        if (typeTo == L"int") {
+            setInt(wcstol(getString().c_str(), nullptr, 10));
+        } else if (typeTo == L"string") {
+        } else if (typeTo == L"double") {
+            setDouble(wcstod(getString().c_str(), nullptr));
+        } else if (typeTo == L"bool") {
+            if (getString() != L"") {
+                setBool(true);
+            } else {
+                setBool(false);
+            }
+        } else if (typeTo == L"array") {
+            setArray({{L"0", make_shared<Atom>(getBool())}});
+        } else if (typeTo == L"null") {
+            setNull();
+        }
+    }
+
+    if (type == Atom::typeBool) {
+        if (typeTo == L"int") {
+            setInt((int) getBool());
+        } else if (typeTo == L"string") {
+            if (getBool()) {
+                setString(L"true");
+            } else {
+                setString(L"false");
+            }
+        } else if (typeTo == L"double") {
+            setDouble((double) getBool());
+        } else if (typeTo == L"bool") {
+            
+        } else if (typeTo == L"array") {
+            setArray({{L"0", make_shared<Atom>(getBool())}});
+        } else if (typeTo == L"null") {
+            setNull();
+        }
+    }
+
+    if (type == Atom::typeInt) {
+        if (typeTo == L"int") {
+        } else if (typeTo == L"string") {
+            setString(to_wstring(getInt()));
+        } else if (typeTo == L"double") {
+            setDouble((double) getInt());
+        } else if (typeTo == L"bool") {
+            setBool((bool) getInt());
+        } else if (typeTo == L"array") {
+            setArray({{L"0", make_shared<Atom>(getInt())}});
+        } else if (typeTo == L"null") {
+            setNull();
+        }
+    }
+
+    if (type == Atom::typeDouble) {
+        if (typeTo == L"int") {
+            setInt((int) getDouble());
+        } else if (typeTo == L"string") {
+            setString(to_wstring(getDouble()));
+        } else if (typeTo == L"double") {
+        } else if (typeTo == L"bool") {
+            setBool((bool) getDouble());
+        } else if (typeTo == L"array") {
+            setArray({{L"0", make_shared<Atom>(getDouble())}});
+        } else if (typeTo == L"null") {
+            setNull();
+        }
+    }
+
+    if (type == Atom::typeNull) {
+        if (typeTo == L"bool") {
+            setBool(false);
+        }
+    }
+}

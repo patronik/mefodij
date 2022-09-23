@@ -4,11 +4,11 @@
 
 #include "../../../Joiner.h"
 
-class ArrayIntJoiner : public Joiner 
+class ArrayIntJoiner: public Joiner 
 {
  
  public:
-
+ ArrayIntJoiner();
  void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
 };
