@@ -1,10 +1,30 @@
 
 #include "../../../../include/joiner/bool/double/BoolDoubleJoiner.h"
 
-BoolDoubleJoiner::BoolDoubleJoiner() : Joiner({})
+BoolDoubleJoiner::BoolDoubleJoiner() : Joiner({L"==", L"||", L"&&", L"="})
 {}
 
 void BoolDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
     validate(op);
+
+    if (op == L"==") {
+        left->setBool(
+            left->getBool() == ((bool) right->getDouble())
+        );
+    } else if (op == L"||") {
+        left->setBool(
+            left->getBool() || ((bool) right->getDouble())
+        );
+    } else if (op == L"&&") {
+         left->setBool(
+            left->getBool() && ((bool) right->getDouble())
+        );
+    } else if (op == L"=") {
+        if (!left->getVar()) {
+            throw new runtime_error("Assignment can only be done to variable");                    
+        } 
+        left->getVar()->setBool((bool) right->getDouble());
+        left->setBool((bool) right->getDouble()); 
+    }
 }
