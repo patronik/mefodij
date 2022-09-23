@@ -25,3 +25,12 @@ string wideStrToStr(wchar_t src)
 {
     return wideStrToStr(wstring{src});
 }
+
+wstring readWideFile(const char * filename)
+{
+    wifstream wif(filename);
+    wif.imbue(std::locale(wif.getloc(), new codecvt_utf8<wchar_t>));
+    wstringstream wss;
+    wss << wif.rdbuf();
+    return wss.str();
+}

@@ -6,9 +6,12 @@ void init() {
     setlocale(LC_ALL, "en_US.utf8");
 }
 
-int main() {
+int main(int argc, char** argv) {
     init();
-    Interpreter interpreter{};
-    interpreter.evaluate(L"функція додати() { повернути 2 + 2 - 1; } друк додати() + 99; друк \"\nкінець програми\n\"");
+    if (argc > 1) {
+         Interpreter interpreter{};
+         wcout << interpreter.evaluate(readWideFile(argv[1]));
+    }
+    wcout << L"Вхідний файл відсутній\n";
     return 0;
 }

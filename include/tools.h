@@ -6,6 +6,9 @@
 #include <locale> 
 #include <codecvt>
 #include <vector>
+#include <sstream>
+#include <fstream>
+#include <codecvt>
 
 using namespace std;
 
@@ -18,5 +21,5 @@ bool inVector(vector<T> storage, T key)
 {
     return find(storage.begin(), storage.end(), key) != storage.end();   
 }
-
+wstring readWideFile(const char * filename);
 #endif
