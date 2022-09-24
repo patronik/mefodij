@@ -64,7 +64,7 @@ void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
 
     wchar_t prevChar = L'\0';
     wchar_t symbol;
-    while (symbol = readChar()) {
+    while (symbol = readChar(false, true)) {
          if (symbol == L'\'') {
             if (!inSingleQuotedStr) {
                 if (!inDoubleQuotedStr) {
@@ -88,7 +88,7 @@ void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
         if (!inSingleQuotedStr && !inDoubleQuotedStr) {
             if (nestedMarker && symbol == nestedMarker) {
                 depth++;
-                readChar();
+                readChar(false, true);
             } else if (inVector<wchar_t>(terminators, symbol)) {
                 if (depth == 0) {
                     break;

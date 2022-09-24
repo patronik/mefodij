@@ -29,7 +29,7 @@ string wideStrToStr(wchar_t src)
 wstring readWideFile(const char * filename)
 {
     wifstream wif(filename);
-    wif.imbue(std::locale(wif.getloc(), new codecvt_utf8<wchar_t>));
+    wif.imbue(locale("en_US.UTF-8"));
     wstringstream wss;
     wss << wif.rdbuf();
     return wss.str();

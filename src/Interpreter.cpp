@@ -139,15 +139,33 @@ bool Interpreter::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> a
     // string in double quotes
     if (symbol == L'"') {
         wstring str{};
+        
         while (symbol = readChar(false, true)) {
-            if (symbol != L'"') {
-                str.push_back(symbol);
+            // parse escape sequence
+            if (symbol == L'\\') {
+                symbol = readChar(false, true);
+                if (symbol == L'n') {
+                    str.push_back(L'\n');
+                } else if (symbol == L't') {
+                    str.push_back(L'\t');
+                } else if (symbol == L'r') {
+                    str.push_back(L'\r');
+                } else if (symbol == L'\\') {
+                    str.push_back(L'\\');
+                } else if (symbol == L'"') {
+                    str.push_back(L'"');
+                } else {
+                    str.push_back(L'\\');
+                    str.push_back(symbol);
+                }
                 continue;
-            } else if (str.size() > 0 && str.at(str.size() - 1) == L'\\') {
-                str[str.size() - 1] = L'\"';
-                continue;
+            } else {
+                if (symbol == L'"') {
+                    break;                    
+                } else {
+                    str.push_back(symbol);
+                }
             }
-            break;
         }
         atom->setString(str);
         return true;
@@ -161,14 +179,25 @@ bool Interpreter::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> a
     if (symbol == L'\'') {
         wstring str{};
         while (symbol = readChar(false, true)) {
-            if (symbol != L'\'') {
-                str.push_back(symbol);
+            // parse escape sequence
+            if (symbol == L'\\') {
+                symbol = readChar(false, true);
+                if (symbol == L'\\') {
+                    str.push_back(L'\\');
+                } else if (symbol == L'\'') {
+                    str.push_back(L'\'');
+                } else {
+                    str.push_back(L'\\');
+                    str.push_back(symbol);
+                }
                 continue;
-            } else if (str.size() > 0 && str.at(str.size() - 1) == L'\\') {
-                str[str.size() - 1] = L'\'';
-                continue;
+            } else {
+                if (symbol == L'\'') {
+                    break;                    
+                } else {
+                    str.push_back(symbol);
+                }
             }
-            break;
         }
         atom->setString(str);
         return true;
@@ -1011,6 +1040,18 @@ void Interpreter::evaluateStatement()
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved
         return;
+    }
+
+    // Handle comments
+    if (symbol == L'/') {
+        if ((symbol = readChar(false, true)) == L'/') {
+            // Comment
+            fastForward({L'\n'});
+            evaluateStatement();
+            return;
+        } else {
+            throw new runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+        }
     }
 
     if (symbol == L';') {
