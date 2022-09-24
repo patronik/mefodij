@@ -581,7 +581,7 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
                 symbol = readChar();
                 if (symbol == L'=') {
                     // equality
-                    unreadChar();
+                    unreadChar(2);
                     return result;
                     break;
                 } else if (symbol == L'>')  {
@@ -824,8 +824,8 @@ void Interpreter::evaluateForLoop()
     }
 
     int conditionPos = pos;
-    int * postStatementPos = nullptr;
-    int * loopBodyPos = nullptr;
+    int postStatementPos = -1;
+    int loopBodyPos = -1;
 
     do {
         evaluateStatement();
@@ -837,15 +837,15 @@ void Interpreter::evaluateForLoop()
             break;
         }
 
-        if (postStatementPos == nullptr) {
-            *postStatementPos = pos;
+        if (postStatementPos == -1) {
+            postStatementPos = pos;
         }
 
-        if (loopBodyPos == nullptr) {
+        if (loopBodyPos == -1) {
             fastForward({L')'}, L'(');
-            *loopBodyPos = pos;
+            loopBodyPos = pos;
         } else {
-            pos = *loopBodyPos;
+            pos = loopBodyPos;
         }
 
         evaluateBlockOrStatement(true);
@@ -854,7 +854,7 @@ void Interpreter::evaluateForLoop()
         }
 
         // Evaluate after statement
-        pos = *postStatementPos;
+        pos = postStatementPos;
         evaluateStatement();
 
         // Prepare for next iteration
@@ -909,7 +909,7 @@ void Interpreter::evaluateBlockOrStatement(bool stopOnBreak)
 
 void Interpreter::evaluateIfStructure()
 {
-    shared_ptr<Atom> lastIfResult{};
+    shared_ptr<Atom> lastIfResult = make_shared<Atom>();
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
         throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
