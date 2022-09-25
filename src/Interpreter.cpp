@@ -134,7 +134,7 @@ Interpreter::Variables & Interpreter::getStorageRef()
     return variables;
 }
 
-bool Interpreter::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::parseDoubleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     // string in double quotes
     if (symbol == L'"') {
@@ -173,7 +173,7 @@ bool Interpreter::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> a
     return false;
 }
 
-bool Interpreter::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     // string in single quotes
     if (symbol == L'\'') {
@@ -205,7 +205,7 @@ bool Interpreter::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> a
     return false;
 }
 
-bool Interpreter::parseKeywordAtom(wstring varName, shared_ptr<Atom> atom)
+bool Interpreter::parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom)
 {
     if (inVector<wstring>(Atom::castTypes, varName)) {
             atom->setCast(varName);
@@ -221,7 +221,7 @@ bool Interpreter::parseKeywordAtom(wstring varName, shared_ptr<Atom> atom)
         return true;
 }
 
-bool Interpreter::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> atom)
+bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom)
 {
     // check if function exists
     if (!functions.has(varName)) {
@@ -304,7 +304,7 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> atom)
     return true;
 }
 
-bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     wstring number{};
     bool hasDot = false;
@@ -343,7 +343,7 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom)
     return false;
 }
 
-bool Interpreter::parseArrayAtom(wstring varName, shared_ptr<Atom> atom)
+bool Interpreter::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom)
 {
     // array element
     wchar_t symbol = readChar();
@@ -397,7 +397,7 @@ bool Interpreter::parseArrayAtom(wstring varName, shared_ptr<Atom> atom)
     return true;
 }
 
-bool Interpreter::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     if (symbol != L'[') {
         return false;
@@ -443,7 +443,7 @@ bool Interpreter::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom)
     return true;
 }
 
-bool Interpreter::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     // alphabetical atom
     wstring varName{};
@@ -459,7 +459,7 @@ bool Interpreter::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> atom)
         }
 
         // try to parse array element
-        if (parseArrayAtom(varName, atom)) {
+        if (parseArrayAccessAtom(varName, atom)) {
             return true;
         }
 
@@ -789,7 +789,7 @@ shared_ptr<Atom> Interpreter::evaluateBoolStatement()
     return result;
 }
 
-bool Interpreter::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> atom)
+bool Interpreter::evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Atom> atom)
 {
     if (symbol == L'(') {
         shared_ptr<Atom> subResult = evaluateBoolStatement();

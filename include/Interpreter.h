@@ -154,15 +154,15 @@ class Interpreter : public Parser
     shared_ptr<Atom> parseAtom();
 
     // Atoms are indivisible parts of statement
-    bool evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> atom);
-    bool parseArrayAtom(wstring varName, shared_ptr<Atom> atom);
-    bool parseKeywordAtom(wstring varName, shared_ptr<Atom> atom);
-    bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> atom);
+    bool evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseDoubleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom);
+    bool parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom);
+    bool parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom);
+    bool parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom);
     
     void evaluateForLoop();
     void evaluateIfStructure();
