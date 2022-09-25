@@ -22,7 +22,7 @@ void BoolBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> ri
         );
     } else if (op == L"=") {
          if (!left->getVar()) {
-            throw new runtime_error("Assignment can only be done to variable");                    
+            throw runtime_error("Assignment can only be done to variable");                    
         } 
         left->getVar()->setBool(right->getBool());
         left->setBool(right->getBool()); 

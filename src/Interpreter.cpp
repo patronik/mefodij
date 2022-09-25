@@ -259,7 +259,7 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> 
         while(funcData.second.count(argumentIndex)) {
             // No intializer means required parameter is missing
             if (funcData.second.at(argumentIndex).second == nullptr) {
-                throw new runtime_error("Function required parameter "
+                throw runtime_error("Function required parameter "
                 + wideStrToStr(funcData.second.at(argumentIndex).first)
                 + " is missing.");
             } else {
@@ -271,7 +271,7 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> 
     }
 
     if (symbol != L')') {
-        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
     }
 
     // push function data onto stack
@@ -316,7 +316,7 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> 
                 continue;
             } else if (symbol == L'.') {
                 if (hasDot) {
-                    throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                 }
                 hasDot = true;
                 number.push_back(symbol);
@@ -330,7 +330,7 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> 
         }
 
         if (symbol == L'.') {
-            throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
         }
 
         if (hasDot) {
@@ -356,16 +356,16 @@ bool Interpreter::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> a
     do {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
         if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
-            throw new runtime_error("Only string and integer array keys are supported.");
+            throw runtime_error("Only string and integer array keys are supported.");
         }
         elementKeys.push_back(keyAtom);
 
         symbol = readChar();
         if (symbol == L'\0') {
-            throw new runtime_error("Unexpected end of file.");
+            throw runtime_error("Unexpected end of file.");
         }
         if (symbol != L']') {
-            throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
         }
         symbol = readChar();
     } while (symbol == L'[');
@@ -424,18 +424,18 @@ bool Interpreter::parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> a
                 } else if (keyOrVal->getType() == L"double") {
                     array[to_wstring(keyOrVal->getDouble())] = arrayVal;
                 } else {
-                    throw new runtime_error("Only string and numeric array keys are supported.");
+                    throw runtime_error("Only string and numeric array keys are supported.");
                 }
 
                 symbol = readChar();
             } else {
-                throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
             }
         }
     } while (symbol == L',');
 
     if (symbol != L']') {
-        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
     }
 
     atom->setArray(array);
@@ -696,7 +696,7 @@ shared_ptr<Atom> Interpreter::evaluateBoolExpression()
                 for (auto tmp: vector<wchar_t>{L'а', L'т', L'ч'}) {
                     symbol = readChar(true);
                     if (symbol != tmp) {
-                        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                     }
                 }
                 Interpreter::joinAtoms(result, L"матч", evaluateBoolExpression());
@@ -813,14 +813,14 @@ void Interpreter::evaluateForLoop()
 {
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
     }
 
     // Initializer statement
     evaluateStatement();
 
     if ((symbol = readChar()) != L';') {
-        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
     }
 
     int conditionPos = pos;
@@ -830,7 +830,7 @@ void Interpreter::evaluateForLoop()
     do {
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
         }
 
         if (!lastResult->toBool()) {
@@ -877,7 +877,7 @@ void Interpreter::evaluateBlockOrStatement(bool stopOnBreak)
         unreadChar();
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
         }
     } else {
         wchar_t statementOp;
@@ -900,7 +900,7 @@ void Interpreter::evaluateBlockOrStatement(bool stopOnBreak)
                     evaluateStatement();
                     break;
                 default:
-                    throw new runtime_error("Unexpected token '" + wideStrToStr(statementOp) + "' .");
+                    throw runtime_error("Unexpected token '" + wideStrToStr(statementOp) + "' .");
                 break;
             }
         }
@@ -912,7 +912,7 @@ void Interpreter::evaluateIfStructure()
     shared_ptr<Atom> lastIfResult = make_shared<Atom>();
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
     }
 
     evaluateParentheticalAtom(symbol, lastIfResult);
@@ -938,7 +938,7 @@ void Interpreter::evaluateIfStructure()
         for (auto tmp: vector<wchar_t>{L'б', L'о'}) {
             symbol = readChar(true);
             if (symbol != tmp) {
-                throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
             }
         }
 
@@ -946,19 +946,19 @@ void Interpreter::evaluateIfStructure()
             for (auto tmp: vector<wchar_t>{L'к', L'щ', L'о'}) {
                 symbol = readChar(true);
                 if (symbol != tmp) {
-                    throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                 }
             }
 
             if (lastIfResult->toBool()) {
                 if ((symbol = readChar()) != L'(') {
-                    throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                 }
                 fastForward({L')'}, L'(');
                 skipBlockOrStatement();
             } else {
                 if ((symbol = readChar()) != L'(') {
-                    throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                 }
                 evaluateParentheticalAtom(symbol, lastIfResult);
                 if (lastIfResult->toBool()) {
@@ -971,7 +971,7 @@ void Interpreter::evaluateIfStructure()
         } else {
             unreadChar();
             if (elseFound) {
-                throw new runtime_error("Only 1 else statement can go after if.");
+                throw runtime_error("Only 1 else statement can go after if.");
             }
             elseFound = true;
             if (lastIfResult->toBool()) {
@@ -988,15 +988,15 @@ void Interpreter::parseFunction()
     wchar_t symbol = readChar();
     wstring functionName;
     if (!parseCharacterSequence(symbol, functionName)) {
-        throw new runtime_error("Failed to parse function name.");
+        throw runtime_error("Failed to parse function name.");
     }
 
     if (functions.has(functionName)) {
-        throw new runtime_error("Function \"" + wideStrToStr(functionName) + "\" already exists.");
+        throw runtime_error("Function \"" + wideStrToStr(functionName) + "\" already exists.");
     }
 
     if ((symbol = readChar()) != L'(') {
-        throw new runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+        throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
     }
 
     map<int, pair<wstring, shared_ptr<Atom>>> parameters;
@@ -1010,7 +1010,7 @@ void Interpreter::parseFunction()
 
         wstring argName;
         if (!parseCharacterSequence(symbol, argName)) {
-            throw new runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+            throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
         }
 
         if ((symbol = readChar()) == L'=') {
@@ -1021,7 +1021,7 @@ void Interpreter::parseFunction()
             // required parameter
             unreadChar();
             if (hasOptional) {
-                throw new runtime_error("Required parameters cannot go after optional ones.");
+                throw runtime_error("Required parameters cannot go after optional ones.");
             }
             parameters[paramIndex] = {argName, nullptr};
         }
@@ -1030,7 +1030,7 @@ void Interpreter::parseFunction()
     } while ((symbol = readChar()) == L',');
 
     if (symbol != L')') {
-        throw new runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+        throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
     }
 
     functions.set(functionName, pos, parameters);
@@ -1054,7 +1054,7 @@ void Interpreter::evaluateStatement()
             evaluateStatement();
             return;
         } else {
-            throw new runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+            throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
         }
     }
 

@@ -17,7 +17,7 @@ void IntIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> righ
         left->setInt(left->getInt() * right->getInt());
     } else if (op == L"/") {
         if (right->getInt() == 0) {
-                throw new runtime_error("Division by zero");
+                throw runtime_error("Division by zero");
             }
         left->setInt(left->getInt() / right->getInt());
     }  else if (op == L"%") {
@@ -54,7 +54,7 @@ void IntIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> righ
         );
     } else if (op == L"=") {
         if (!left->getVar()) {
-            throw new runtime_error("Assignment can only be done to variable");                    
+            throw runtime_error("Assignment can only be done to variable");                    
         } 
         left->getVar()->setInt(right->getInt());
         left->setInt(right->getInt());

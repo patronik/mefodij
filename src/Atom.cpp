@@ -226,7 +226,7 @@ bool Atom::toBool()
     if (type == Atom::typeCast ) {
         return !castVal.empty();
     }
-    throw new runtime_error("Not supported atom type");
+    throw runtime_error("Not supported atom type");
 }
 
 wstring Atom::toString() 
@@ -252,7 +252,7 @@ wstring Atom::toString()
     if (type == Atom::typeCast ) {
         return castVal;
     }
-    throw new runtime_error("Not supported atom type");
+    throw runtime_error("Not supported atom type");
 }
 
 void Atom::preOperator(wstring op)
