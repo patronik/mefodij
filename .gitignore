@@ -1,6 +1,7 @@
 /.vscode
 /bin
 /build
+/src/build
 /obj
 /interpreter.cbp
 /interpreter.depend
