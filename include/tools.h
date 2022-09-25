@@ -21,4 +21,5 @@ bool inVector(vector<T> storage, T key)
     return find(storage.begin(), storage.end(), key) != storage.end();   
 }
 wstring readWideFile(const char * filename);
+bool fileExist(const char * fileName);
 #endif

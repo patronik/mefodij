@@ -34,3 +34,9 @@ wstring readWideFile(const char * filename)
     wss << wif.rdbuf();
     return wss.str();
 }
+
+bool fileExist(const char * fileName)
+{
+    ifstream infile(fileName);
+    return infile.good();
+}
