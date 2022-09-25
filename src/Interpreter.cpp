@@ -601,7 +601,7 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
             case L'<': // greater than
             case L'&': // boolean "and" &&
             case L'|': // boolean "or" ||
-            case L'l': // check against regex
+            case L'м': // check against regex
             case L'i': // find in set
             // end of argument or statement
             case L',':
@@ -928,24 +928,28 @@ void Interpreter::evaluateIfStructure()
 
     bool elseFound = false;
     while (!isReturn) {
-        if ((symbol = readChar(true)) != L'e') {
+        if ((symbol = readChar(true)) != L'а') {
             if (symbol != endOfFile) {
                 unreadChar();
             }
             break;
         }
 
-        for (auto tmp: vector<wchar_t>{L'l', L's', L'e'}) {
+        for (auto tmp: vector<wchar_t>{L'б', L'о'}) {
             symbol = readChar(true);
             if (symbol != tmp) {
                 throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
             }
         }
 
-        if ((symbol = readChar(true)) == L'i') {
-            if (symbol = readChar(true) != L'f') {
-                throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        if ((symbol = readChar(true)) == L'я') {
+            for (auto tmp: vector<wchar_t>{L'к', L'щ', L'о'}) {
+                symbol = readChar(true);
+                if (symbol != tmp) {
+                    throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                }
             }
+
             if (lastIfResult->toBool()) {
                 if ((symbol = readChar()) != L'(') {
                     throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
