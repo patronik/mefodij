@@ -12,15 +12,15 @@ int main(int argc, char** argv) {
         init();
         if (argc > 1) {
             if (!fileExist(argv[1])) {
-                throw runtime_error("Файлу '" + string(argv[1]) + "' не існує\n");
+                throw runtime_error("File '" + string(argv[1]) + "' does not exist\n");
             }
             Interpreter interpreter{};
             wcout << interpreter.evaluate(readWideFile(argv[1]));
         } else {
-            wcout << L"Вхідний файл відсутній\n";
+            throw runtime_error("Input file is missing\n");
         }
     } catch(const exception & e) {
-       wcout << L"Помилка: " << e.what() << L'\n';
+       cout << "Error: " << e.what() << '\n';
     }
     return 0;
 }
