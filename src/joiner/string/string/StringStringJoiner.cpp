@@ -3,7 +3,7 @@
 
 #include <regex>
 
-StringStringJoiner::StringStringJoiner() : Joiner({L".", L"=", L"like"})
+StringStringJoiner::StringStringJoiner() : Joiner({L".", L"=", L"матч"})
 {}
 
 void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -14,7 +14,7 @@ void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
         left->setString(
             left->getString() + right->getString()
         );
-    } else if (op == L"like") {
+    } else if (op == L"матч") {
         if (regex_match(left->getString(), wregex(right->getString()))) {
             left->setBool(true);
         } else {

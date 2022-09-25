@@ -692,14 +692,14 @@ shared_ptr<Atom> Interpreter::evaluateBoolExpression()
                     + "' .");
                 }
             break;
-            case L'l': // check against regex
-                for (auto tmp: vector<wchar_t>{L'i', L'k', L'e'}) {
+            case L'м': // check against regex
+                for (auto tmp: vector<wchar_t>{L'а', L'т', L'ч'}) {
                     symbol = readChar(true);
                     if (symbol != tmp) {
                         throw new runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
                     }
                 }
-                Interpreter::joinAtoms(result, L"like", evaluateBoolExpression());
+                Interpreter::joinAtoms(result, L"матч", evaluateBoolExpression());
             break;
             // Lower lever operators
             case L'&': // boolean "and" &&
