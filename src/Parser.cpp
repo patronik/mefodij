@@ -138,3 +138,20 @@ bool Parser::parseCharacterSequence(wchar_t symbol, wstring & buffer)
     }
     return false;
 }
+
+pair<int, int> Parser::getCurrentLocation()
+{
+    int line = 1;
+    int relPos = 0;
+    int tmpPos = 0;
+    while (tmpPos < pos) {
+        if (src.at(tmpPos++) == L'\n') {
+            relPos = 0;
+            line++;
+        } else {
+            relPos++;
+        }
+        
+    }
+    return {line, relPos};
+}

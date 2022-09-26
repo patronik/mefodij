@@ -113,11 +113,12 @@ void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
     } else if (left->getType() == L"null" && right->getType() == L"null") {
         Interpreter::nullNullJoiner->join(left, op, right);
     } else {
+        pair<int, int> currLoc = getCurrentLocation();
         throw runtime_error(
             "Joiner for type " + wideStrToStr(left->getType())
             + " operator " + wideStrToStr(op)
             + " and type " + wideStrToStr(right->getType())
-            + " does not exist"
+            + " does not exist. At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + "."
         );
     }
 }
@@ -259,9 +260,10 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> 
         while(funcData.second.count(argumentIndex)) {
             // No intializer means required parameter is missing
             if (funcData.second.at(argumentIndex).second == nullptr) {
+                pair<int, int> currLoc = getCurrentLocation();
                 throw runtime_error("Function required parameter "
                 + wideStrToStr(funcData.second.at(argumentIndex).first)
-                + " is missing.");
+                + " is missing. At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             } else {
                 // Set default value
                 functionStack.set(funcData.second.at(argumentIndex).first, funcData.second.at(argumentIndex).second);
@@ -271,7 +273,9 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> 
     }
 
     if (symbol != L')') {
-        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) 
+        + "' . At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     // push function data onto stack
@@ -316,7 +320,9 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> 
                 continue;
             } else if (symbol == L'.') {
                 if (hasDot) {
-                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) 
+                    + "' . At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
                 hasDot = true;
                 number.push_back(symbol);
@@ -330,6 +336,7 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> 
         }
 
         if (symbol == L'.') {
+            pair<int, int> currLoc = getCurrentLocation();
             throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
         }
 
@@ -356,16 +363,19 @@ bool Interpreter::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> a
     do {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
         if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
-            throw runtime_error("Only string and integer array keys are supported.");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Only string and integer array keys are supported. At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
         elementKeys.push_back(keyAtom);
 
         symbol = readChar();
         if (symbol == L'\0') {
-            throw runtime_error("Unexpected end of file.");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected end of file.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
         if (symbol != L']') {
-            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' . At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
         symbol = readChar();
     } while (symbol == L'[');
@@ -424,18 +434,21 @@ bool Interpreter::parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> a
                 } else if (keyOrVal->getType() == L"double") {
                     array[to_wstring(keyOrVal->getDouble())] = arrayVal;
                 } else {
-                    throw runtime_error("Only string and numeric array keys are supported.");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Only string and numeric array keys are supported.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
 
                 symbol = readChar();
             } else {
-                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             }
         }
     } while (symbol == L',');
 
     if (symbol != L']') {
-        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     atom->setArray(array);
@@ -540,24 +553,24 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
     while (atomOp = readChar(true)) {
         switch (atomOp) {
             case L'*':
-                Interpreter::joinAtoms(result, L"*", parseAtom());
+                joinAtoms(result, L"*", parseAtom());
             break;
             case L'/':
-                Interpreter::joinAtoms(result, L"/", parseAtom());
+                joinAtoms(result, L"/", parseAtom());
             break;
             case L'.':
-                Interpreter::joinAtoms(result, L".", parseAtom());
+                joinAtoms(result, L".", parseAtom());
             break;
             case L'%':
-                Interpreter::joinAtoms(result, L"%", parseAtom());
+                joinAtoms(result, L"%", parseAtom());
             break;
             case L'+':
                 symbol = readChar();
                 if (symbol == L'+') {
                     result->postOperator(L"++");
                 } else if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L"+", evaluateBoolStatement());
-                    Interpreter::joinAtoms(result, L"=", result);
+                    joinAtoms(result, L"+", evaluateBoolStatement());
+                    joinAtoms(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
@@ -569,8 +582,8 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
                 if (symbol == L'-') {
                     result->postOperator(L"--");
                 } else if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L"-", evaluateBoolStatement());
-                    Interpreter::joinAtoms(result, L"=", result);
+                    joinAtoms(result, L"-", evaluateBoolStatement());
+                    joinAtoms(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
@@ -592,7 +605,7 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
                 } else {
                     unreadChar();
                     // execute assignment statement
-                    Interpreter::joinAtoms(result, L"=", evaluateBoolStatement());
+                    joinAtoms(result, L"=", evaluateBoolStatement());
                 }
                 break;
             // Lower lever operators
@@ -616,7 +629,8 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
                 return result;
                 break;
             default:
-                throw runtime_error("Unexpected token '" + wideStrToStr(atomOp) + "' .");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(atomOp) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 break;
         }
     }
@@ -631,75 +645,79 @@ shared_ptr<Atom> Interpreter::evaluateBoolExpression()
     while (mathOp = readChar(true)) {
         switch (mathOp) {
             case L'+':
-                Interpreter::joinAtoms(result, L"+", evaluateMathBlock());
+                joinAtoms(result, L"+", evaluateMathBlock());
             break;
             case L'-':
-                Interpreter::joinAtoms(result, L"-", evaluateMathBlock());
+                joinAtoms(result, L"-", evaluateMathBlock());
             break;
             case L'=':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L"==", evaluateMathBlock());
+                    joinAtoms(result, L"==", evaluateMathBlock());
                 } else if (symbol == L'>')  {
                     // key-val separator
                     unreadChar(2);
                     return result;
                     break;
                 } else {
+                    pair<int, int> currLoc = getCurrentLocation();
                     throw runtime_error("Unexpected token '"
                     + wideStrToStr(mathOp)
                     + wideStrToStr(symbol)
-                    + "' .");
+                    + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
             break;
             case L'!':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L"!=", evaluateMathBlock());
+                    joinAtoms(result, L"!=", evaluateMathBlock());
                 } else {
+                    pair<int, int> currLoc = getCurrentLocation();
                     throw runtime_error("Unexpected token '"
                     + wideStrToStr(mathOp)
                     + wideStrToStr(symbol)
-                    + "' .");
+                    + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
             break;
             case L'>':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L">=", evaluateMathBlock());
+                    joinAtoms(result, L">=", evaluateMathBlock());
                 } else {
                     unreadChar();
-                    Interpreter::joinAtoms(result, L">", evaluateMathBlock());
+                    joinAtoms(result, L">", evaluateMathBlock());
                 }
             break;
             case L'<':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    Interpreter::joinAtoms(result, L"<=", evaluateMathBlock());
+                    joinAtoms(result, L"<=", evaluateMathBlock());
                 } else {
                     unreadChar();
-                    Interpreter::joinAtoms(result, L"<", evaluateMathBlock());
+                    joinAtoms(result, L"<", evaluateMathBlock());
                 }
                 break;
             case L'i': // find in set
                 symbol = readChar(true);
                 if (symbol == L'n') {
-                    Interpreter::joinAtoms(result, L"in", evaluateMathBlock());
+                    joinAtoms(result, L"in", evaluateMathBlock());
                 } else {
+                    pair<int, int> currLoc = getCurrentLocation();
                     throw runtime_error("Unexpected token '"
                     + wideStrToStr(mathOp)
                     + wideStrToStr(symbol)
-                    + "' .");
+                    + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
             break;
             case L'м': // check against regex
                 for (auto tmp: vector<wchar_t>{L'а', L'т', L'ч'}) {
                     symbol = readChar(true);
                     if (symbol != tmp) {
-                        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                        pair<int, int> currLoc = getCurrentLocation();
+                        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                     }
                 }
-                Interpreter::joinAtoms(result, L"матч", evaluateBoolExpression());
+                joinAtoms(result, L"матч", evaluateBoolExpression());
             break;
             // Lower lever operators
             case L'&': // boolean "and" &&
@@ -717,7 +735,8 @@ shared_ptr<Atom> Interpreter::evaluateBoolExpression()
                 return result;
                 break;
             default:
-                throw runtime_error("Unexpected token '" + wideStrToStr(mathOp) + "' .");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(mathOp) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 break;
         }
     }
@@ -745,12 +764,13 @@ shared_ptr<Atom> Interpreter::evaluateBoolStatement()
                         unreadChar();
                         return result;
                     }
-                    Interpreter::joinAtoms(result, L"||", evaluateBoolExpression());
+                    joinAtoms(result, L"||", evaluateBoolExpression());
                 } else {
+                    pair<int, int> currLoc = getCurrentLocation();
                     throw runtime_error("Unexpected token '"
                     + wideStrToStr(booleanOp)
                     + wideStrToStr(symbol)
-                    + "' .");
+                    + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
                 break;
             case L'&':
@@ -763,12 +783,13 @@ shared_ptr<Atom> Interpreter::evaluateBoolStatement()
                         unreadChar();
                         return result;
                     }
-                    Interpreter::joinAtoms(result, L"&&", evaluateBoolExpression());
+                    joinAtoms(result, L"&&", evaluateBoolExpression());
                 } else {
+                    pair<int, int> currLoc = getCurrentLocation();
                     throw runtime_error("Unexpected token '"
                     + wideStrToStr(booleanOp)
                     + wideStrToStr(symbol)
-                    + "' .");
+                    + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
                 break;
             // end of argument
@@ -782,7 +803,8 @@ shared_ptr<Atom> Interpreter::evaluateBoolStatement()
                 return result;
                 break;
             default:
-                throw runtime_error("Unexpected token '" + wideStrToStr(booleanOp) + "' .");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(booleanOp) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 break;
         }
     }
@@ -794,7 +816,8 @@ bool Interpreter::evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Ato
     if (symbol == L'(') {
         shared_ptr<Atom> subResult = evaluateBoolStatement();
         if (readChar() != L')') {
-            throw runtime_error("Syntax error. Wrong number of parentheses.");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Syntax error. Wrong number of parentheses.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
         if (subResult->getType() == Atom::typeCast) {
             // Type casting
@@ -813,14 +836,16 @@ void Interpreter::evaluateForLoop()
 {
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     // Initializer statement
     evaluateStatement();
 
     if ((symbol = readChar()) != L';') {
-        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     int conditionPos = pos;
@@ -830,7 +855,8 @@ void Interpreter::evaluateForLoop()
     do {
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
 
         if (!lastResult->toBool()) {
@@ -877,7 +903,8 @@ void Interpreter::evaluateBlockOrStatement(bool stopOnBreak)
         unreadChar();
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
     } else {
         wchar_t statementOp;
@@ -900,7 +927,8 @@ void Interpreter::evaluateBlockOrStatement(bool stopOnBreak)
                     evaluateStatement();
                     break;
                 default:
-                    throw runtime_error("Unexpected token '" + wideStrToStr(statementOp) + "' .");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Unexpected token '" + wideStrToStr(statementOp) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 break;
             }
         }
@@ -912,7 +940,8 @@ void Interpreter::evaluateIfStructure()
     shared_ptr<Atom> lastIfResult = make_shared<Atom>();
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     evaluateParentheticalAtom(symbol, lastIfResult);
@@ -938,7 +967,8 @@ void Interpreter::evaluateIfStructure()
         for (auto tmp: vector<wchar_t>{L'б', L'о'}) {
             symbol = readChar(true);
             if (symbol != tmp) {
-                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             }
         }
 
@@ -946,19 +976,22 @@ void Interpreter::evaluateIfStructure()
             for (auto tmp: vector<wchar_t>{L'к', L'щ', L'о'}) {
                 symbol = readChar(true);
                 if (symbol != tmp) {
-                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
             }
 
             if (lastIfResult->toBool()) {
                 if ((symbol = readChar()) != L'(') {
-                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
                 fastForward({L')'}, L'(');
                 skipBlockOrStatement();
             } else {
                 if ((symbol = readChar()) != L'(') {
-                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .");
+                    pair<int, int> currLoc = getCurrentLocation();
+                    throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "' .  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 }
                 evaluateParentheticalAtom(symbol, lastIfResult);
                 if (lastIfResult->toBool()) {
@@ -971,7 +1004,8 @@ void Interpreter::evaluateIfStructure()
         } else {
             unreadChar();
             if (elseFound) {
-                throw runtime_error("Only 1 else statement can go after if.");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Only 1 else statement can go after if.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             }
             elseFound = true;
             if (lastIfResult->toBool()) {
@@ -988,15 +1022,18 @@ void Interpreter::parseFunction()
     wchar_t symbol = readChar();
     wstring functionName;
     if (!parseCharacterSequence(symbol, functionName)) {
-        throw runtime_error("Failed to parse function name.");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Failed to parse function name.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     if (functions.has(functionName)) {
-        throw runtime_error("Function \"" + wideStrToStr(functionName) + "\" already exists.");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Function \"" + wideStrToStr(functionName) + "\" already exists.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     if ((symbol = readChar()) != L'(') {
-        throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     map<int, pair<wstring, shared_ptr<Atom>>> parameters;
@@ -1010,7 +1047,8 @@ void Interpreter::parseFunction()
 
         wstring argName;
         if (!parseCharacterSequence(symbol, argName)) {
-            throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
 
         if ((symbol = readChar()) == L'=') {
@@ -1021,7 +1059,8 @@ void Interpreter::parseFunction()
             // required parameter
             unreadChar();
             if (hasOptional) {
-                throw runtime_error("Required parameters cannot go after optional ones.");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Required parameters cannot go after optional ones.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             }
             parameters[paramIndex] = {argName, nullptr};
         }
@@ -1030,7 +1069,8 @@ void Interpreter::parseFunction()
     } while ((symbol = readChar()) == L',');
 
     if (symbol != L')') {
-        throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+        pair<int, int> currLoc = getCurrentLocation();
+        throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
     }
 
     functions.set(functionName, pos, parameters);
@@ -1054,7 +1094,8 @@ void Interpreter::evaluateStatement()
             evaluateStatement();
             return;
         } else {
-            throw runtime_error("Unexpected token \"" + wideStrToStr(symbol) + "\".");
+            pair<int, int> currLoc = getCurrentLocation();
+            throw runtime_error("Unexpected token '" + wideStrToStr(symbol) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
         }
     }
 
@@ -1151,7 +1192,8 @@ void Interpreter::evaluateStatements()
                 evaluateStatement();
                 break;
             default:
-                throw runtime_error("Unexpected token \"" + wideStrToStr(statementOp) + "\".");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(statementOp) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
                 break;
         }
     }
@@ -1174,7 +1216,8 @@ wstring Interpreter::evaluate(wstring code, int pos)
                 evaluateStatements();
                 break;
             default:
-                throw runtime_error("Unexpected token \"" + wideStrToStr(separator) + "\".");
+                pair<int, int> currLoc = getCurrentLocation();
+                throw runtime_error("Unexpected token '" + wideStrToStr(separator) + "'.  At " + to_string(currLoc.first) + ":" + to_string(currLoc.second) + ".");
             break;
         }
     }
@@ -1182,5 +1225,6 @@ wstring Interpreter::evaluate(wstring code, int pos)
     if (isReturn) {
         return lastResult->toString();
     }
+    
     return L"";
 }

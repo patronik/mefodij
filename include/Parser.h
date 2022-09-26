@@ -30,6 +30,7 @@ class Parser
     // Dynamic source
     wstring dynamicSrc{};
 
+    pair<int, int> getCurrentLocation();
     bool isSpace(wchar_t symbol);
     void skipSpaces();
     wchar_t readChar(bool toLower = false, bool allChars = false);

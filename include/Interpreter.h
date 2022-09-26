@@ -144,7 +144,7 @@ class Interpreter : public Parser
     static unique_ptr<StringDoubleJoiner> stringDoubleJoiner;
     static unique_ptr<StringStringJoiner> stringStringJoiner;
 
-    static void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
+    void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
     Variables & getStorageRef();
 
