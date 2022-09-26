@@ -271,9 +271,9 @@ bool Interpreter::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> 
         while(funcData.second.count(argumentIndex)) {
             // No intializer means required parameter is missing
             if (funcData.second.at(argumentIndex).second == nullptr) {
-                throwError("Function required parameter "
+                throwError("Function required parameter '"
                     + wideStrToStr(funcData.second.at(argumentIndex).first)
-                    + " is missing."
+                    + "' is missing."
                 );
             } else {
                 // Set default value
