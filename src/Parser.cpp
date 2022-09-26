@@ -141,19 +141,15 @@ bool Parser::parseCharacterSequence(wchar_t symbol, wstring & buffer)
 
 pair<int, int> Parser::getCurrentLocation()
 {
-    int tmpPos = 0;
-    int relPos = 0;
+    int tmpPos = 1;
+    int relPos = 1;
     int line = 1;
-    while (tmpPos <= pos) {
-        if (tmpPos == 0) {
-            tmpPos++;
-            relPos++;
-            continue;
-        }
 
+    int lastReadPos = pos - 1;
+    while (tmpPos <= lastReadPos) {
         if (src.at(tmpPos - 1) == L'\n') {
             line++;
-            relPos = 0;
+            relPos = 1;
         } else {
             relPos++;
         }

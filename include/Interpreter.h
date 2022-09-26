@@ -170,6 +170,8 @@ class Interpreter : public Parser
     void evaluateBlockOrStatement(bool stopOnBreak = false);
     void evaluateStatement();
     void evaluateStatements();
+
+    void throwError(const string message);
 public:
   Interpreter();
   wstring evaluate(wstring code = L"", int pos = 0);
