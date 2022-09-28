@@ -16,6 +16,11 @@ void StringDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
         if (!left->getVar()) {
             throw runtime_error("Assignment can only be done to variable");                    
         } 
+
+        if (left->getCharIndex() > 0) {
+            throw new runtime_error("Cannot assign non string value to string character");
+        }
+        
         left->getVar()->setString(to_wstring(right->getDouble()));
         left->setString(to_wstring(right->getDouble())); 
     }

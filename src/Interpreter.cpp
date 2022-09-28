@@ -359,6 +359,41 @@ bool Interpreter::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> 
     return false;
 }
 
+bool Interpreter::parseStringAccessAtom(wstring varName, const vector<shared_ptr<Atom>> keys, const shared_ptr<Atom> atom)
+{
+    if (keys.size() == 0) {
+        throwError("String character access was not provided.");
+    }
+
+    if (keys.size() > 1) {
+        throwError("String atom doesn't support multiple access operators.");
+    }
+
+    if (keys[0]->getType() != Atom::typeInt) {
+        throwError("Only integer keys can be used for accessing string character.");
+    }
+
+    if (keys[0]->getInt() < 0) {
+        throwError("Negative indexes are not supported.");
+    }
+
+    Interpreter::Variables storage = getStorageRef();
+    if (!storage.has(varName)) {
+        throwError("Variable with name '" +  wideStrToStr(varName) + "' does not exist.");
+    }
+
+    shared_ptr<Atom> target = storage.get(varName);
+
+    if (target->getString().size() < keys[0]->getInt()) {
+        throwError("Character at index '" +  to_string(keys[0]->getInt()) + "' does not exist.");
+    }
+    
+    // create string atom with one character 
+    atom->setString(wstring(1, target->getString().at(keys[0]->getInt())));
+    atom->setVar(target, keys[0]->getInt());
+    return true;
+}
+
 bool Interpreter::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom)
 {
     // array element
@@ -395,6 +430,10 @@ bool Interpreter::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> a
     }
 
     shared_ptr<Atom> target = storage.get(varName);
+
+    if (target->getType() == Atom::typeString) {
+        return parseStringAccessAtom(varName, elementKeys, atom);
+    }
 
     for (int key = 0; key < elementKeys.size(); key++) {
         if (key < (elementKeys.size() - 1)) {
@@ -617,7 +656,7 @@ shared_ptr<Atom> Interpreter::evaluateMathBlock()
             case L'<': // greater than
             case L'&': // boolean "and" &&
             case L'|': // boolean "or" ||
-            case L'м': // check against regex
+            case L'~': // check against regex
             case L'i': // find in set
             // end of argument or statement
             case L',':
@@ -699,14 +738,8 @@ shared_ptr<Atom> Interpreter::evaluateBoolExpression()
                     throwError("Unexpected token '"+ wideStrToStr(mathOp) + "' '" + wideStrToStr(symbol) + "'.");
                 }
             break;
-            case L'м': // check against regex
-                for (auto tmp: vector<wchar_t>{L'а', L'т', L'ч'}) {
-                    symbol = readChar(true);
-                    if (symbol != tmp) {
-                        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-                    }
-                }
-                joinAtoms(result, L"матч", evaluateBoolExpression());
+            case L'~': // check against regex
+                joinAtoms(result, L"~", evaluateBoolExpression());
             break;
             // Lower lever operators
             case L'&': // boolean "and" &&

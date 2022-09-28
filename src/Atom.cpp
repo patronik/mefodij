@@ -47,14 +47,22 @@ Atom::Atom(bool val)
    boolVal = val;
 }
 
-void Atom::setVar(shared_ptr<Atom> atom)
+void Atom::setVar(shared_ptr<Atom> atom, const int charIndex)
 {
     varRef = atom;
+    if (charIndex > 0) {
+        stringVarCharIndex = charIndex;
+    }
 }
 
 shared_ptr<Atom> Atom::getVar()
 {
     return varRef;
+}
+
+int Atom::getCharIndex()
+{
+    return stringVarCharIndex;
 }
 
 wstring Atom::getType()
@@ -67,7 +75,6 @@ void Atom::clearVal()
     intVal = 0;  
     doubleVal = 0.0;
     stringVal.clear();
-    arrayIndexOffset = 0;
     arrayVal.clear();
     boolVal = false;
     castVal.clear();

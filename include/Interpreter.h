@@ -161,6 +161,7 @@ class Interpreter : public Parser
     bool parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom);
     bool parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom);
     bool parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom);
+    bool parseStringAccessAtom(wstring varName, const vector<shared_ptr<Atom>> keys, const shared_ptr<Atom> atom);
     bool parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom);
     bool parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom);
     

@@ -3,7 +3,7 @@
 
 #include <regex>
 
-StringStringJoiner::StringStringJoiner() : Joiner({L".", L"=", L"матч"})
+StringStringJoiner::StringStringJoiner() : Joiner({L".", L"=", L"~"})
 {}
 
 void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -14,7 +14,7 @@ void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
         left->setString(
             left->getString() + right->getString()
         );
-    } else if (op == L"матч") {
+    } else if (op == L"~") {
         if (regex_match(left->getString(), wregex(right->getString()))) {
             left->setBool(true);
         } else {
@@ -24,7 +24,18 @@ void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
         if (!left->getVar()) {
             throw runtime_error("Assignment can only be done to variable");                    
         } 
-        left->getVar()->setString(right->getString());
-        left->setString(right->getString()); 
+
+        if (left->getCharIndex() > 0) {
+            // single character string
+            if (right->getString().size() > 1) {
+                throw new runtime_error("Cannot assign multiple characters to one");
+            }
+            wstring storageString = left->getVar()->getString();
+            storageString[left->getCharIndex()] = right->getString().at(0);
+            left->getVar()->setString(storageString);           
+        } else {
+            left->getVar()->setString(right->getString());
+        }
+        left->setString(right->getString());  
     }
 }
