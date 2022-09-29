@@ -131,7 +131,7 @@ void Mefody::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right
                 + " operator " + wideStrToStr(op)
                 + " and type " + wideStrToStr(right->getType())
                 + " does not exist."
-            );    
+            );   
         }    
     } catch(const exception & e) {
         throwError(e.what());
@@ -363,21 +363,13 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
     return false;
 }
 
-bool Mefody::parseStringAccessAtom(wstring varName, const vector<shared_ptr<Atom>> keys, const shared_ptr<Atom> atom)
+bool Mefody::parseStringAccessAtom(wstring varName, shared_ptr<Atom> key, const shared_ptr<Atom> atom)
 {
-    if (keys.size() == 0) {
-        throwError("String character access was not provided.");
-    }
-
-    if (keys.size() > 1) {
-        throwError("String atom doesn't support multiple access operators.");
-    }
-
-    if (keys[0]->getType() != Atom::typeInt) {
+    if (key->getType() != Atom::typeInt) {
         throwError("Only integer keys can be used for accessing string character.");
     }
 
-    if (keys[0]->getInt() < 0) {
+    if (key->getInt() < 0) {
         throwError("Negative indexes are not supported.");
     }
 
@@ -388,17 +380,17 @@ bool Mefody::parseStringAccessAtom(wstring varName, const vector<shared_ptr<Atom
 
     shared_ptr<Atom> target = storage.get(varName);
 
-    if (target->getString().size() < keys[0]->getInt()) {
-        throwError("Character at index '" +  to_string(keys[0]->getInt()) + "' does not exist.");
+    if (target->getString().size() < key->getInt()) {
+        throwError("Character at index '" +  to_string(key->getInt()) + "' does not exist.");
     }
     
     // create string atom with one character 
-    atom->setString(wstring(1, target->getString().at(keys[0]->getInt())));
-    atom->setVar(target, keys[0]->getInt());
+    atom->setString(wstring(1, target->getString().at(key->getInt())));
+    atom->setVar(target, key->getInt());
     return true;
 }
 
-bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom)
+bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom, shared_ptr<Atom> target)
 {
     // array element
     wchar_t symbol = readChar();
@@ -407,49 +399,46 @@ bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom)
         return false;
     }
 
-    vector<shared_ptr<Atom>> elementKeys{};
-    do {
-        shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
-            throwError("Only string and integer array keys are supported.");
-        }
-        elementKeys.push_back(keyAtom);
-
-        symbol = readChar();
-        if (symbol == L'\0') {
-            throwError("Unexpected end of file.");
-        }
-        if (symbol != L']') {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-        }
-        symbol = readChar();
-    } while (symbol == L'[');
-
-    unreadChar();
-
-    Mefody::Variables storage = getStorageRef();
-    // initialize to empty array if not exists
-    if (!storage.has(varName)) {
-        storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
+    shared_ptr<Atom> keyAtom = evaluateBoolExpression();
+    if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
+        throwError("Only string and numerical array keys are supported.");
     }
 
-    shared_ptr<Atom> target = storage.get(varName);
+    if ((symbol = readChar()) != L']') {
+        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+    }
+
+    if (target == nullptr) {
+        Mefody::Variables storage = getStorageRef();
+        // initialize to empty array if not exists
+        if (!storage.has(varName)) {
+            storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
+        }
+        target = storage.get(varName);
+    }
 
     if (target->getType() == Atom::typeString) {
-        return parseStringAccessAtom(varName, elementKeys, atom);
+        return parseStringAccessAtom(varName, keyAtom, atom);
     }
 
-    for (int key = 0; key < elementKeys.size(); key++) {
-        if (key < (elementKeys.size() - 1)) {
-            if (!target->issetAt(elementKeys[key]->toString())) {
-                target->createAt(
-                    elementKeys[key]->toString(),
-                    make_shared<Atom>(map<wstring, shared_ptr<Atom>>{})
-                );
-            }
-        }
-        target = target->elementAt(elementKeys[key]->toString());
+    if (target->getType() != Atom::typeArray) {
+        throwError("Variable of type" 
+            + wideStrToStr(target->getType())
+            + " cannot be accessed with an index operator."
+        );
     }
+
+    if (!target->issetAt(keyAtom->toString())) {
+        target->createAt(
+            keyAtom->toString(), 
+            make_shared<Atom>(map<wstring, shared_ptr<Atom>>{})
+        );
+    }
+
+    *target = *target->elementAt(keyAtom->toString());
+
+    // resolve all possible subsequent access operators
+    parseArrayAccessAtom(varName, atom, target);
 
     *atom = *target;
     atom->setVar(target);

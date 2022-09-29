@@ -153,6 +153,7 @@ class Mefody : public Parser
     shared_ptr<Atom> evaluateBoolStatement();
     shared_ptr<Atom> parseAtom();
 
+
     // Atoms are indivisible parts of statement
     bool evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Atom> atom);
     bool parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom);
@@ -160,8 +161,8 @@ class Mefody : public Parser
     bool parseDoubleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom);
     bool parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom);
     bool parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom);
-    bool parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom);
-    bool parseStringAccessAtom(wstring varName, const vector<shared_ptr<Atom>> keys, const shared_ptr<Atom> atom);
+    bool parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom, shared_ptr<Atom> target = nullptr);
+    bool parseStringAccessAtom(wstring varName, const shared_ptr<Atom> key, const shared_ptr<Atom> atom);
     bool parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom);
     bool parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom);
     
