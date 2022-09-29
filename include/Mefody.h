@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef MEFODY_H
+#define MEFODY_H
 
 #include <iostream>
 #include <string>
@@ -49,7 +49,7 @@
 
 using namespace std;
 
-class Interpreter : public Parser
+class Mefody : public Parser
 {
     const wstring statementFunc = L"функція";
     const wstring statementReturn = L"повернути";
@@ -174,7 +174,7 @@ class Interpreter : public Parser
 
     void throwError(const string message);
 public:
-  Interpreter();
+  Mefody();
   wstring evaluate(wstring code = L"", int pos = 0);
 };
 

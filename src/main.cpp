@@ -1,5 +1,5 @@
 #include "../include/tools.h"
-#include "../include/Interpreter.h"
+#include "../include/Mefody.h"
 #include <iostream>
 #include <cwchar>
 
@@ -14,8 +14,8 @@ int main(int argc, char** argv) {
             if (!fileExist(argv[1])) {
                 throw runtime_error("File '" + string(argv[1]) + "' does not exist.");
             }
-            Interpreter interpreter{};
-            wcout << interpreter.evaluate(readWideFile(argv[1]));
+            Mefody mefody{};
+            wcout << mefody.evaluate(readWideFile(argv[1]));
         } else {
             throw runtime_error("Input file is missing.");
         }
