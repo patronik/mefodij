@@ -51,6 +51,7 @@ public:
   void setInt(int val);
   void setDouble(double val);
   void setString(wstring val);
+  void setStringChar(wchar_t val, int charIndex);
   void setArray(map<wstring, shared_ptr<Atom>> val);
   void setBool(bool val);
   void setNull();

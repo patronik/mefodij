@@ -50,7 +50,7 @@ Atom::Atom(bool val)
 void Atom::setVar(shared_ptr<Atom> atom, const int charIndex)
 {
     varRef = atom;
-    if (charIndex > 0) {
+    if (charIndex > -1) {
         stringVarCharIndex = charIndex;
     }
 }
@@ -99,6 +99,11 @@ void Atom::setString(wstring val)
     clearVal();
     stringVal = val;
     type = Atom::typeString;        
+}
+
+void Atom::setStringChar(wchar_t val, int charIndex)
+{
+    stringVal[charIndex] = val;
 }
 
 void Atom::setArray(map<wstring, shared_ptr<Atom>> val) 

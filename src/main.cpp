@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
             throw runtime_error("Input file is missing.");
         }
     } catch(const exception & e) {
-       cout << "Error: " << e.what() << '\n';
+       cerr << "Error: " << e.what() << '\n';
     }
     return 0;
 }

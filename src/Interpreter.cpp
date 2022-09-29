@@ -51,86 +51,90 @@ void Interpreter::throwError(string message)
 }
 
 void Interpreter::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    if (left->getType() == L"int" && right->getType() == L"int") {
-        Interpreter::intIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"double") {
-        Interpreter::intDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"string") {
-        Interpreter::intStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"array") {
-        Interpreter::intArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"bool") {
-        Interpreter::intBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"int" && right->getType() == L"null") {
-        Interpreter::intNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"int") {
-        Interpreter::doubleIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"double") {
-        Interpreter::doubleDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"string") {
-        Interpreter::doubleStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"array") {
-        Interpreter::doubleArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"bool") {
-        Interpreter::doubleBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"double" && right->getType() == L"null") {
-        Interpreter::doubleNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"int") {
-        Interpreter::stringIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"double") {
-        Interpreter::stringDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"string") {
-        Interpreter::stringStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"array") {
-        Interpreter::stringArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"bool") {
-        Interpreter::stringBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"string" && right->getType() == L"null") {
-        Interpreter::stringNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"int") {
-        Interpreter::arrayIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"double") {
-        Interpreter::arrayDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"string") {
-        Interpreter::arrayStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"array") {
-        Interpreter::arrayArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"bool") {
-        Interpreter::arrayBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"array" && right->getType() == L"null") {
-        Interpreter::arrayNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"int") {
-        Interpreter::boolIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"double") {
-        Interpreter::boolDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"string") {
-        Interpreter::boolStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"array") {
-        Interpreter::boolArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"bool") {
-        Interpreter::boolBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"bool" && right->getType() == L"null") {
-        Interpreter::boolNullJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"int") {
-        Interpreter::nullIntJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"double") {
-        Interpreter::nullDoubleJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"string") {
-        Interpreter::nullStringJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"array") {
-        Interpreter::nullArrayJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"bool") {
-        Interpreter::nullBoolJoiner->join(left, op, right);
-    } else if (left->getType() == L"null" && right->getType() == L"null") {
-        Interpreter::nullNullJoiner->join(left, op, right);
-    } else {
-        throwError(
-            "Joiner for type " + wideStrToStr(left->getType())
-            + " operator " + wideStrToStr(op)
-            + " and type " + wideStrToStr(right->getType())
-            + " does not exist."
-        );
+{   
+    try {
+        if (left->getType() == L"int" && right->getType() == L"int") {
+            Interpreter::intIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"int" && right->getType() == L"double") {
+            Interpreter::intDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"int" && right->getType() == L"string") {
+            Interpreter::intStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"int" && right->getType() == L"array") {
+            Interpreter::intArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"int" && right->getType() == L"bool") {
+            Interpreter::intBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"int" && right->getType() == L"null") {
+            Interpreter::intNullJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"int") {
+            Interpreter::doubleIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"double") {
+            Interpreter::doubleDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"string") {
+            Interpreter::doubleStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"array") {
+            Interpreter::doubleArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"bool") {
+            Interpreter::doubleBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"double" && right->getType() == L"null") {
+            Interpreter::doubleNullJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"int") {
+            Interpreter::stringIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"double") {
+            Interpreter::stringDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"string") {
+            Interpreter::stringStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"array") {
+            Interpreter::stringArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"bool") {
+            Interpreter::stringBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"string" && right->getType() == L"null") {
+            Interpreter::stringNullJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"int") {
+            Interpreter::arrayIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"double") {
+            Interpreter::arrayDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"string") {
+            Interpreter::arrayStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"array") {
+            Interpreter::arrayArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"bool") {
+            Interpreter::arrayBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"array" && right->getType() == L"null") {
+            Interpreter::arrayNullJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"int") {
+            Interpreter::boolIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"double") {
+            Interpreter::boolDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"string") {
+            Interpreter::boolStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"array") {
+            Interpreter::boolArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"bool") {
+            Interpreter::boolBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"bool" && right->getType() == L"null") {
+            Interpreter::boolNullJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"int") {
+            Interpreter::nullIntJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"double") {
+            Interpreter::nullDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"string") {
+            Interpreter::nullStringJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"array") {
+            Interpreter::nullArrayJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"bool") {
+            Interpreter::nullBoolJoiner->join(left, op, right);
+        } else if (left->getType() == L"null" && right->getType() == L"null") {
+            Interpreter::nullNullJoiner->join(left, op, right);
+        } else {
+            throw runtime_error(
+                "Joiner for type " + wideStrToStr(left->getType())
+                + " operator " + wideStrToStr(op)
+                + " and type " + wideStrToStr(right->getType())
+                + " does not exist."
+            );    
+        }    
+    } catch(const exception & e) {
+        throwError(e.what());
     }
 }
 
