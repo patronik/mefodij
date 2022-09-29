@@ -150,7 +150,7 @@ Mefody::Variables & Mefody::getStorageRef()
     return variables;
 }
 
-bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // string in double quotes
     if (symbol == L'"') {
@@ -189,7 +189,7 @@ bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> 
     return false;
 }
 
-bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // string in single quotes
     if (symbol == L'\'') {
@@ -221,7 +221,7 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, const shared_ptr<Atom> 
     return false;
 }
 
-bool Mefody::parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom)
+bool Mefody::parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     if (inVector<wstring>(Atom::castTypes, varName)) {
             atom->setCast(varName);
@@ -237,7 +237,7 @@ bool Mefody::parseKeywordAtom(wstring varName, const shared_ptr<Atom> atom)
         return true;
 }
 
-bool Mefody::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom)
+bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     // check if function exists
     if (!functions.has(varName)) {
@@ -309,7 +309,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom)
     evaluateBlockOrStatement();
     if (isReturn) {
         // assign function result as atom
-        *atom = *lastResult;
+        atom = lastResult;
     }
 
     // pop function data from stack
@@ -324,7 +324,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, const shared_ptr<Atom> atom)
     return true;
 }
 
-bool Mefody::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     wstring number{};
     bool hasDot = false;
@@ -363,7 +363,7 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
     return false;
 }
 
-bool Mefody::parseStringAccessAtom(wstring varName, shared_ptr<Atom> key, const shared_ptr<Atom> atom)
+bool Mefody::parseStringAccessAtom(wstring varName, const shared_ptr<Atom> key, shared_ptr<Atom> & atom)
 {
     if (key->getType() != Atom::typeInt) {
         throwError("Only integer keys can be used for accessing string character.");
@@ -390,7 +390,7 @@ bool Mefody::parseStringAccessAtom(wstring varName, shared_ptr<Atom> key, const 
     return true;
 }
 
-bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom, shared_ptr<Atom> target)
+bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     // array element
     wchar_t symbol = readChar();
@@ -408,13 +408,59 @@ bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom, 
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    if (target == nullptr) {
-        Mefody::Variables storage = getStorageRef();
-        // initialize to empty array if not exists
-        if (!storage.has(varName)) {
-            storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
-        }
-        target = storage.get(varName);
+    Mefody::Variables storage = getStorageRef();
+    // initialize to empty array if not exists
+    if (!storage.has(varName)) {
+        storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
+    }
+    shared_ptr<Atom> target = storage.get(varName);
+
+    if (target->getType() == Atom::typeString) {
+        return parseStringAccessAtom(varName, keyAtom, atom);
+    }
+
+    if (target->getType() != Atom::typeArray) {
+        throwError("Variable of type" 
+            + wideStrToStr(target->getType())
+            + " cannot be accessed with an index operator."
+        );
+    }
+
+    if (!target->issetAt(keyAtom->toString())) {
+        target->createAt(
+            keyAtom->toString(), 
+            make_shared<Atom>(map<wstring, shared_ptr<Atom>>{})
+        );
+    }
+
+    target = target->elementAt(keyAtom->toString());
+
+    // resolve all possible subsequent access operators
+    parseArrayAccessAtom(varName, atom, target);
+
+    // copy variable value to atom value
+    *atom = *target;
+    // store reference to variable into atom
+    atom->setVar(target);
+    return true;
+}
+
+bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom, shared_ptr<Atom>  & target)
+{
+    // array element
+    wchar_t symbol = readChar();
+    if (symbol != L'[') {
+        unreadChar();
+        return false;
+    }
+
+    shared_ptr<Atom> keyAtom = evaluateBoolExpression();
+    if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
+        throwError("Only string and numerical array keys are supported.");
+    }
+
+    if ((symbol = readChar()) != L']') {
+        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
     if (target->getType() == Atom::typeString) {
@@ -435,17 +481,19 @@ bool Mefody::parseArrayAccessAtom(wstring varName, const shared_ptr<Atom> atom, 
         );
     }
 
-    *target = *target->elementAt(keyAtom->toString());
+    target = target->elementAt(keyAtom->toString());
 
     // resolve all possible subsequent access operators
     parseArrayAccessAtom(varName, atom, target);
 
+     // copy variable value to atom value
     *atom = *target;
+    // store reference to variable into atom
     atom->setVar(target);
     return true;
 }
 
-bool Mefody::parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol != L'[') {
         return false;
@@ -491,7 +539,7 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, const shared_ptr<Atom> atom)
     return true;
 }
 
-bool Mefody::parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // alphabetical atom
     wstring varName{};
@@ -517,8 +565,9 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, const shared_ptr<Atom> atom)
             storage.set(varName, make_shared<Atom>());
         }
 
-        // copy variable value to atom
+        // copy variable value to atom value
         *atom = *storage.get(varName);
+        // store reference to variable into atom
         atom->setVar(storage.get(varName));
         return true;
     }
@@ -816,7 +865,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
     return result;
 }
 
-bool Mefody::evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Atom> atom)
+bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol == L'(') {
         shared_ptr<Atom> subResult = evaluateBoolStatement();
@@ -825,11 +874,11 @@ bool Mefody::evaluateParentheticalAtom(wchar_t symbol, const shared_ptr<Atom> at
         }
         if (subResult->getType() == Atom::typeCast) {
             // Type casting
-            *atom = *parseAtom();
+            atom = parseAtom();
             atom->cast(subResult->getCast());
         } else {
             // Subexpression
-            *atom = *subResult;
+            atom = subResult;
         }
         return true;
     }
@@ -1038,6 +1087,12 @@ void Mefody::parseFunction()
         wstring argName;
         if (!parseCharacterSequence(symbol, argName)) {
             throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        }
+
+        for (auto const & parameter : parameters) {
+            if (parameter.second.first == argName) {
+                throwError("Parameter with name '" + wideStrToStr(argName) + "' already exists.");
+            }
         }
 
         if ((symbol = readChar()) == L'=') {
