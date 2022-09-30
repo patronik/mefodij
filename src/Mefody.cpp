@@ -308,7 +308,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     // execute function body
     evaluateBlockOrStatement();
     if (isReturn) {
-        // assign function result as atom
+        // atom is a result of function call
         atom = lastResult;
     }
 
@@ -439,8 +439,8 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom)
     parseArrayAccessAtom(varName, atom, target);
 
     // copy variable value to atom value
-    *atom = *target;
-    // store reference to variable into atom
+    atom->setAtom(target);
+    // store reference to variable into atom (used for assignment)
     atom->setVar(target);
     return true;
 }
@@ -486,9 +486,9 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom, shar
     // resolve all possible subsequent access operators
     parseArrayAccessAtom(varName, atom, target);
 
-     // copy variable value to atom value
-    *atom = *target;
-    // store reference to variable into atom
+    // copy variable value to atom value
+    atom->setAtom(target);
+    // store reference to variable into atom (used for assignment)
     atom->setVar(target);
     return true;
 }
@@ -566,7 +566,7 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         }
 
         // copy variable value to atom value
-        *atom = *storage.get(varName);
+        atom->setAtom(storage.get(varName));
         // store reference to variable into atom
         atom->setVar(storage.get(varName));
         return true;
@@ -877,7 +877,7 @@ bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
             atom = parseAtom();
             atom->cast(subResult->getCast());
         } else {
-            // Subexpression
+            // atom is a result of subexpression
             atom = subResult;
         }
         return true;

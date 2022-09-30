@@ -56,6 +56,7 @@ public:
   void setBool(bool val);
   void setNull();
   void setCast(wstring val);
+  void setAtom(const shared_ptr<Atom> & src);
 
   int getInt();
   double getDouble();
