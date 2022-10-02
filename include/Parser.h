@@ -7,7 +7,7 @@
 using namespace std;
 
 /**
- * Parser is responsible for reading and navigating through the code
+ * Parser is responsible for reading, parsing and navigating through the code
  */
 class Parser
 {
@@ -21,11 +21,18 @@ class Parser
     wstring printableLetters;
     wstring printableChars;
 
-    // Source code
-    wstring src{};
+    const wstring statementFunc = L"функція";
+    const wstring statementReturn = L"повернути";
+    const wstring statementIf = L"якщо";
+    const wstring statementBreak = L"стоп";
+    const wstring statementFor = L"цикл";
+    const wstring statementPrint = L"друк";
 
     // Current parser position
     int pos = 0;
+
+    // Source code
+    wstring src{};
 
     // Dynamic source
     wstring dynamicSrc{};
@@ -38,6 +45,7 @@ class Parser
     void fastForward(vector<wchar_t> terminators, wchar_t nestedMarker = L'\0');
     void skipBlockOrStatement();
     bool parseCharacterSequence(wchar_t symbol, wstring & buffer);
+
     public:
     Parser();
 };

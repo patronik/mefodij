@@ -11,11 +11,8 @@ int main(int argc, char** argv) {
     try {
         init();
         if (argc > 1) {
-            if (!fileExist(argv[1])) {
-                throw runtime_error("File '" + string(argv[1]) + "' does not exist.");
-            }
             Mefody mefody{};
-            wcout << mefody.evaluate(readWideFile(argv[1]));
+            wcout << mefody.evaluateFile(argv[1]);
         } else {
             throw runtime_error("Input file is missing.");
         }

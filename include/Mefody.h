@@ -51,13 +51,6 @@ using namespace std;
 
 class Mefody : public Parser
 {
-    const wstring statementFunc = L"функція";
-    const wstring statementReturn = L"повернути";
-    const wstring statementIf = L"якщо";
-    const wstring statementBreak = L"стоп";
-    const wstring statementFor = L"цикл";
-    const wstring statementPrint = L"друк";
-
     // Return flag
     bool isReturn = false;
 
@@ -174,10 +167,15 @@ class Mefody : public Parser
     void evaluateStatement();
     void evaluateStatements();
 
+    tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState();
+    void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state);
+
     void throwError(const string message);
 public:
   Mefody();
   wstring evaluate(wstring code = L"", int pos = 0);
+  wstring evaluateFile(string filename);
+  wstring evaluateFile(wstring wfilename);
 };
 
 #endif

@@ -142,6 +142,21 @@ Mefody::Mefody() : Parser()
 {
 }
 
+tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> Mefody::getState()
+{
+    return tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>>{pos, src, dynamicSrc, isReturn, isBreak, lastResult};
+}
+
+void Mefody::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state)
+{
+    lastResult = get<5>(state);
+    isBreak = get<4>(state);
+    isReturn = get<3>(state);
+    dynamicSrc = get<2>(state);
+    src = get<1>(state);
+    pos = get<0>(state);
+}
+
 Mefody::Variables & Mefody::getStorageRef()
 {
     if (stack.size() > 0) {
@@ -297,13 +312,10 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     // push function data onto stack
     stack.push_back(functionStack);
 
-    // backup state
-    tuple<int, bool, shared_ptr<Atom>, wstring> prevState{pos, isReturn, lastResult, dynamicSrc};
+    auto prevState = getState();
 
     // point parser to function body
-    dynamicSrc = L"";
-    pos = funcData.first;
-    isReturn = false;
+    setState({funcData.first, src, L"", false, false, nullptr});
 
     // execute function body
     evaluateBlockOrStatement();
@@ -315,11 +327,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     // pop function data from stack
     stack.pop_back();
 
-    // restore state
-    dynamicSrc = get<3>(prevState);
-    lastResult = get<2>(prevState);
-    isReturn = get<1>(prevState);
-    pos = get<0>(prevState);
+    setState(prevState);
 
     return true;
 }
@@ -1162,7 +1170,7 @@ void Mefody::evaluateStatement()
             wcout << lastResult->toString();
             return;
         }
-        // END OFPRINT STATEMENT
+        // END OF PRINT STATEMENT
 
         // FUNCTION DEFINITION
         if (keyWord == statementFunc) {
@@ -1266,4 +1274,18 @@ wstring Mefody::evaluate(wstring code, int pos)
     }
     
     return L"";
+}
+
+wstring Mefody::evaluateFile(string filename)
+{
+    wstring wfilename(filename.begin(), filename.end()); 
+    return evaluateFile(wfilename);
+}
+
+wstring Mefody::evaluateFile(wstring wfilename)
+{
+    if (!fileExist(wideStrToStr(wfilename).c_str())) {
+        throwError("File '" + wideStrToStr(wfilename) + "' does not exist.");
+    }
+    return evaluate(readWideFile(wideStrToStr(wfilename).c_str()));
 }
