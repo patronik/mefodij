@@ -40,12 +40,16 @@ unique_ptr<StringStringJoiner> Mefody::stringStringJoiner = make_unique<StringSt
 
 void Mefody::throwError(string message)
 {
-    pair<int, int> currLoc = getCurrentLocation();
+    tuple<wstring, int, int> currLoc = getLastLocation();
     throw runtime_error(
-        message + " At " 
-        + to_string(currLoc.first) 
+        message 
+        + " In file: '" 
+        + wideStrToStr(get<0>(currLoc)) 
+        +  "'" 
+        + " At " 
+        + to_string(get<1>(currLoc)) 
         + ":" 
-        + to_string(currLoc.second) 
+        + to_string(get<2>(currLoc)) 
         + "."
     );
 }
@@ -1164,6 +1168,18 @@ void Mefody::evaluateStatement()
     // handle statements with preceding keywords
     if (parseCharacterSequence(symbol, keyWord)) {
 
+        // IMPORT STATEMENT
+        if (keyWord == statementImport) {
+            evaluateStatement();
+            if ((symbol = readChar()) != L';') {
+                unreadChar();
+            }
+            insertSource(lastResult->toString());
+            evaluateStatement();
+            return;
+        }
+        // END OF IMPORT STATEMENT
+
         // PRINT STATEMENT
         if (keyWord == statementPrint) {
             evaluateStatement();
@@ -1247,10 +1263,8 @@ void Mefody::evaluateStatements()
     }
 }
 
-wstring Mefody::evaluate(wstring code, int pos)
+wstring Mefody::evaluate()
 {
-    src = code;
-    pos = pos;
     evaluateStatements();
     wchar_t separator;
     while (!isReturn && (separator = readChar())) {
@@ -1284,8 +1298,6 @@ wstring Mefody::evaluateFile(string filename)
 
 wstring Mefody::evaluateFile(wstring wfilename)
 {
-    if (!fileExist(wideStrToStr(wfilename).c_str())) {
-        throwError("File '" + wideStrToStr(wfilename) + "' does not exist.");
-    }
-    return evaluate(readWideFile(wideStrToStr(wfilename).c_str()));
+    insertSource(wfilename);
+    return evaluate();
 }

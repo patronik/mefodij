@@ -139,22 +139,96 @@ bool Parser::parseCharacterSequence(wchar_t symbol, wstring & buffer)
     return false;
 }
 
-pair<int, int> Parser::getCurrentLocation()
+tuple<wstring, int, int> Parser::getLastLocation()
 {
-    int tmpPos = 1;
-    int relPos = 1;
-    int line = 1;
-
-    int lastReadPos = pos - 1;
-    while (tmpPos <= lastReadPos) {
-        if (src.at(tmpPos - 1) == L'\n') {
-            line++;
-            relPos = 1;
-        } else {
-            relPos++;
-        }
-        
-        tmpPos++;
+    int lastProccessedPos = pos - 1;
+    if (srcData.count(lastProccessedPos) == 0) {
+        throw runtime_error("Parser position '" + to_string(lastProccessedPos) + "' does not exist.");
     }
-    return {line, relPos};
+
+    auto lastProcessed = srcData[lastProccessedPos];
+    
+    int relativePos = 1;
+    while(srcData.count(--lastProccessedPos) != 0) {
+        auto processedData = srcData[lastProccessedPos];
+        if (processedData.first < lastProcessed.first) {
+            break;
+        }
+        relativePos++;
+    }
+
+    return {lastProcessed.second, lastProcessed.first, relativePos};
+}
+
+void Parser::insertSource(wstring wfilename)
+{
+    if (!fileExist(wideStrToStr(wfilename).c_str())) {
+        throw runtime_error("File '" + wideStrToStr(wfilename) + "' does not exist.");
+    }
+
+    wstring source = readWideFile(wideStrToStr(wfilename).c_str());
+
+    src.insert(pos, source);
+
+    map<int, pair<int, wstring>> newSrcData;
+    
+    int srcIdx = 0;
+    if (pos > 0) {
+        srcIdx = 0;
+        while (srcIdx < pos) {
+            newSrcData[srcIdx] = srcData[srcIdx];
+            srcIdx++;
+        }
+    }
+
+    int b = 0;
+    int  linesCnt = 0;
+    while (b < source.size()) {
+        srcIdx = b + pos;
+        if (srcIdx == 0) {
+            newSrcData[srcIdx] = {1, wfilename};
+        } else if (srcIdx > 0) {
+            if (src[srcIdx - 1] == L'\n') {
+                newSrcData[srcIdx] = {
+                    newSrcData[srcIdx - 1].first + 1, 
+                    wfilename
+                };
+                linesCnt++;
+            } else {
+                newSrcData[srcIdx] = {
+                    newSrcData[srcIdx - 1].first, 
+                    wfilename
+                };
+            }
+        }
+        b++;
+    }
+
+    srcIdx = pos;
+    while (srcIdx < srcData.size()) {
+        pair<int, wstring> symbolData = srcData[srcIdx];
+        newSrcData[srcIdx + source.size()] = {
+            symbolData.first + linesCnt, 
+            symbolData.second
+        };
+        srcIdx++;
+    }
+
+    srcData = newSrcData;
+
+    /*
+        for (const auto & tmp: srcData) {
+            wchar_t s = src[tmp.first];
+            if (s == L'\n') {
+                s = L'n';
+            }
+            wcout << s 
+                << " " 
+                << tmp.second.first 
+                << " " 
+                << tmp.second.second 
+                << "\n";
+        }
+        wcout << "\n\n\n";
+    */
 }

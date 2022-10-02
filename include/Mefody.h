@@ -173,7 +173,7 @@ class Mefody : public Parser
     void throwError(const string message);
 public:
   Mefody();
-  wstring evaluate(wstring code = L"", int pos = 0);
+  wstring evaluate();
   wstring evaluateFile(string filename);
   wstring evaluateFile(wstring wfilename);
 };

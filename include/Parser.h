@@ -1,8 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -27,6 +29,7 @@ class Parser
     const wstring statementBreak = L"стоп";
     const wstring statementFor = L"цикл";
     const wstring statementPrint = L"друк";
+    const wstring statementImport = L"імпорт";
 
     // Current parser position
     int pos = 0;
@@ -34,10 +37,14 @@ class Parser
     // Source code
     wstring src{};
 
+    // Source code lines and files 
+    map<int, pair<int, wstring>> srcData;
+
     // Dynamic source
     wstring dynamicSrc{};
 
-    pair<int, int> getCurrentLocation();
+    void insertSource(wstring wfilename);
+    tuple<wstring, int, int> getLastLocation();
     bool isSpace(wchar_t symbol);
     void skipSpaces();
     wchar_t readChar(bool toLower = false, bool allChars = false);
