@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 #include <map>
@@ -36,9 +37,9 @@ class Parser
 
     // Source code
     wstring src{};
-
+    
     // Source code lines and files 
-    map<int, pair<int, wstring>> srcData;
+    vector<tuple<wstring, int, int, wchar_t>> sourceEntries;
 
     // Dynamic source
     wstring dynamicSrc{};

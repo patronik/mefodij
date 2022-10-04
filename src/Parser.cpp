@@ -141,23 +141,13 @@ bool Parser::parseCharacterSequence(wchar_t symbol, wstring & buffer)
 
 tuple<wstring, int, int> Parser::getLastLocation()
 {
-    int lastProccessedPos = pos - 1;
-    if (srcData.count(lastProccessedPos) == 0) {
-        throw runtime_error("Parser position '" + to_string(lastProccessedPos) + "' does not exist.");
+    try {
+        auto curEntry = sourceEntries.at(pos - 1);
+        return {get<0>(curEntry), get<1>(curEntry), get<2>(curEntry)};   
     }
-
-    auto lastProcessed = srcData[lastProccessedPos];
-    
-    int relativePos = 1;
-    while(srcData.count(--lastProccessedPos) != 0) {
-        auto processedData = srcData[lastProccessedPos];
-        if (processedData.first < lastProcessed.first) {
-            break;
-        }
-        relativePos++;
+    catch (const out_of_range & oor) {
+        throw runtime_error("Element at index '" + to_string(pos - 1) + "' does not exist.");
     }
-
-    return {lastProcessed.second, lastProcessed.first, relativePos};
 }
 
 void Parser::insertSource(wstring wfilename)
@@ -170,65 +160,61 @@ void Parser::insertSource(wstring wfilename)
 
     src.insert(pos, source);
 
-    map<int, pair<int, wstring>> newSrcData;
-    
-    int srcIdx = 0;
-    if (pos > 0) {
-        srcIdx = 0;
-        while (srcIdx < pos) {
-            newSrcData[srcIdx] = srcData[srcIdx];
-            srcIdx++;
-        }
-    }
+    vector<tuple<wstring, int, int, wchar_t>>::iterator prev;
 
-    int b = 0;
-    int  linesCnt = 0;
-    while (b < source.size()) {
-        srcIdx = b + pos;
-        if (srcIdx == 0) {
-            newSrcData[srcIdx] = {1, wfilename};
-        } else if (srcIdx > 0) {
-            if (src[srcIdx - 1] == L'\n') {
-                newSrcData[srcIdx] = {
-                    newSrcData[srcIdx - 1].first + 1, 
-                    wfilename
-                };
-                linesCnt++;
+    if (pos == 0) {
+        for (int i = 0; i < source.size(); i++) {
+            if (i == 0) {
+                sourceEntries.insert(
+                    sourceEntries.begin(), 
+                    {wfilename, 1, 1, source.at(i)}
+                );
+                prev = sourceEntries.begin();
             } else {
-                newSrcData[srcIdx] = {
-                    newSrcData[srcIdx - 1].first, 
-                    wfilename
-                };
+                int line = 1;
+                int relPos = 1;
+                if (get<3>(*prev) == L'\n') {
+                    line = get<1>(*prev) + 1;
+                    relPos = 1;
+                } else {
+                    line = get<1>(*prev);
+                    relPos = get<2>(*prev) + 1;
+                }
+                sourceEntries.insert(
+                    sourceEntries.begin() + i, 
+                    {wfilename, line, relPos, source.at(i)}
+                );
+                prev = (sourceEntries.begin() + i);
             }
         }
-        b++;
-    }
+    } else {
+        // Find insert position
+        for (int i = 0; i < source.size(); i++) {
+            auto baseInsertPos = sourceEntries.begin() + pos;
 
-    srcIdx = pos;
-    while (srcIdx < srcData.size()) {
-        pair<int, wstring> symbolData = srcData[srcIdx];
-        newSrcData[srcIdx + source.size()] = {
-            symbolData.first + linesCnt, 
-            symbolData.second
-        };
-        srcIdx++;
-    }
+            int line = 1;
+            int relPos = 1;
 
-    srcData = newSrcData;
-
-    /*
-        for (const auto & tmp: srcData) {
-            wchar_t s = src[tmp.first];
-            if (s == L'\n') {
-                s = L'n';
+            if (i > 0) {
+                prev = (baseInsertPos + i) - 1;
+                if (get<3>(*prev) == L'\n') {
+                    line = get<1>(*prev) + 1;
+                    relPos = 1;
+                } else {
+                    line = get<1>(*prev);
+                    relPos = get<2>(*prev) + 1;
+                }
             }
-            wcout << s 
-                << " " 
-                << tmp.second.first 
-                << " " 
-                << tmp.second.second 
-                << "\n";
+
+            sourceEntries.insert(
+                baseInsertPos + i, 
+                {
+                    wfilename, 
+                    line, 
+                    relPos, 
+                    source.at(i)
+                }
+            );
         }
-        wcout << "\n\n\n";
-    */
+    }
 }
