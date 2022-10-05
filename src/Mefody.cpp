@@ -385,7 +385,7 @@ bool Mefody::parseStringAccessAtom(wstring varName, const shared_ptr<Atom> key, 
         throwError("Negative indexes are not supported.");
     }
 
-    Mefody::Variables storage = getStorageRef();
+    Mefody::Variables & storage = getStorageRef();
     if (!storage.has(varName)) {
         throwError("Variable with name '" +  wideStrToStr(varName) + "' does not exist.");
     }
@@ -420,7 +420,7 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom)
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    Mefody::Variables storage = getStorageRef();
+    Mefody::Variables & storage = getStorageRef();
     // initialize to empty array if not exists
     if (!storage.has(varName)) {
         storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
@@ -432,16 +432,12 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom)
     }
 
     if (target->getType() != Atom::typeArray) {
-        throwError("Variable of type" 
-            + wideStrToStr(target->getType())
-            + " cannot be accessed with an index operator."
-        );
+        target->setArray(map<wstring, shared_ptr<Atom>>{});
     }
 
     if (!target->issetAt(keyAtom->toString())) {
         target->createAt(
-            keyAtom->toString(), 
-            make_shared<Atom>(map<wstring, shared_ptr<Atom>>{})
+            keyAtom->toString(), make_shared<Atom>()
         );
     }
 
@@ -480,16 +476,12 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom, shar
     }
 
     if (target->getType() != Atom::typeArray) {
-        throwError("Variable of type" 
-            + wideStrToStr(target->getType())
-            + " cannot be accessed with an index operator."
-        );
+        target->setArray(map<wstring, shared_ptr<Atom>>{});
     }
 
     if (!target->issetAt(keyAtom->toString())) {
         target->createAt(
-            keyAtom->toString(), 
-            make_shared<Atom>(map<wstring, shared_ptr<Atom>>{})
+            keyAtom->toString(), make_shared<Atom>()
         );
     }
 
