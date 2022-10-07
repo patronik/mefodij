@@ -26,7 +26,7 @@ class Parser
 
     const wstring statementFunc = L"функція";
     const wstring statementReturn = L"повернути";
-    const wstring statementIf = L"якщо";
+    const wstring statementIf = L"умова";
     const wstring statementBreak = L"стоп";
     const wstring statementFor = L"цикл";
     const wstring statementPrint = L"друк";

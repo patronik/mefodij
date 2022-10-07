@@ -79,6 +79,7 @@ class Mefody : public Parser
     Functions functions{};
 
     class Variables {
+      Variables * parentStorage = nullptr;
       map<wstring, shared_ptr<Atom>> storage;
       public:
         void set(wstring key, shared_ptr<Atom> var) 
@@ -86,11 +87,29 @@ class Mefody : public Parser
             storage.insert({key, var});
         }
         bool has(wstring key) {
-            return storage.count(key) != 0;
+            bool hasOwn = storage.count(key) != 0;
+            if (hasOwn) {
+                return true;
+            }
+            if (parentStorage) {
+                return parentStorage->has(key);
+            }
+            return false;
         }
         shared_ptr<Atom> get(wstring key) 
         {
-            return storage.at(key);
+            bool hasOwn = storage.count(key) != 0;
+            if (hasOwn) {
+                return storage.at(key);
+            }
+            if (parentStorage) {
+                return parentStorage->get(key);
+            }
+            throw runtime_error("Variable '" + wideStrToStr(key) + "' does not exist.");
+        }
+        void setParent(Variables * parent)
+        {
+            parentStorage = parent;
         }
     };
 

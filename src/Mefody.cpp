@@ -313,6 +313,8 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
+    functionStack.setParent(&getStorageRef());
+
     // push function data onto stack
     stack.push_back(functionStack);
 

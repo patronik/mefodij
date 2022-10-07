@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/double/double/DoubleDoubleJoiner.h"
 
-DoubleDoubleJoiner::DoubleDoubleJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"="})
+DoubleDoubleJoiner::DoubleDoubleJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"=", L"!="})
 {
 }
 
@@ -27,6 +27,10 @@ void DoubleDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
     } else if (op == L"==") {
         left->setBool(
             (bool) (left->getDouble() == right->getDouble())
+        );
+    } else if (op == L"!=") {
+        left->setBool(
+            (bool) (left->getDouble() != right->getDouble())
         );
     } else if (op == L">=") {
         left->setBool(

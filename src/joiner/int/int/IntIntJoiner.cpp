@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/int/int/IntIntJoiner.h"
 
-IntIntJoiner::IntIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"="})
+IntIntJoiner::IntIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"=", L"!="})
 {
 }
 
@@ -27,6 +27,10 @@ void IntIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> righ
     } else if (op == L"==") {
         left->setBool(
             (bool) (left->getInt() == right->getInt())
+        );
+    } else if (op == L"!=") {
+        left->setBool(
+            (bool) (left->getInt() != right->getInt())
         );
     } else if (op == L">=") {
         left->setBool(
