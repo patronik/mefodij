@@ -161,12 +161,12 @@ void Mefody::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<
     pos = get<0>(state);
 }
 
-Mefody::Variables & Mefody::getStorageRef()
+Context & Mefody::getContext()
 {
     if (stack.size() > 0) {
         return stack.at(stack.size() - 1);
     }
-    return variables;
+    return context;
 }
 
 bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
@@ -259,7 +259,7 @@ bool Mefody::parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom)
 bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     // check if function exists
-    if (!functions.has(varName)) {
+    if (!getContext().hasFunction(varName)) {
         return false;
     }
 
@@ -270,8 +270,8 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         return false;
     }
 
-    pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & funcData = functions.get(varName);
-    Mefody::Variables functionStack;
+    pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & funcData = getContext().getFunction(varName);
+    Context functionStack;
     symbol = readChar();
     if (symbol != L')') {
         unreadChar();
@@ -279,7 +279,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         int argumentIndex = 0;
         do {
             if (funcData.second.count(argumentIndex)) {
-                functionStack.set(funcData.second.at(argumentIndex).first, evaluateBoolStatement());
+                functionStack.setVar(funcData.second.at(argumentIndex).first, evaluateBoolStatement());
             } else {
                 // skip arguments which are not expected by function
                 fastForward({L','});
@@ -300,7 +300,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
                 );
             } else {
                 // Set default value
-                functionStack.set(
+                functionStack.setVar(
                     funcData.second.at(argumentIndex).first, 
                     funcData.second.at(argumentIndex).second
                 );
@@ -313,7 +313,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    functionStack.setParent(&getStorageRef());
+    functionStack.setParent(&getContext());
 
     // push function data onto stack
     stack.push_back(functionStack);
@@ -387,12 +387,12 @@ bool Mefody::parseStringAccessAtom(wstring varName, const shared_ptr<Atom> key, 
         throwError("Negative indexes are not supported.");
     }
 
-    Mefody::Variables & storage = getStorageRef();
-    if (!storage.has(varName)) {
+    Context & storage = getContext();
+    if (!storage.hasVar(varName)) {
         throwError("Variable with name '" +  wideStrToStr(varName) + "' does not exist.");
     }
 
-    shared_ptr<Atom> target = storage.get(varName);
+    shared_ptr<Atom> target = storage.getVar(varName);
 
     if (target->getString().size() < key->getInt()) {
         throwError("Character at index '" +  to_string(key->getInt()) + "' does not exist.");
@@ -422,12 +422,12 @@ bool Mefody::parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom)
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    Mefody::Variables & storage = getStorageRef();
+    Context & storage = getContext();
     // initialize to empty array if not exists
-    if (!storage.has(varName)) {
-        storage.set(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
+    if (!storage.hasVar(varName)) {
+        storage.setVar(varName,  make_shared<Atom>(map<wstring, shared_ptr<Atom>>{}));
     }
-    shared_ptr<Atom> target = storage.get(varName);
+    shared_ptr<Atom> target = storage.getVar(varName);
 
     if (target->getType() == Atom::typeString) {
         return parseStringAccessAtom(varName, keyAtom, atom);
@@ -566,15 +566,15 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         }
 
         // variable atom
-        Mefody::Variables & storage = getStorageRef();
-        if (!storage.has(varName)) {
-            storage.set(varName, make_shared<Atom>());
+        Context & storage = getContext();
+        if (!storage.hasOwnVar(varName)) {
+            storage.setVar(varName, make_shared<Atom>());
         }
 
         // copy variable value to atom value
-        atom->setAtom(storage.get(varName));
+        atom->setAtom(storage.getVar(varName));
         // store reference to variable into atom
-        atom->setVar(storage.get(varName));
+        atom->setVar(storage.getVar(varName));
         return true;
     }
     return false;
@@ -1073,7 +1073,7 @@ void Mefody::parseFunction()
         throwError("Failed to parse function name." );
     }
 
-    if (functions.has(functionName)) {
+    if (getContext().hasOwnFunction(functionName)) {
         throwError("Function '" + wideStrToStr(functionName) + "' already defined." );
     }
 
@@ -1121,7 +1121,7 @@ void Mefody::parseFunction()
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    functions.set(functionName, pos, parameters);
+    getContext().setFunction(functionName, pos, parameters);
 
     skipBlockOrStatement();
 }

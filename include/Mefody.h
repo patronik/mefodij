@@ -9,6 +9,7 @@
 
 #include "Parser.h"
 #include "Atom.h"
+#include "Context.h"
 
 #include "joiner/bool/bool/BoolBoolJoiner.h"
 #include "joiner/bool/int/BoolIntJoiner.h"
@@ -59,65 +60,11 @@ class Mefody : public Parser
 
     shared_ptr<Atom> lastResult{};
 
-    class Functions {
-      map<wstring, pair<int, map<int, pair<wstring, shared_ptr<Atom>>>>> storage;
-      public:
-        void set(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params) 
-        {
-            storage.insert({key, {pos, params}});
-        }
-        bool has(wstring key) {
-            return storage.count(key) != 0;
-        }
-        pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & get(wstring key) 
-        {
-            return storage.at(key);
-        }
-    };
-
-    // User defined functions
-    Functions functions{};
-
-    class Variables {
-      Variables * parentStorage = nullptr;
-      map<wstring, shared_ptr<Atom>> storage;
-      public:
-        void set(wstring key, shared_ptr<Atom> var) 
-        {
-            storage.insert({key, var});
-        }
-        bool has(wstring key) {
-            bool hasOwn = storage.count(key) != 0;
-            if (hasOwn) {
-                return true;
-            }
-            if (parentStorage) {
-                return parentStorage->has(key);
-            }
-            return false;
-        }
-        shared_ptr<Atom> get(wstring key) 
-        {
-            bool hasOwn = storage.count(key) != 0;
-            if (hasOwn) {
-                return storage.at(key);
-            }
-            if (parentStorage) {
-                return parentStorage->get(key);
-            }
-            throw runtime_error("Variable '" + wideStrToStr(key) + "' does not exist.");
-        }
-        void setParent(Variables * parent)
-        {
-            parentStorage = parent;
-        }
-    };
-
     // Global variables
-    Variables variables{};
+    Context context{};
 
     // Variables in stack
-    vector<Variables> stack{};
+    vector<Context> stack{};
 
     static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
     static unique_ptr<BoolIntJoiner> boolIntJoiner;
@@ -158,7 +105,7 @@ class Mefody : public Parser
 
     void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
-    Variables & getStorageRef();
+    Context & getContext();
 
     shared_ptr<Atom> evaluateMathBlock();
     shared_ptr<Atom> evaluateBoolExpression();
