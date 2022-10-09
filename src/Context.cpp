@@ -67,7 +67,11 @@ pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & Context::getFunction(wstr
     throw runtime_error("Function '" + wideStrToStr(key) + "' does not exist.");
 }
 
-void Context::setParent(Context * parent)
+void Context::setParent(shared_ptr<Context> parent)
 {
     parentContext = parent;
+}
+
+Context::Context(): storage(), functions(), parentContext(nullptr)
+{
 }

@@ -61,10 +61,10 @@ class Mefody : public Parser
     shared_ptr<Atom> lastResult{};
 
     // Global variables
-    Context context{};
+    shared_ptr<Context> context = nullptr;
 
     // Variables in stack
-    vector<Context> stack{};
+    vector<shared_ptr<Context>> stack{};
 
     static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
     static unique_ptr<BoolIntJoiner> boolIntJoiner;
@@ -105,7 +105,7 @@ class Mefody : public Parser
 
     void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
-    Context & getContext();
+    shared_ptr<Context> getContext();
 
     shared_ptr<Atom> evaluateMathBlock();
     shared_ptr<Atom> evaluateBoolExpression();

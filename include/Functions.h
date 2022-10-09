@@ -11,7 +11,7 @@ class Functions {
     void set(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params); 
     bool has(wstring key);
     pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & get(wstring key);
-  
+    Functions(): storage{} {};
 };
 
 #endif
