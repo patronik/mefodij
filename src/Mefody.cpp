@@ -569,9 +569,8 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 
         // variable atom
         shared_ptr<Context> storage = getContext();
-        // TODO implement separate var declaration and use case
-        if (!storage->hasOwnVar(varName)) {
-            storage->setVar(varName, make_shared<Atom>());
+        if (!storage->hasVar(varName)) {
+            throwError("Variable '" + wideStrToStr(varName) + "' is not defined.");
         }
 
         // copy variable value to atom value
@@ -896,6 +895,11 @@ bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 
 void Mefody::evaluateForLoop()
 {
+    shared_ptr<Context> loopStack = make_shared<Context>();
+    loopStack->setParent(getContext());
+    // push function data onto stack
+    stack.push_back(loopStack);
+
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
@@ -952,6 +956,9 @@ void Mefody::evaluateForLoop()
     skipBlockOrStatement();
 
     isBreak = false;
+
+    // pop function data from stack
+    stack.pop_back();
 }
 
 void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
@@ -1009,63 +1016,67 @@ void Mefody::evaluateIfStructure()
         }
     } else {
         skipBlockOrStatement();
-    }
 
-    bool elseFound = false;
-    while (!isReturn) {
-        if ((symbol = readChar(true)) != L'а') {
-            if (symbol != endOfFile) {
-                unreadChar();
-            }
-            break;
-        }
-
-        for (auto tmp: vector<wchar_t>{L'б', L'о'}) {
-            symbol = readChar(true);
-            if (symbol != tmp) {
-                throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-            }
-        }
-
-        if ((symbol = readChar(true)) == L'я') {
-            for (auto tmp: vector<wchar_t>{L'к', L'щ', L'о'}) {
-                symbol = readChar(true);
-                if (symbol != tmp) {
-                    throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-                }
+        bool elseFound = false;
+        while (!isReturn) {
+            if (readChars(true, false, 3) != L"або") {
+                unreadChar(3);
+                break;
             }
 
-            if (lastIfResult->toBool()) {
-                if ((symbol = readChar()) != L'(') {
-                    throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-                }
-                fastForward({L')'}, L'(');
-                skipBlockOrStatement();
-            } else {
-                if ((symbol = readChar()) != L'(') {
-                    throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
-                }
-                evaluateParentheticalAtom(symbol, lastIfResult);
+            if (readChars(true, false, 5) == L"умова") {
                 if (lastIfResult->toBool()) {
-                    evaluateBlockOrStatement();
-                } else {
+                    if ((symbol = readChar()) != L'(') {
+                        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                    }
+                    fastForward({L')'}, L'(');
                     skipBlockOrStatement();
+                } else {
+                    if ((symbol = readChar()) != L'(') {
+                        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                    }
+                    evaluateParentheticalAtom(symbol, lastIfResult);
+                    if (lastIfResult->toBool()) {
+                        evaluateBlockOrStatement();
+                    } else {
+                        skipBlockOrStatement();
+                    }
                 }
-            }
-            continue;
-        } else {
-            unreadChar();
-            if (elseFound) {
-                throwError("Only 1 else statement can go after if.");
-            }
-            elseFound = true;
-            if (lastIfResult->toBool()) {
-                skipBlockOrStatement();
+                continue;
             } else {
-                evaluateBlockOrStatement();
+                unreadChar(5);
+                if (elseFound) {
+                    throwError("Only 1 else statement can go after if.");
+                }
+                elseFound = true;
+                if (lastIfResult->toBool()) {
+                    skipBlockOrStatement();
+                } else {
+                    evaluateBlockOrStatement();
+                }
             }
         }
     }
+}
+
+void Mefody::parseVariable() 
+{
+    // Backup pos
+    int prevPos = pos;
+
+    wchar_t symbol = readChar();
+    wstring varName;
+    if (!parseCharacterSequence(symbol, varName)) {
+        throwError("Failed to parse variable name.");
+    }
+
+    if (getContext()->hasOwnVar(varName)) {
+        throwError("Variable '" + wideStrToStr(varName) + "' already defined." );
+    }
+
+    getContext()->setVar(varName, make_shared<Atom>());
+
+    pos = prevPos;
 }
 
 void Mefody::parseFunction()
@@ -1185,6 +1196,14 @@ void Mefody::evaluateStatement()
         }
         // END OF PRINT STATEMENT
 
+        // VARIABLE DEFINITION
+        if (keyWord == statementDec) {
+            parseVariable();
+            evaluateStatement();
+            return;
+        }
+        // END OF VARIABLE DEFINITION
+
         // FUNCTION DEFINITION
         if (keyWord == statementFunc) {
             parseFunction();
@@ -1194,7 +1213,7 @@ void Mefody::evaluateStatement()
         // END OF FUNCTION DEFINITION
 
         // RETURN STATEMENT
-        if (keyWord == statementReturn) {
+        if (keyWord == statementExit) {
             isReturn = true;
             evaluateStatement();
             return;

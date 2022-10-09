@@ -24,8 +24,9 @@ class Parser
     wstring printableLetters;
     wstring printableChars;
 
+    const wstring statementDec = L"дек";
     const wstring statementFunc = L"функція";
-    const wstring statementReturn = L"повернути";
+    const wstring statementExit = L"вихід";
     const wstring statementIf = L"умова";
     const wstring statementBreak = L"стоп";
     const wstring statementFor = L"цикл";
@@ -39,7 +40,7 @@ class Parser
     wstring src{};
     
     // Source code lines and files 
-    vector<tuple<wstring, int, int, wchar_t>> sourceEntries;
+    vector<tuple<wstring, int, int, wchar_t>> sourceEntries{};
 
     // Dynamic source
     wstring dynamicSrc{};
@@ -49,6 +50,7 @@ class Parser
     bool isSpace(wchar_t symbol);
     void skipSpaces();
     wchar_t readChar(bool toLower = false, bool allChars = false);
+    wstring readChars(bool toLower, bool allChars, int numChars);
     void unreadChar(int numOfSteps = 1);
     void fastForward(vector<wchar_t> terminators, wchar_t nestedMarker = L'\0');
     void skipBlockOrStatement();

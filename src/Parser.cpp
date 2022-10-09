@@ -45,6 +45,16 @@ wchar_t Parser::readChar(bool toLower, bool allChars)
     return symbol;
 }
 
+wstring Parser::readChars(bool toLower, bool allChars, int numChars) 
+{
+    wstring wstr;
+    while (numChars > 0) {
+        wstr += wstring(1, readChar(toLower, allChars));
+        numChars--;
+    }
+    return wstr;
+}
+
 void Parser::unreadChar(int numOfSteps)
 {
     do {

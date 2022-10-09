@@ -258,11 +258,11 @@ wstring Atom::toString()
     if (type == Atom::typeBool) {
         return boolVal ? L"true" : L"false";
     }
-    if (type == Atom::typeNull) {
-        return Atom::typeNull;
+    if (type == Atom::typeCast) {
+        throw runtime_error("Cast to string conversion");
     }
-    if (type == Atom::typeCast ) {
-        return castVal;
+    if (type == Atom::typeNull) {
+        return L"";
     }
     throw runtime_error("Not supported atom type");
 }
