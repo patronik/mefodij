@@ -1,13 +1,13 @@
 
 #include "../../../../include/joiner/string/null/StringNullJoiner.h"
 
-StringNullJoiner::StringNullJoiner() : Joiner({L"=", L"."})
+StringNullJoiner::StringNullJoiner() : Joiner({L"=", L"&"})
 {}
 
 void StringNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
     validate(op);
-    if (op == L".") {
+    if (op == L"&") {
         
     } else if (op == L"=") {
         if (!left->getVar()) {

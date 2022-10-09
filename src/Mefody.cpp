@@ -650,8 +650,16 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             case L'/':
                 joinAtoms(result, L"/", parseAtom());
             break;
-            case L'.':
-                joinAtoms(result, L".", parseAtom());
+            case L'&':
+                symbol = readChar();
+                if (symbol == L'&') {
+                    // Lower lever operator
+                    unreadChar(2);
+                    return result;
+                } else {
+                    unreadChar();
+                    joinAtoms(result, L"&", parseAtom());
+                }
             break;
             case L'%':
                 joinAtoms(result, L"%", parseAtom());
@@ -704,7 +712,6 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             case L'!': // boolean not
             case L'>': // less than
             case L'<': // greater than
-            case L'&': // boolean "and" &&
             case L'|': // boolean "or" ||
             case L'~': // check against regex
             case L'i': // find in set
