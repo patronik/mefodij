@@ -42,9 +42,10 @@ public:
 
   static vector<wstring> castTypes;
 
-  void setVar(shared_ptr<Atom> atom, const int charIndex = -1);
+  void setVar(shared_ptr<Atom> atom);
   shared_ptr<Atom> getVar();
   int getCharIndex();
+  void setCharIndex(const int index);
 
   wstring getType();
 

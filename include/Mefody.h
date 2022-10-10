@@ -120,11 +120,10 @@ class Mefody : public Parser
     bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom);
-    bool parseArrayAccessAtom(wstring varName, shared_ptr<Atom> & atom, shared_ptr<Atom> & target);
-    bool parseStringAccessAtom(wstring varName, const shared_ptr<Atom> key, shared_ptr<Atom> & atom);
     bool parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom);
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
+    void resolveStringAccess(const shared_ptr<Atom> key, shared_ptr<Atom> & atom);
+    void resolveArrayAccess(shared_ptr<Atom> & atom);
     
     void evaluateForLoop();
     void evaluateIfStructure();

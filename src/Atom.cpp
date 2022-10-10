@@ -47,12 +47,14 @@ Atom::Atom(bool val)
    boolVal = val;
 }
 
-void Atom::setVar(shared_ptr<Atom> atom, const int charIndex)
+void Atom::setCharIndex(const int index)
+{
+    stringVarCharIndex = index;
+}
+
+void Atom::setVar(shared_ptr<Atom> atom)
 {
     varRef = atom;
-    if (charIndex > -1) {
-        stringVarCharIndex = charIndex;
-    }
 }
 
 shared_ptr<Atom> Atom::getVar()
