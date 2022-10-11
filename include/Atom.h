@@ -17,6 +17,8 @@ class Atom
     wstring stringVal = L"";
     bool boolVal = false;
     wstring castVal = L"";
+
+    int arrayNextIndex = 0;
     map<wstring, shared_ptr<Atom>> arrayVal;
     
     int stringVarCharIndex  = -1;
@@ -42,10 +44,14 @@ public:
 
   static vector<wstring> castTypes;
 
-  void setVar(shared_ptr<Atom> atom);
-  shared_ptr<Atom> getVar();
   int getCharIndex();
   void setCharIndex(const int index);
+
+  int getArrayNextIndex();
+  void setArrayNextIndex(const int index);
+
+  void setVar(shared_ptr<Atom> atom);
+  shared_ptr<Atom> getVar();
 
   wstring getType();
 

@@ -279,32 +279,48 @@ void Mefody::resolveStringAccess(const shared_ptr<Atom> key, shared_ptr<Atom> & 
 
 void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom) 
 {
-    shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-    if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
-        throwError("Only string and numerical array keys are supported.");
-    }
-
+    int implicitKey = false;
     wchar_t symbol;
-    if ((symbol = readChar()) != L']') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+    if ((symbol = readChar()) == L']') {
+        implicitKey = true;
+    } else {
+        unreadChar();
     }
 
-    if (atom->getType() == Atom::typeString) {
-        return resolveStringAccess(keyAtom, atom);
+    wstring arrayKey;
+    if (implicitKey) {
+        if (atom->getType() == Atom::typeString) {
+            throwError("Implicit key are not allowed for string accessing.");
+        }
+        arrayKey = to_wstring(atom->getArrayNextIndex());
+        atom->getVar()->setArrayNextIndex(atom->getArrayNextIndex() + 1);
+    } else {
+        shared_ptr<Atom> keyAtom = evaluateBoolExpression();
+        if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
+            throwError("Only string and numerical array keys are supported.");
+        }
+
+        wchar_t symbol;
+        if ((symbol = readChar()) != L']') {
+            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        }
+
+        if (atom->getType() == Atom::typeString) {
+            return resolveStringAccess(keyAtom, atom);
+        }
+        arrayKey = keyAtom->toString();
     }
 
     if (atom->getVar()->getType() != Atom::typeArray) {
         atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
     }
 
-    if (!atom->getVar()->issetAt(keyAtom->toString())) {
-        atom->getVar()->createAt(
-            keyAtom->toString(), make_shared<Atom>()
-        );
+    if (!atom->getVar()->issetAt(arrayKey)) {
+        atom->getVar()->createAt(arrayKey, make_shared<Atom>());
     }
 
-    atom->setAtom(atom->getVar()->elementAt(keyAtom->toString()));
-    atom->setVar(atom->getVar()->elementAt(keyAtom->toString()));
+    atom->setAtom(atom->getVar()->elementAt(arrayKey));
+    atom->setVar(atom->getVar()->elementAt(arrayKey));
 }
 
 bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
@@ -349,6 +365,7 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     }
 
     atom->setArray(array);
+    atom->setArrayNextIndex(implicitKey + 1);
 
     return true;
 }

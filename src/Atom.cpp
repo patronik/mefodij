@@ -47,6 +47,20 @@ Atom::Atom(bool val)
    boolVal = val;
 }
 
+int Atom::getArrayNextIndex()
+{
+    return arrayNextIndex;
+}
+void Atom::setArrayNextIndex(const int index)
+{
+    arrayNextIndex = index;
+}
+
+int Atom::getCharIndex()
+{
+    return stringVarCharIndex;
+}
+
 void Atom::setCharIndex(const int index)
 {
     stringVarCharIndex = index;
@@ -60,11 +74,6 @@ void Atom::setVar(shared_ptr<Atom> atom)
 shared_ptr<Atom> Atom::getVar()
 {
     return varRef;
-}
-
-int Atom::getCharIndex()
-{
-    return stringVarCharIndex;
 }
 
 wstring Atom::getType()
@@ -255,7 +264,8 @@ wstring Atom::toString()
         return stringVal;
     }
     if (type == Atom::typeArray) {
-        throw runtime_error("Array to string conversion");
+        cast(Atom::typeString);
+        return stringVal;
     }
     if (type == Atom::typeBool) {
         return boolVal ? L"true" : L"false";
@@ -385,6 +395,9 @@ void Atom::setAtom(const shared_ptr<Atom> & src)
     } else if (src->getType() == Atom::typeNull) {
         setNull();
     }
+    arrayNextIndex = src->getArrayNextIndex();
+    stringVarCharIndex = src->getCharIndex();
+    
 }
 
 void Atom::cast(wstring typeTo)
@@ -392,7 +405,6 @@ void Atom::cast(wstring typeTo)
     if (type == Atom::typeString) {
         if (typeTo == L"int") {
             setInt(wcstol(getString().c_str(), nullptr, 10));
-        } else if (typeTo == L"string") {
         } else if (typeTo == L"double") {
             setDouble(wcstod(getString().c_str(), nullptr));
         } else if (typeTo == L"bool") {
@@ -402,9 +414,27 @@ void Atom::cast(wstring typeTo)
                 setBool(false);
             }
         } else if (typeTo == L"array") {
-            setArray({{L"0", make_shared<Atom>(getBool())}});
+            map<wstring, shared_ptr<Atom>> arrayVal;
+            for (int i = 0; i < getString().size(); i++) {
+                arrayVal[to_wstring(i)] = make_shared<Atom>(wstring(1, getString().at(i)));
+            }
+            setArray(arrayVal);
         } else if (typeTo == L"null") {
             setNull();
+        } else {
+            throw runtime_error("Cast failed.");
+        }
+    }
+
+    if (type == Atom::typeArray) {
+        if (typeTo == Atom::typeString) {
+            wstring stringVal;
+            for (auto elem: arrayVal) {
+                stringVal += elem.second->toString();
+            }
+            setString(stringVal);
+        } else {
+            throw runtime_error("Cast failed.");
         }
     }
 
@@ -425,6 +455,8 @@ void Atom::cast(wstring typeTo)
             setArray({{L"0", make_shared<Atom>(getBool())}});
         } else if (typeTo == L"null") {
             setNull();
+        } else {
+            throw runtime_error("Cast failed.");
         }
     }
 
@@ -440,6 +472,8 @@ void Atom::cast(wstring typeTo)
             setArray({{L"0", make_shared<Atom>(getInt())}});
         } else if (typeTo == L"null") {
             setNull();
+        } else {
+            throw runtime_error("Cast failed.");
         }
     }
 
@@ -455,12 +489,16 @@ void Atom::cast(wstring typeTo)
             setArray({{L"0", make_shared<Atom>(getDouble())}});
         } else if (typeTo == L"null") {
             setNull();
+        } else {
+            throw runtime_error("Cast failed.");
         }
     }
 
     if (type == Atom::typeNull) {
         if (typeTo == L"bool") {
             setBool(false);
+        } else {
+            throw runtime_error("Cast failed.");
         }
     }
 }
