@@ -885,6 +885,14 @@ void Mefody::parseVariable()
         throwError("Variable '" + wideStrToStr(varName) + "' already defined." );
     }
 
+    if (getContext()->hasOwnFunction(varName)) {
+        throwError("This name '" + wideStrToStr(varName) + "' is already used by function." );
+    }
+
+    if (inVector<wstring>(reservedKeywords,varName)) {
+        throwError("This name '" + wideStrToStr(varName) + "' is reserved." );
+    }
+
     getContext()->setVar(varName, make_shared<Atom>());
 
     pos = prevPos;
@@ -900,6 +908,14 @@ void Mefody::parseFunction()
 
     if (getContext()->hasOwnFunction(functionName)) {
         throwError("Function '" + wideStrToStr(functionName) + "' already defined." );
+    }
+
+    if (getContext()->hasOwnVar(functionName)) {
+        throwError("This name '" + wideStrToStr(functionName) + "' is already used by variable." );
+    }
+
+    if (inVector<wstring>(reservedKeywords,functionName)) {
+        throwError("This name '" + wideStrToStr(functionName) + "' is reserved." );
     }
 
     if ((symbol = readChar()) != L'(') {
@@ -1008,7 +1024,7 @@ void Mefody::evaluateStatement()
         // END OF PRINT STATEMENT
 
         // VARIABLE DEFINITION
-        if (keyWord == statementDec) {
+        if (keyWord == statementLem) {
             parseVariable();
             evaluateStatement();
             return;

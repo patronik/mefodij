@@ -58,12 +58,13 @@ class Mefody : public Parser
     // Breaks loop execution
     bool isBreak = false;
 
+    // Result of last executed statement
     shared_ptr<Atom> lastResult{};
 
-    // Global variables
+    // Global context
     shared_ptr<Context> context = nullptr;
 
-    // Variables in stack
+    // Stack
     vector<shared_ptr<Context>> stack{};
 
     static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
@@ -111,7 +112,6 @@ class Mefody : public Parser
     shared_ptr<Atom> evaluateBoolExpression();
     shared_ptr<Atom> evaluateBoolStatement();
     shared_ptr<Atom> parseAtom();
-
 
     // Atoms are indivisible parts of statement
     bool evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);

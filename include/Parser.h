@@ -24,7 +24,7 @@ class Parser
     wstring printableLetters;
     wstring printableChars;
 
-    const wstring statementDec = L"дек";
+    const wstring statementLem = L"лем";
     const wstring statementFunc = L"функція";
     const wstring statementExit = L"вихід";
     const wstring statementIf = L"умова";
@@ -32,6 +32,7 @@ class Parser
     const wstring statementFor = L"цикл";
     const wstring statementPrint = L"друк";
     const wstring statementImport = L"імпорт";
+    const wstring statementElse = L"або";
 
     // Current parser position
     int pos = 0;
@@ -44,6 +45,9 @@ class Parser
 
     // Dynamic source
     wstring dynamicSrc{};
+
+    // Reserved keywords
+    vector<wstring> reservedKeywords{};
 
     void insertSource(wstring wfilename);
     tuple<wstring, int, int> getLastLocation();

@@ -6,6 +6,26 @@ Parser::Parser()
     printableChars = printableNumbers + ukrainianLetters + englishLetters + printableSymbols;
     lettersNumsUnderscore = ukrainianLetters + englishLetters + printableNumbers + wstring(L"_");
     printableLetters = ukrainianLetters + englishLetters;
+
+    reservedKeywords = {
+        L"int", 
+        L"double",
+        L"string", 
+        L"array", 
+        L"bool", 
+        L"null",
+        L"true",
+        L"false",
+        statementLem,
+        statementFunc,
+        statementExit,
+        statementIf,
+        statementBreak,
+        statementFor,
+        statementPrint,
+        statementImport,
+        statementElse
+    };
 }
 
 bool Parser::isSpace(wchar_t symbol)
