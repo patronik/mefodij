@@ -67,6 +67,8 @@ class Mefody : public Parser
     // Stack
     vector<shared_ptr<Context>> stack{};
 
+    static vector<wstring> castTypes;
+
     static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
     static unique_ptr<BoolIntJoiner> boolIntJoiner;
     static unique_ptr<BoolNullJoiner> boolNullJoiner;

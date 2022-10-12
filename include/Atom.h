@@ -21,7 +21,7 @@ class Atom
     int arrayNextIndex = 0;
     map<wstring, shared_ptr<Atom>> arrayVal;
     
-    int stringVarCharIndex  = -1;
+    int charIndex  = -1;
     shared_ptr<Atom> varRef = nullptr;
     
     void clearVal();
@@ -41,8 +41,6 @@ public:
   const static wstring typeBool;
   const static wstring typeNull;
   const static wstring typeCast;
-
-  static vector<wstring> castTypes;
 
   int getCharIndex();
   void setCharIndex(const int index);

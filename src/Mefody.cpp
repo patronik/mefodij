@@ -1,6 +1,8 @@
 #include "../include/Mefody.h"
 #include "../include/tools.h"
 
+vector<wstring> Mefody::castTypes{L"int", L"double", L"string", L"array", L"bool", L"null"};
+
 void Mefody::throwError(string message)
 {
     tuple<wstring, int, int> currLoc = getLastLocation();
@@ -118,7 +120,7 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
 
 bool Mefody::parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom)
 {
-    if (inVector<wstring>(Atom::castTypes, varName)) {
+    if (inVector<wstring>(Mefody::castTypes, varName)) {
             atom->setCast(varName);
         } else if (varName == L"true") {
             atom->setBool(true);

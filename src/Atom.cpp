@@ -9,8 +9,6 @@ const wstring Atom::typeBool(L"bool");
 const wstring Atom::typeNull(L"null");
 const wstring Atom::typeCast(L"cast");
 
-vector<wstring> Atom::castTypes{L"int", L"double", L"string", L"array", L"bool", L"null"};
-
 Atom::Atom()
 {
     type = L"null";
@@ -59,12 +57,12 @@ void Atom::setArrayNextIndex(const int index)
 
 int Atom::getCharIndex()
 {
-    return stringVarCharIndex;
+    return charIndex;
 }
 
 void Atom::setCharIndex(const int index)
 {
-    stringVarCharIndex = index;
+    charIndex = index;
 }
 
 void Atom::setVar(shared_ptr<Atom> atom)
@@ -419,7 +417,7 @@ void Atom::setAtom(const shared_ptr<Atom> & src)
         setNull();
     }
     arrayNextIndex = src->getArrayNextIndex();
-    stringVarCharIndex = src->getCharIndex();
+    charIndex = src->getCharIndex();
 }
 
 void Atom::cast(wstring typeTo)
