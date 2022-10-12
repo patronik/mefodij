@@ -16,6 +16,7 @@ Parser::Parser()
         L"null",
         L"true",
         L"false",
+        L"в",
         statementLem,
         statementFunc,
         statementExit,

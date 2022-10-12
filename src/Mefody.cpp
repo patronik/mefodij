@@ -254,27 +254,37 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
-void Mefody::resolveStringAccess(const shared_ptr<Atom> key, shared_ptr<Atom> & atom)
+void Mefody::resolveStringAccess(shared_ptr<Atom> & atom)
 {
+    shared_ptr<Atom> keyAtom = evaluateBoolExpression();
+    if (!inVector<wstring>({L"int"}, keyAtom->getType())) {
+        throwError("Only integer keys are supported.");
+    }
+
+    wchar_t symbol;
+    if ((symbol = readChar()) != L']') {
+        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+    }
+
     if (atom->getCharIndex() > -1) {
         throwError("Individual characters cannot be accessed with array access.");
     }
 
-    if (key->getType() != Atom::typeInt) {
+    if (keyAtom->getType() != Atom::typeInt) {
         throwError("Only integer keys can be used for accessing string character.");
     }
 
-    if (key->getInt() < 0) {
+    if (keyAtom->getInt() < 0) {
         throwError("Negative indexes are not supported.");
     }
 
-    if (atom->getString().size() < key->getInt()) {
-        throwError("Character at index '" +  to_string(key->getInt()) + "' does not exist.");
+    if (atom->getString().size() < keyAtom->getInt()) {
+        throwError("Character at index '" +  to_string(keyAtom->getInt()) + "' does not exist.");
     }
 
     // trasform string to single char string
-    atom->setString(wstring(1, atom->getString().at(key->getInt())));
-    atom->setCharIndex(key->getInt());
+    atom->setString(wstring(1, atom->getString().at(keyAtom->getInt())));
+    atom->setCharIndex(keyAtom->getInt());
 }
 
 void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom) 
@@ -287,40 +297,46 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
         unreadChar();
     }
 
+    if (atom->getType() != Atom::typeArray) {
+        atom->setArray(map<wstring, shared_ptr<Atom>>{});
+    }
+
     wstring arrayKey;
     if (implicitKey) {
-        if (atom->getType() == Atom::typeString) {
-            throwError("Implicit key are not allowed for string accessing.");
-        }
         arrayKey = to_wstring(atom->getArrayNextIndex());
-        atom->getVar()->setArrayNextIndex(atom->getArrayNextIndex() + 1);
+        atom->setArrayNextIndex(atom->getArrayNextIndex() + 1);
     } else {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!inVector<wstring>({L"string", L"int", L"double"}, keyAtom->getType())) {
-            throwError("Only string and numerical array keys are supported.");
+        if (!inVector<wstring>({L"string", L"int"}, keyAtom->getType())) {
+            throwError("Only string and integer array keys are supported.");
         }
 
         wchar_t symbol;
         if ((symbol = readChar()) != L']') {
             throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
         }
-
-        if (atom->getType() == Atom::typeString) {
-            return resolveStringAccess(keyAtom, atom);
-        }
         arrayKey = keyAtom->toString();
     }
 
-    if (atom->getVar()->getType() != Atom::typeArray) {
-        atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
+    if (!atom->issetAt(arrayKey)) {
+        atom->createAt(arrayKey, make_shared<Atom>());
     }
 
-    if (!atom->getVar()->issetAt(arrayKey)) {
-        atom->getVar()->createAt(arrayKey, make_shared<Atom>());
-    }
+    // Store changed atom to variable
+    atom->getVar()->setAtom(atom);
 
+    // Point atom to element which is being accessed
     atom->setAtom(atom->getVar()->elementAt(arrayKey));
     atom->setVar(atom->getVar()->elementAt(arrayKey));
+}
+
+void Mefody::resolveElementAccess(shared_ptr<Atom> & atom)
+{
+    if (atom->getType() == Atom::typeString) {
+        resolveStringAccess(atom);
+    } else {
+        resolveArrayAccess(atom);
+    }
 }
 
 bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
@@ -347,10 +363,8 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
                         implicitKey = keyOrVal->getInt() + 1;
                     }
                     array[to_wstring(keyOrVal->getInt())] = arrayVal;
-                } else if (keyOrVal->getType() == L"double") {
-                    array[to_wstring(keyOrVal->getDouble())] = arrayVal;
                 } else {
-                    throwError("Only string and numeric array keys are supported.");
+                    throwError("Only string and integer array keys are supported.");
                 }
 
                 symbol = readChar();
@@ -365,7 +379,6 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     }
 
     atom->setArray(array);
-    atom->setArrayNextIndex(implicitKey + 1);
 
     return true;
 }
@@ -469,7 +482,7 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
                 joinAtoms(result, L"/", parseAtom());
             break;
             case L'[':
-                resolveArrayAccess(result);
+                resolveElementAccess(result);
             break;
             case L'&':
                 symbol = readChar();
@@ -535,7 +548,7 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             case L'<': // greater than
             case L'|': // boolean "or" ||
             case L'~': // check against regex
-            case L'i': // find in set
+            case L'в': // find in set
             // end of argument or statement
             case L',':
             // end of subexpression
@@ -608,13 +621,8 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
                     joinAtoms(result, L"<", evaluateMathBlock());
                 }
                 break;
-            case L'i': // find in set
-                symbol = readChar(true);
-                if (symbol == L'n') {
-                    joinAtoms(result, L"in", evaluateMathBlock());
-                } else {
-                    throwError("Unexpected token '"+ wideStrToStr(mathOp) + "' '" + wideStrToStr(symbol) + "'.");
-                }
+            case L'в': // find in set
+                joinAtoms(result, L"в", evaluateMathBlock());
             break;
             case L'~': // check against regex
                 joinAtoms(result, L"~", evaluateBoolExpression());

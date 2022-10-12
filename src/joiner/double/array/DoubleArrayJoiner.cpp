@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/double/array/DoubleArrayJoiner.h"
 
-DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"in"})
+DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"в", L"="})
 {
 }
 
@@ -9,7 +9,7 @@ void DoubleArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom>
 {
     validate(op);
 
-    if (op == L"in") {
+    if (op == L"в") {
         bool found = false;
         for (const auto & kv : right->getArray()) {
             if (kv.second->getType() == Atom::typeDouble) {
@@ -20,5 +20,11 @@ void DoubleArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom>
             }
         }
         left->setBool(found);
+    } else if (op == L"=") {
+        if (!left->getVar()) {
+            throw runtime_error("Assignment can only be done to variable");                    
+        } 
+        left->getVar()->setArray(right->getArray());
+        left->setArray(right->getArray());
     }
 }

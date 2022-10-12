@@ -122,8 +122,9 @@ class Mefody : public Parser
     bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom);
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
-    void resolveStringAccess(const shared_ptr<Atom> key, shared_ptr<Atom> & atom);
+    void resolveStringAccess(shared_ptr<Atom> & atom);
     void resolveArrayAccess(shared_ptr<Atom> & atom);
+    void resolveElementAccess(shared_ptr<Atom> & atom);
     
     void evaluateForLoop();
     void evaluateIfStructure();

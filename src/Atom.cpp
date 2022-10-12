@@ -1,4 +1,5 @@
 #include "../include/Atom.h"
+#include "../include/tools.h"
 
 const wstring Atom::typeInt(L"int");
 const wstring Atom::typeDouble(L"double");
@@ -121,7 +122,26 @@ void Atom::setArray(map<wstring, shared_ptr<Atom>> val)
 {
     clearVal();
     arrayVal = val;
-    type = Atom::typeArray;        
+    type = Atom::typeArray; 
+    
+    if (arrayVal.size() > 0) {
+        int topIndex = 0;
+        for (auto elem: arrayVal) {
+            try {
+                if (isNumber(elem.first)) {
+                    int i = stoi(elem.first);
+                    if (i > topIndex) {
+                        topIndex = i;
+                    }
+                }
+            } catch (...) {
+                throw runtime_error("Unknown error while setting array.");
+            }
+        }
+        setArrayNextIndex(topIndex + 1);   
+    } else {
+        setArrayNextIndex(0);
+    }
 }
 
 void Atom::setBool(bool val) 
@@ -264,8 +284,11 @@ wstring Atom::toString()
         return stringVal;
     }
     if (type == Atom::typeArray) {
-        cast(Atom::typeString);
-        return stringVal;
+        wstring str;
+        for (auto elem: arrayVal) {
+            str += elem.second->toString();
+        }
+        return str;
     }
     if (type == Atom::typeBool) {
         return boolVal ? L"true" : L"false";
@@ -380,7 +403,7 @@ void Atom::unaryOperator(wstring op)
 
 void Atom::setAtom(const shared_ptr<Atom> & src)
 {
-    if (src->getType() == Atom::typeString) {
+   if (src->getType() == Atom::typeString) {
         setString(src->getString());
     } else if (src->getType() == Atom::typeInt) {
         setInt(src->getInt());
@@ -397,7 +420,6 @@ void Atom::setAtom(const shared_ptr<Atom> & src)
     }
     arrayNextIndex = src->getArrayNextIndex();
     stringVarCharIndex = src->getCharIndex();
-    
 }
 
 void Atom::cast(wstring typeTo)
@@ -414,9 +436,11 @@ void Atom::cast(wstring typeTo)
                 setBool(false);
             }
         } else if (typeTo == L"array") {
+            int i = 0;
             map<wstring, shared_ptr<Atom>> arrayVal;
-            for (int i = 0; i < getString().size(); i++) {
+            while (i < getString().size()) {
                 arrayVal[to_wstring(i)] = make_shared<Atom>(wstring(1, getString().at(i)));
+                i++;
             }
             setArray(arrayVal);
         } else if (typeTo == L"null") {
@@ -451,8 +475,6 @@ void Atom::cast(wstring typeTo)
             setDouble((double) getBool());
         } else if (typeTo == L"bool") {
             
-        } else if (typeTo == L"array") {
-            setArray({{L"0", make_shared<Atom>(getBool())}});
         } else if (typeTo == L"null") {
             setNull();
         } else {
@@ -468,8 +490,6 @@ void Atom::cast(wstring typeTo)
             setDouble((double) getInt());
         } else if (typeTo == L"bool") {
             setBool((bool) getInt());
-        } else if (typeTo == L"array") {
-            setArray({{L"0", make_shared<Atom>(getInt())}});
         } else if (typeTo == L"null") {
             setNull();
         } else {
@@ -485,8 +505,6 @@ void Atom::cast(wstring typeTo)
         } else if (typeTo == L"double") {
         } else if (typeTo == L"bool") {
             setBool((bool) getDouble());
-        } else if (typeTo == L"array") {
-            setArray({{L"0", make_shared<Atom>(getDouble())}});
         } else if (typeTo == L"null") {
             setNull();
         } else {
