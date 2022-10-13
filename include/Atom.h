@@ -11,21 +11,35 @@ using namespace std;
 
 class Atom
 {
+    // atom type
     wstring type = L"null";
-    int intVal = 0;
-    double doubleVal = 0.00;
-    wstring stringVal = L"";
-    bool boolVal = false;
-    wstring castVal = L"";
 
-    int arrayNextIndex = 0;
-    map<wstring, shared_ptr<Atom>> arrayVal;
-    
-    int charIndex  = -1;
+    // supported values
+    int intVal = 0; // int
+
+    // float point number
+    double doubleVal = 0.00; 
+
+     // string
+    wstring stringVal = L"";
+    // postion of a character in string
+    int charIndex  = -1; 
+
+    // boolean value
+    bool boolVal = false; 
+
+    // next not used integer key in array
+    int arrayNextIndex = 0; 
+    // array of atoms (values)
+    map<wstring, shared_ptr<Atom>> arrayVal; 
+
+    // string representing catst type
+    wstring castVal = L""; 
+
+    // Reference to variable
     shared_ptr<Atom> varRef = nullptr;
     
     void clearVal();
-
 public:
   Atom();
   Atom(int val);
@@ -42,17 +56,22 @@ public:
   const static wstring typeNull;
   const static wstring typeCast;
 
+  // Getters
+  int getInt();
+  double getDouble();
+  wstring getString();
+  map<wstring, shared_ptr<Atom>> getArray();
+  bool getBool();
+  wstring getCast();
   int getCharIndex();
-  void setCharIndex(const int index);
-
   int getArrayNextIndex();
-  void setArrayNextIndex(const int index);
-
-  void setVar(shared_ptr<Atom> atom);
   shared_ptr<Atom> getVar();
-
   wstring getType();
 
+  // Setters
+  void setVar(shared_ptr<Atom> atom);
+  void setArrayNextIndex(const int index);
+  void setCharIndex(const int index);
   void setInt(int val);
   void setDouble(double val);
   void setString(wstring val);
@@ -61,25 +80,23 @@ public:
   void setBool(bool val);
   void setNull();
   void setCast(wstring val);
-  void setAtom(const shared_ptr<Atom> & src);
+  void setAtom(const  shared_ptr<Atom> & src);
 
-  int getInt();
-  double getDouble();
-  wstring getString();
-  map<wstring, shared_ptr<Atom>> getArray();
-  bool getBool();
-  wstring getCast();
-
+  // Array related
   bool issetAt(wstring key);
   shared_ptr<Atom> elementAt(wstring key);
   void createAt(wstring key, shared_ptr<Atom> val);
 
+  // Convertors
   bool toBool();
   wstring toString();
 
+  // Operators supported by atom
   void preOperator(wstring op);
   void postOperator(wstring op);
   void unaryOperator(wstring op);
+
+  // Convert atom from one type to another
   void cast(wstring typeTo);
 };
 

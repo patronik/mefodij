@@ -299,14 +299,14 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
         unreadChar();
     }
 
-    if (atom->getType() != Atom::typeArray) {
-        atom->setArray(map<wstring, shared_ptr<Atom>>{});
+    if (atom->getVar()->getType() != Atom::typeArray) {
+        atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
     }
 
     wstring arrayKey;
     if (implicitKey) {
-        arrayKey = to_wstring(atom->getArrayNextIndex());
-        atom->setArrayNextIndex(atom->getArrayNextIndex() + 1);
+        arrayKey = to_wstring(atom->getVar()->getArrayNextIndex());
+        atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
     } else {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
         if (!inVector<wstring>({L"string", L"int"}, keyAtom->getType())) {
@@ -320,16 +320,18 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
         arrayKey = keyAtom->toString();
     }
 
-    if (!atom->issetAt(arrayKey)) {
-        atom->createAt(arrayKey, make_shared<Atom>());
+    if (!atom->getVar()->issetAt(arrayKey)) {
+        atom->getVar()->createAt(arrayKey, make_shared<Atom>());
     }
 
-    // Store changed atom to variable
-    atom->getVar()->setAtom(atom);
+    // Backup pointer to variable
+    auto varPtr = atom->getVar();
 
-    // Point atom to element which is being accessed
-    atom->setAtom(atom->getVar()->elementAt(arrayKey));
-    atom->setVar(atom->getVar()->elementAt(arrayKey));
+    // Copy element state to atom
+    atom->setAtom(varPtr->elementAt(arrayKey));
+
+    // Update pointer to variable
+    atom->setVar(varPtr->elementAt(arrayKey));
 }
 
 void Mefody::resolveElementAccess(shared_ptr<Atom> & atom)
@@ -406,7 +408,7 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
             throwError("Variable '" + wideStrToStr(varName) + "' is not defined.");
         }
 
-        // copy variable value to atom value
+        // copy variable state to atom 
         atom->setAtom(storage->getVar(varName));
         // store reference to variable into atom
         atom->setVar(storage->getVar(varName));

@@ -399,27 +399,6 @@ void Atom::unaryOperator(wstring op)
     }
 }
 
-void Atom::setAtom(const shared_ptr<Atom> & src)
-{
-   if (src->getType() == Atom::typeString) {
-        setString(src->getString());
-    } else if (src->getType() == Atom::typeInt) {
-        setInt(src->getInt());
-    } else if (src->getType() == Atom::typeDouble) {
-        setDouble(src->getDouble());
-    } else if (src->getType() == Atom::typeArray) {
-        setArray(src->getArray());
-    } else if (src->getType() == Atom::typeBool) {
-        setBool(src->getBool());
-    } else if (src->getType() == Atom::typeCast) {
-        setCast(src->getCast());
-    } else if (src->getType() == Atom::typeNull) {
-        setNull();
-    }
-    arrayNextIndex = src->getArrayNextIndex();
-    charIndex = src->getCharIndex();
-}
-
 void Atom::cast(wstring typeTo)
 {
     if (type == Atom::typeString) {
@@ -517,4 +496,9 @@ void Atom::cast(wstring typeTo)
             throw runtime_error("Cast failed.");
         }
     }
+}
+
+void Atom::setAtom(const shared_ptr<Atom> & src)
+{
+    *this = *src;
 }
