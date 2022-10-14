@@ -899,7 +899,7 @@ void Mefody::evaluateIfStructure()
     }
 }
 
-void Mefody::parseVariable() 
+void Mefody::parseVariable(bool isConst) 
 {
     // Backup pos
     int prevPos = pos;
@@ -922,7 +922,13 @@ void Mefody::parseVariable()
         throwError("This name '" + wideStrToStr(varName) + "' is reserved." );
     }
 
-    getContext()->setVar(varName, make_shared<Atom>());
+    auto newVariable = make_shared<Atom>();
+    
+    if (isConst) {
+        newVariable->setIsConst();
+    }
+
+    getContext()->setVar(varName, newVariable);
 
     pos = prevPos;
 }
@@ -1059,6 +1065,14 @@ void Mefody::evaluateStatement()
             return;
         }
         // END OF VARIABLE DEFINITION
+
+        // CONST VARIABLE DEFINITION
+        if (keyWord == statementConst) {
+            parseVariable(true);
+            evaluateStatement();
+            return;
+        }
+        // END OF CONST VARIABLE DEFINITION
 
         // FUNCTION DEFINITION
         if (keyWord == statementFunc) {

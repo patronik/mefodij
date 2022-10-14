@@ -25,6 +25,7 @@ class Parser
     wstring printableChars;
 
     const wstring statementLem = L"лем";
+    const wstring statementConst = L"конст";
     const wstring statementFunc = L"функція";
     const wstring statementExit = L"вихід";
     const wstring statementIf = L"умова";

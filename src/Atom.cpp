@@ -88,6 +88,8 @@ void Atom::clearVal()
     arrayVal.clear();
     boolVal = false;
     castVal.clear();
+    arrayNextIndex = 0;
+    charIndex = -1;
 }
 
 void Atom::setInt(int val) 
@@ -501,4 +503,34 @@ void Atom::cast(wstring typeTo)
 void Atom::setAtom(const shared_ptr<Atom> & src)
 {
     *this = *src;
+}
+
+bool Atom::getIsConst()
+{
+    return options[0] == true;
+}
+
+bool Atom::getIsAssigned()
+{
+    return options[1] == true;
+}
+
+bool Atom::getIsCalculated()
+{
+    return options[2] == true;
+}
+
+void Atom::setIsConst()
+{
+    options[0] = true;
+}
+
+void Atom::setIsAssigned()
+{
+    options[1] = true;
+}
+
+void Atom::setIsCalculated()
+{
+    options[2] = true;
 }

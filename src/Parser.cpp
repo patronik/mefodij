@@ -18,6 +18,7 @@ Parser::Parser()
         L"false",
         L"в",
         statementLem,
+        statementConst,
         statementFunc,
         statementExit,
         statementIf,

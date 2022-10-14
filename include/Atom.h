@@ -1,6 +1,7 @@
 #ifndef ATOM_H
 #define ATOM_H
 
+#include <bitset>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -11,6 +12,9 @@ using namespace std;
 
 class Atom
 {
+    // atom state
+    bitset<sizeof(int)> options{0};
+
     // atom type
     wstring type = L"null";
 
@@ -67,6 +71,9 @@ public:
   int getArrayNextIndex();
   shared_ptr<Atom> getVar();
   wstring getType();
+  bool getIsConst();
+  bool getIsAssigned();
+  bool getIsCalculated();
 
   // Setters
   void setVar(shared_ptr<Atom> atom);
@@ -81,6 +88,9 @@ public:
   void setNull();
   void setCast(wstring val);
   void setAtom(const  shared_ptr<Atom> & src);
+  void setIsConst();
+  void setIsAssigned();
+  void setIsCalculated();
 
   // Array related
   bool issetAt(wstring key);

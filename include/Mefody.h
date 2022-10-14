@@ -131,8 +131,7 @@ class Mefody : public Parser
     
     void evaluateForLoop();
     void evaluateIfStructure();
-    void parseVariable();
-    void parseConst();
+    void parseVariable(bool isConst = false);
     void parseFunction();
     void evaluateBlockOrStatement(bool stopOnBreak = false);
     void evaluateStatement();

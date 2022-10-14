@@ -124,8 +124,22 @@ void Mefody::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right
 
 void Mefody::assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
+    if (left->getIsCalculated()) {
+        throw runtime_error("Cannot assign to dynamicaly calculated value."); 
+    }
+
     if (!left->getVar()) {
-        throw runtime_error("Assignment can only be done to variable");                    
+        throw runtime_error("Assignment can only be done to variable.");                    
     } 
+
+    if (left->getIsConst() && left->getIsAssigned()) {
+        throw runtime_error("Cannot change the value of const variable."); 
+    }
+
     joinAtoms(left, L"=", right);
+
+    if (!left->getIsAssigned()) {
+        left->getVar()->setIsAssigned();
+        left->setIsAssigned();
+    }
 }
