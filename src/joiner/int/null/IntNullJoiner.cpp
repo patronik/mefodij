@@ -9,9 +9,6 @@ void IntNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> rig
     validate(op);
 
     if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
         left->getVar()->setNull();
         left->setNull(); 
     }

@@ -21,9 +21,6 @@ void BoolDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
             left->getBool() && ((bool) right->getDouble())
         );
     } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
         left->getVar()->setBool((bool) right->getDouble());
         left->setBool((bool) right->getDouble()); 
     }

@@ -52,10 +52,7 @@ void DoubleIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
         left->setBool(
             (bool) (left->getDouble() && right->getInt())
         );
-    } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
+    } else if (op == L"=") { 
         left->getVar()->setDouble((double) right->getInt());
         left->setDouble((double) right->getInt());
     } 

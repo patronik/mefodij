@@ -18,9 +18,6 @@ void NullArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
         }
         left->setBool(found);
     } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
         left->getVar()->setArray(right->getArray());
         left->setArray(right->getArray());
     }  

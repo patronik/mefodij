@@ -56,10 +56,7 @@ void IntIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> righ
         left->setBool(
             (bool) (left->getInt() && right->getInt())
         );
-    } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
+    } else if (op == L"=") { 
         left->getVar()->setInt(right->getInt());
         left->setInt(right->getInt());
     } 

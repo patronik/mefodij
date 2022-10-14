@@ -19,10 +19,7 @@ void IntArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> ri
             }
         }
         left->setBool(found);
-    } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
+    } else if (op == L"=") { 
         left->getVar()->setArray(right->getArray());
         left->setArray(right->getArray());
     }

@@ -9,10 +9,7 @@ void NullStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
     validate(op);
     if (op == L"&") {
         left->setString(right->getString());
-    } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
+    } else if (op == L"=") { 
         left->getVar()->setString(right->getString());
         left->setString(right->getString());
     }

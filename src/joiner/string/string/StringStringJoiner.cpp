@@ -33,10 +33,6 @@ void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
             left->setBool(false);
         }
     } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
-
         if (left->getCharIndex() > -1) {
             // single character string
             if (right->getString().size() > 1) {

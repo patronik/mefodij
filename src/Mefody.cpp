@@ -508,7 +508,7 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
                     result->postOperator(L"++");
                 } else if (symbol == L'=') {
                     joinAtoms(result, L"+", evaluateBoolStatement());
-                    joinAtoms(result, L"=", result);
+                    assignToAtom(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
@@ -521,7 +521,7 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
                     result->postOperator(L"--");
                 } else if (symbol == L'=') {
                     joinAtoms(result, L"-", evaluateBoolStatement());
-                    joinAtoms(result, L"=", result);
+                    assignToAtom(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
@@ -543,7 +543,7 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
                 } else {
                     unreadChar();
                     // execute assignment statement
-                    joinAtoms(result, L"=", evaluateBoolStatement());
+                    assignToAtom(result, L"=", evaluateBoolStatement());
                 }
                 break;
             // Lower lever operators
@@ -1137,28 +1137,33 @@ void Mefody::evaluateStatements()
 
 wstring Mefody::evaluate()
 {
-    evaluateStatements();
-    wchar_t separator;
-    while (!isReturn && (separator = readChar())) {
-        switch (separator) {
-            // start of block
-            case L'{':
-                evaluateStatements();
+    try {
+        evaluateStatements();
+        wchar_t separator;
+        while (!isReturn && (separator = readChar())) {
+            switch (separator) {
+                // start of block
+                case L'{':
+                    evaluateStatements();
+                    break;
+                // end of block
+                case L'}':
+                    evaluateStatements();
+                    break;
+                default:
+                    throwError("Unexpected token '" + wideStrToStr(separator) + "'." );
                 break;
-            // end of block
-            case L'}':
-                evaluateStatements();
-                break;
-            default:
-                throwError("Unexpected token '" + wideStrToStr(separator) + "'." );
-            break;
+            }
         }
+
+        if (isReturn) {
+            return lastResult->toString();
+        }
+        
+    } catch(const exception & e) {
+        throwError(e.what());
     }
 
-    if (isReturn) {
-        return lastResult->toString();
-    }
-    
     return L"";
 }
 

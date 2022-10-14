@@ -107,6 +107,7 @@ class Mefody : public Parser
     static unique_ptr<StringStringJoiner> stringStringJoiner;
 
     void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
+    void assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
     shared_ptr<Context> getContext();
 

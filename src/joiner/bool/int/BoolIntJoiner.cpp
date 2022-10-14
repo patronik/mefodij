@@ -21,9 +21,6 @@ void BoolIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> rig
             left->getBool() && ((bool) right->getInt())
         );
     } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
         left->getVar()->setBool((bool) right->getInt());
         left->setBool((bool) right->getInt()); 
     }

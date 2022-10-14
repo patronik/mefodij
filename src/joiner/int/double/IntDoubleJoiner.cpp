@@ -22,9 +22,6 @@ void IntDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
             left->getInt() && ((int) right->getDouble())
         );
     } else if (op == L"=") {
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable");                    
-        } 
         left->getVar()->setInt((int)right->getDouble());
         left->setInt((int)right->getDouble()); 
     }
