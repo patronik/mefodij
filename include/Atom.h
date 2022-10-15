@@ -42,6 +42,15 @@ class Atom
 
     // Reference to variable
     shared_ptr<Atom> varRef = nullptr;
+
+    // Members
+    map<wstring, map<wstring, void (Atom::*)()>> members{};
+
+    // Member resolvers
+    void resolveStringSize();
+    void resolveArraySize();
+
+    void initMembers();
     
     void clearVal();
 public:
@@ -108,6 +117,9 @@ public:
 
   // Convert atom from one type to another
   void cast(wstring typeTo);
+
+  // Member resolver
+  void resolveMember(wstring name);
 };
 
 #endif

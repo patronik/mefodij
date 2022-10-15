@@ -127,6 +127,7 @@ class Mefody : public Parser
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
     void resolveStringAccess(shared_ptr<Atom> & atom);
     void resolveArrayAccess(shared_ptr<Atom> & atom);
+    void resolveMemberAccess(shared_ptr<Atom> & atom);
     void resolveElementAccess(shared_ptr<Atom> & atom);
     
     void evaluateForLoop();

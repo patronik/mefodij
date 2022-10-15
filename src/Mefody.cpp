@@ -334,6 +334,15 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
     atom->setVar(varPtr->elementAt(arrayKey));
 }
 
+void Mefody::resolveMemberAccess(shared_ptr<Atom> & atom)
+{
+    wstring memberName{};
+    if (!parseCharacterSequence(readChar(), memberName)) {
+        throw runtime_error("Unexpected atom member name.");
+    }
+    atom->resolveMember(memberName);
+}
+
 void Mefody::resolveElementAccess(shared_ptr<Atom> & atom)
 {
     if (atom->getType() == Atom::typeString) {
@@ -484,6 +493,9 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             break;
             case L'/':
                 joinAtoms(result, L"/", parseAtom());
+            break;
+            case L'.':
+                resolveMemberAccess(result);
             break;
             case L'[':
                 resolveElementAccess(result);

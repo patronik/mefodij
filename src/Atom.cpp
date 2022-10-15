@@ -12,12 +12,14 @@ const wstring Atom::typeCast(L"cast");
 Atom::Atom()
 {
     type = L"null";
+    initMembers();
 }
 
 Atom::Atom(int val) 
 {
    type = L"int";
    intVal = val;
+   initMembers();
 }
 
 
@@ -25,12 +27,14 @@ Atom::Atom(double val)
 {
    type = L"double";
    doubleVal = val;
+   initMembers();
 }
 
 Atom::Atom(wstring val) 
 {
    type = L"string";
    stringVal = val;
+   initMembers();
 }
 
 
@@ -38,12 +42,14 @@ Atom::Atom(map<wstring, shared_ptr<Atom>> val)
 {
    type = L"array";
    arrayVal = val;
+   initMembers();
 }
 
 Atom::Atom(bool val) 
 {
    type = L"bool";
    boolVal = val;
+   initMembers();
 }
 
 int Atom::getArrayNextIndex()
@@ -82,6 +88,7 @@ wstring Atom::getType()
 
 void Atom::clearVal() 
 { 
+    options = 0;
     intVal = 0;  
     doubleVal = 0.0;
     stringVal.clear();
@@ -533,4 +540,57 @@ void Atom::setIsAssigned()
 void Atom::setIsCalculated()
 {
     options[2] = true;
+}
+
+void Atom::initMembers()
+{
+    members = {
+        {
+            L"string", {
+                {L"розмір", &Atom::resolveStringSize}
+            }
+        },
+        {
+            L"array", {
+                {L"розмір", &Atom::resolveArraySize}
+            }
+        }
+    };
+}
+
+void Atom::resolveStringSize()
+{
+    setInt(stringVal.size());
+    setVar(nullptr);
+    setIsCalculated();
+}
+
+void Atom::resolveArraySize()
+{
+    setInt(arrayVal.size());
+    setVar(nullptr);
+    setIsCalculated();
+}
+
+void Atom::resolveMember(wstring name)
+{
+    if (!members.count(type)) {
+        throw runtime_error(
+            "Atom of type '" 
+            + wideStrToStr(type) 
+            + "' does not have members."
+        );
+    }
+
+    if (!members[type].count(name)) {
+        throw runtime_error(
+            "Atom of type '" 
+            + wideStrToStr(type) 
+            + "' does not have a member '" 
+            + wideStrToStr(name) 
+            + "'."
+        );
+    }
+
+    (this->*members[type][name])();
 }
