@@ -343,13 +343,24 @@ void Mefody::resolveMemberAccess(shared_ptr<Atom> & atom)
     atom->resolveMember(memberName);
 }
 
-void Mefody::resolveElementAccess(shared_ptr<Atom> & atom)
+void Mefody::resolveAtom(shared_ptr<Atom> & atom)
 {
-    if (atom->getType() == Atom::typeString) {
-        resolveStringAccess(atom);
-    } else {
-        resolveArrayAccess(atom);
-    }
+     wchar_t symbol = readChar();
+     if (symbol == L'[') {
+        if (atom->getType() == Atom::typeString) {
+            resolveStringAccess(atom);
+        } else {
+            resolveArrayAccess(atom);
+            // recursevily resolve the whole chain
+            resolveAtom(atom);
+        }
+     } else if (symbol == L'.') {
+        resolveMemberAccess(atom);
+        // recursevily resolve the whole chain
+        resolveAtom(atom);
+     } else {
+        unreadChar();
+     }
 }
 
 bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
@@ -470,6 +481,8 @@ shared_ptr<Atom> Mefody::parseAtom()
     || parseSingleQuotedStringAtom(atomChar, atom)
     || parseDoubleQuotedStringAtom(atomChar, atom);
 
+    resolveAtom(atom);
+
     if (preOperator.size()) {
         atom->preOperator(preOperator);
     }
@@ -493,12 +506,6 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             break;
             case L'/':
                 joinAtoms(result, L"/", parseAtom());
-            break;
-            case L'.':
-                resolveMemberAccess(result);
-            break;
-            case L'[':
-                resolveElementAccess(result);
             break;
             case L'&':
                 symbol = readChar();
