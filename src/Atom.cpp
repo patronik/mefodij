@@ -547,7 +547,7 @@ void Atom::initMembers()
     members = {
         {
             L"string", {
-                {L"розмір", &Atom::resolveStringSize}
+                {L"довжина", &Atom::resolveStringSize}
             }
         },
         {
