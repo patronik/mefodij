@@ -206,7 +206,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     evaluateBlockOrStatement();
     if (isReturn) {
         // atom is a result of function call
-        atom = lastResult;
+        atom->setAtom(*lastResult);
     }
 
     // pop function data from stack
@@ -878,12 +878,12 @@ void Mefody::evaluateIfStructure()
 
         bool elseFound = false;
         while (!isReturn) {
-            if (readChars(true, false, 3) != L"або") {
+            if (readChars(true, false, 3) != statementElse) {
                 unreadChar(3);
                 break;
             }
 
-            if (readChars(true, false, 5) == L"умова") {
+            if (readChars(true, false, 5) == statementIf) {
                 if (lastIfResult->toBool()) {
                     if ((symbol = readChar()) != L'(') {
                         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
@@ -1022,7 +1022,7 @@ void Mefody::parseFunction()
 }
 
 void Mefody::evaluateStatement()
-{
+{    
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved
