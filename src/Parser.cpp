@@ -13,9 +13,6 @@ Parser::Parser()
         L"string", 
         L"array", 
         L"bool", 
-        L"null",
-        L"true",
-        L"false",
         L"в",
         statementLem,
         statementConst,
@@ -55,6 +52,9 @@ wchar_t Parser::readChar(bool toLower, bool allChars)
     }
 
     if (pos >= src.size()) {
+        if (state == inStmt) {
+            throw runtime_error("Unexpected end of file.");
+        }
         // end of script
         return endOfFile;
     }

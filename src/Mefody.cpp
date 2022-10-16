@@ -412,6 +412,11 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     // alphabetical atom
     wstring varName{};
     if (parseCharacterSequence(symbol, varName)) {
+        // Check if sequence is reserved 
+        if (inVector<wstring>(reservedKeywords, varName)) {
+            throwError("This name '" + wideStrToStr(varName) + "' is reserved.");
+        }
+
         // try to parse keyword atom
         if (parseKeywordAtom(varName, atom)) {
             return true;
@@ -443,6 +448,8 @@ shared_ptr<Atom> Mefody::parseAtom()
     wstring preOperator{};
 
     wchar_t atomChar = readChar();
+
+    state = inStmt;
 
     // check for boolean inversion
     if (atomChar == L'!') {
@@ -1023,6 +1030,7 @@ void Mefody::parseFunction()
 
 void Mefody::evaluateStatement()
 {    
+    state = beforeStmt;
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved
@@ -1032,6 +1040,7 @@ void Mefody::evaluateStatement()
     // Handle comments
     if (symbol == L'/') {
         if ((symbol = readChar(false, true)) == L'/') {
+            state = inComment;
             // Comment
             fastForward({L'\n'});
             evaluateStatement();
@@ -1041,8 +1050,11 @@ void Mefody::evaluateStatement()
         }
     }
 
+    state = beforeStmt;
+
     // Empty statement
     if (symbol == L';') {
+        state = afterStmt;
         // Last result is set to emtpy atom
         lastResult->setAtom(Atom());
         // Skip to next statement
@@ -1052,13 +1064,17 @@ void Mefody::evaluateStatement()
 
     // handle braces
     if (symbol == L'{' || symbol == L'}') {
+        state = flowControl;
         unreadChar();
         return;
     }
 
+    state = beforeStmt;
+
     wstring keyWord;
     // handle statements with preceding keywords
     if (parseCharacterSequence(symbol, keyWord)) {
+        state = inStmt;
 
         // IMPORT STATEMENT
         if (keyWord == statementImport) {
