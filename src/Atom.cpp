@@ -507,9 +507,9 @@ void Atom::cast(wstring typeTo)
     }
 }
 
-void Atom::setAtom(const shared_ptr<Atom> & src)
+void Atom::setAtom(const Atom & src)
 {
-    *this = *src;
+    *this = src;
 }
 
 bool Atom::getIsConst()

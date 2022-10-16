@@ -96,7 +96,7 @@ public:
   void setBool(bool val);
   void setNull();
   void setCast(wstring val);
-  void setAtom(const  shared_ptr<Atom> & src);
+  void setAtom(const Atom & src);
   void setIsConst();
   void setIsAssigned();
   void setIsCalculated();

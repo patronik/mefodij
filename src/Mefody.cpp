@@ -328,7 +328,7 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
     auto varPtr = atom->getVar();
 
     // Copy element state to atom
-    atom->setAtom(varPtr->elementAt(arrayKey));
+    atom->setAtom(*varPtr->elementAt(arrayKey));
 
     // Update pointer to variable
     atom->setVar(varPtr->elementAt(arrayKey));
@@ -429,7 +429,7 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         }
 
         // copy variable state to atom 
-        atom->setAtom(storage->getVar(varName));
+        atom->setAtom(*storage->getVar(varName));
         // store reference to variable into atom
         atom->setVar(storage->getVar(varName));
         return true;
@@ -1041,8 +1041,11 @@ void Mefody::evaluateStatement()
         }
     }
 
+    // Empty statement
     if (symbol == L';') {
-        // Empty statement
+        // Last result is set to emtpy atom
+        lastResult->setAtom(Atom());
+        // Skip to next statement
         unreadChar();
         return;
     }
