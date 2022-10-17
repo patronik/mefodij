@@ -803,18 +803,26 @@ void Mefody::evaluateForLoop()
             pos = loopBodyPos;
         }
 
+        shared_ptr<Context> iterationStack = make_shared<Context>();
+        iterationStack->setParent(getContext());
+        // push function data onto stack
+        stack.push_back(iterationStack);
+
         evaluateBlockOrStatement(true);
+
+        // pop iteration stack
+        stack.pop_back();
+
         if (isBreak || isReturn) {
             break;
         }
 
-        // Evaluate after statement
+        // Evaluate post statement
         pos = postStatementPos;
         evaluateStatement();
 
         // Prepare for next iteration
         pos = conditionPos;
-
     } while(true);
 
     pos = conditionPos;
@@ -823,7 +831,7 @@ void Mefody::evaluateForLoop()
 
     isBreak = false;
 
-    // pop function data from stack
+    // pop loop stack
     stack.pop_back();
 }
 
