@@ -118,7 +118,7 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
     return false;
 }
 
-bool Mefody::parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom)
+bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     if (inVector<wstring>(Mefody::castTypes, varName)) {
             atom->setCast(varName);
@@ -412,14 +412,14 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     // alphabetical atom
     wstring varName{};
     if (parseCharacterSequence(symbol, varName)) {
-        // Check if sequence is reserved 
-        if (inVector<wstring>(reservedKeywords, varName)) {
-            throwError("This name '" + wideStrToStr(varName) + "' is reserved.");
+        // try to recognize keyword 
+        if (parseCharacterConstAtom(varName, atom)) {
+            return true;
         }
 
-        // try to parse keyword atom
-        if (parseKeywordAtom(varName, atom)) {
-            return true;
+        // check if sequence is reserved 
+        if (inVector<wstring>(reservedKeywords, varName)) {
+            throwError("This name '" + wideStrToStr(varName) + "' is reserved.");
         }
 
         // try to process function call atom

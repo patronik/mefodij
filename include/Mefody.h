@@ -123,7 +123,7 @@ class Mefody : public Parser
     bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseKeywordAtom(wstring varName, shared_ptr<Atom> & atom);
+    bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
     
     // Atom resolving
