@@ -67,16 +67,6 @@ wchar_t Parser::readChar(bool toLower, bool allChars)
     return symbol;
 }
 
-wstring Parser::readChars(bool toLower, bool allChars, int numChars) 
-{
-    wstring wstr;
-    while (numChars > 0) {
-        wstr += wstring(1, readChar(toLower, allChars));
-        numChars--;
-    }
-    return wstr;
-}
-
 void Parser::unreadChar(int numOfSteps)
 {
     do {
@@ -90,6 +80,8 @@ void Parser::unreadChar(int numOfSteps)
 
 void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
 {
+    state = flowControl;
+
     bool inSingleQuotedStr = false;
     bool inDoubleQuotedStr = false;
     int depth = 0;
@@ -136,6 +128,8 @@ void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
 
 void Parser::skipBlockOrStatement()
 {
+    state = flowControl;
+
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved

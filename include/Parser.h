@@ -66,7 +66,6 @@ class Parser
     bool isSpace(wchar_t symbol);
     void skipSpaces();
     wchar_t readChar(bool toLower = false, bool allChars = false);
-    wstring readChars(bool toLower, bool allChars, int numChars);
     void unreadChar(int numOfSteps = 1);
     void fastForward(vector<wchar_t> terminators, wchar_t nestedMarker = L'\0');
     void skipBlockOrStatement();

@@ -882,15 +882,40 @@ void Mefody::evaluateIfStructure()
         }
     } else {
         skipBlockOrStatement();
+    }
 
-        bool elseFound = false;
-        while (!isReturn) {
-            if (readChars(true, false, 3) != statementElse) {
-                unreadChar(3);
+    bool elseFound = false;
+    while (!isReturn) {
+        
+        bool evalElse = true, evalElseIf = true;
+        
+        // Check for else
+        int i = 0;
+        while (i < statementElse.size()) {
+            if ((symbol = readChar()) != statementElse.at(i)) {
+                evalElse = false;
+                unreadChar(i + 1);
                 break;
             }
+            i++;
+        }
 
-            if (readChars(true, false, 5) == statementIf) {
+        if (!evalElse) {
+            break;
+        } else {
+            // Check for else if
+            int j = 0;
+            while (j < statementIf.size()) {
+                if ((symbol = readChar()) != statementIf.at(j)) {
+                    evalElseIf = false;
+                    unreadChar(j + 1);
+                    break;
+                }
+                j++;
+            }
+
+            if (evalElseIf) {
+                // Evaluate else if
                 if (lastIfResult->toBool()) {
                     if ((symbol = readChar()) != L'(') {
                         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
@@ -910,7 +935,7 @@ void Mefody::evaluateIfStructure()
                 }
                 continue;
             } else {
-                unreadChar(5);
+                // Evaluate else
                 if (elseFound) {
                     throwError("Only 1 else statement can go after if.");
                 }
