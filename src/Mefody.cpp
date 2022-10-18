@@ -817,9 +817,15 @@ void Mefody::evaluateForLoop()
             break;
         }
 
-        // Evaluate post statement
+        // Evaluate first post statement
         pos = postStatementPos;
         evaluateStatement();
+
+        // Evaluate all comma separated post statements
+        while ((symbol = readChar()) == L',') {
+            evaluateStatement();
+        } 
+        unreadChar();
 
         // Prepare for next iteration
         pos = conditionPos;
@@ -990,6 +996,15 @@ void Mefody::parseVariable(bool isConst)
     getContext()->setVar(varName, newVariable);
 
     pos = prevPos;
+
+    evaluateStatement();
+
+    if ((symbol = readChar()) == L',') {
+        // recursively declare all variables
+        parseVariable(isConst);
+    } else {
+        unreadChar();
+    }
 }
 
 void Mefody::parseFunction()
@@ -1132,7 +1147,6 @@ void Mefody::evaluateStatement()
         // VARIABLE DEFINITION
         if (keyWord == statementLem) {
             parseVariable();
-            evaluateStatement();
             return;
         }
         // END OF VARIABLE DEFINITION
@@ -1140,7 +1154,6 @@ void Mefody::evaluateStatement()
         // CONST VARIABLE DEFINITION
         if (keyWord == statementConst) {
             parseVariable(true);
-            evaluateStatement();
             return;
         }
         // END OF CONST VARIABLE DEFINITION
@@ -1200,9 +1213,9 @@ void Mefody::evaluateStatement()
 void Mefody::evaluateStatements()
 {
     evaluateStatement();
-    wchar_t statementOp;
-    while (!isReturn && (statementOp = readChar())) {
-        switch (statementOp) {
+    wchar_t sep;
+    while (!isReturn && (sep = readChar())) {
+        switch (sep) {
             case L'{':
             case L'}':
                 unreadChar();
@@ -1214,7 +1227,7 @@ void Mefody::evaluateStatements()
                 evaluateStatement();
                 break;
             default:
-                throwError("Unexpected token '" + wideStrToStr(statementOp) + "'." );
+                throwError("Unexpected token '" + wideStrToStr(sep) + "'.");
                 break;
         }
     }
