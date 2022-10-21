@@ -587,6 +587,8 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
             case L';':
             // array value parsed
             case L']':
+            // separator in range loop
+            case L':':
                 // start of statement block
                 unreadChar();
                 return result;
@@ -668,6 +670,8 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
             case L';':
             // array value parsed
             case L']':
+            // separator in range loop
+            case L':':
                 unreadChar();
                 // return result from recursive call
                 return result;
@@ -727,6 +731,8 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
             case L')':
             // end of statement
             case L';':
+            // separator in range loop
+            case L':':
                 unreadChar();
                 // return result from recursive call
                 return result;
@@ -759,6 +765,88 @@ bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
+void Mefody::evaluateWhileLoop(int condStatementPos)
+{
+    while (lastResult->toBool()) {        
+        shared_ptr<Context> iterationStack = make_shared<Context>();
+        iterationStack->setParent(getContext());
+        // push function data onto stack
+        stack.push_back(iterationStack);
+
+        evaluateBlockOrStatement(true);
+
+        // pop iteration stack
+        stack.pop_back();
+
+        if (isBreak || isReturn) {
+            break;
+        }
+
+        pos = condStatementPos;
+        evaluateStatement();
+        fastForward({L')'}, L'(');
+    }
+
+    pos = condStatementPos;
+    fastForward({L')'}, L'(');
+    skipBlockOrStatement();
+
+    isBreak = false;
+
+    // pop loop stack
+    stack.pop_back();
+}
+
+void Mefody::evaluateRangeLoop()
+{
+    int initialPos = pos;
+
+    if (lastResult->getVar() == nullptr) {
+        throwError("Initial statement of a range loop should be variable declaration.");
+    }
+    auto elementVar = lastResult->getVar();
+
+    // Range container statement
+    evaluateStatement();
+
+    if (lastResult->getVar() == nullptr 
+        || lastResult->getVar()->getType() != Atom::typeArray
+    ) {
+        throwError(": separator must be followed by array statement.");
+    }
+    auto arrayVar = lastResult->getVar();
+
+    for (auto elem: arrayVar->getArray()) {
+        elementVar->setArray({
+            {L"0", make_shared<Atom>(elem.first)},
+            {L"1", elem.second}
+        });
+
+        shared_ptr<Context> iterationStack = make_shared<Context>();
+        iterationStack->setParent(getContext());
+        // push function data onto stack
+        stack.push_back(iterationStack);
+
+        evaluateBlockOrStatement(true);
+
+        // pop iteration stack
+        stack.pop_back();
+
+        if (isBreak || isReturn) {
+            break;
+        }
+    }
+
+    pos = initialPos;
+    fastForward({L')'}, L'(');
+    skipBlockOrStatement();
+
+    isBreak = false;
+
+    // pop loop stack
+    stack.pop_back();
+}
+
 void Mefody::evaluateForLoop()
 {
     shared_ptr<Context> loopStack = make_shared<Context>();
@@ -771,13 +859,32 @@ void Mefody::evaluateForLoop()
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
+    int firstStamentPos = pos;
+
     // Initializer statement
     evaluateStatement();
+
+    // Range loop
+    if ((symbol = readChar()) == L':') {
+        evaluateRangeLoop();
+        return;
+    } else {
+        unreadChar();
+    }
+
+    // While loop
+    if ((symbol = readChar()) == L')') {
+        evaluateWhileLoop(firstStamentPos);
+        return;
+    } else {
+        unreadChar();
+    }
 
     if ((symbol = readChar()) != L';') {
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
+    // For loop
     int conditionPos = pos;
     int postStatementPos = -1;
     int loopBodyPos = -1;
