@@ -765,8 +765,10 @@ bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
-void Mefody::evaluateWhileLoop(int condStatementPos)
+void Mefody::evaluateWhileLoop(int firstStmtPos)
 {
+    int loopBodyPos = pos;
+
     while (lastResult->toBool()) {        
         shared_ptr<Context> iterationStack = make_shared<Context>();
         iterationStack->setParent(getContext());
@@ -782,12 +784,13 @@ void Mefody::evaluateWhileLoop(int condStatementPos)
             break;
         }
 
-        pos = condStatementPos;
+        pos = firstStmtPos;
         evaluateStatement();
-        fastForward({L')'}, L'(');
+        
+        pos = loopBodyPos;
     }
 
-    pos = condStatementPos;
+    pos = firstStmtPos;
     fastForward({L')'}, L'(');
     skipBlockOrStatement();
 
@@ -797,24 +800,29 @@ void Mefody::evaluateWhileLoop(int condStatementPos)
     stack.pop_back();
 }
 
-void Mefody::evaluateRangeLoop()
+void Mefody::evaluateRangeLoop(int firstStmtPos)
 {
-    int initialPos = pos;
-
     if (lastResult->getVar() == nullptr) {
-        throwError("Initial statement of a range loop should be variable declaration.");
+        throwError("Initial statement should resolve to variable.");
     }
     auto elementVar = lastResult->getVar();
 
-    // Range container statement
+    // Container statement
     evaluateStatement();
 
     if (lastResult->getVar() == nullptr 
         || lastResult->getVar()->getType() != Atom::typeArray
     ) {
-        throwError(": separator must be followed by array statement.");
+        throwError("Separator must be followed by array.");
     }
     auto arrayVar = lastResult->getVar();
+
+    wchar_t symbol;
+    if ((symbol = readChar()) != L')') {
+        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+    }
+
+    int loopBodyPos = -1;
 
     for (auto elem: arrayVar->getArray()) {
         elementVar->setArray({
@@ -827,6 +835,10 @@ void Mefody::evaluateRangeLoop()
         // push function data onto stack
         stack.push_back(iterationStack);
 
+        if (loopBodyPos == -1) {
+            loopBodyPos = pos;
+        } 
+
         evaluateBlockOrStatement(true);
 
         // pop iteration stack
@@ -835,9 +847,11 @@ void Mefody::evaluateRangeLoop()
         if (isBreak || isReturn) {
             break;
         }
+
+        pos = loopBodyPos;
     }
 
-    pos = initialPos;
+    pos = firstStmtPos;
     fastForward({L')'}, L'(');
     skipBlockOrStatement();
 
@@ -859,14 +873,14 @@ void Mefody::evaluateForLoop()
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
     }
 
-    int firstStamentPos = pos;
+    int firstStmtPos = pos;
 
     // Initializer statement
     evaluateStatement();
 
     // Range loop
     if ((symbol = readChar()) == L':') {
-        evaluateRangeLoop();
+        evaluateRangeLoop(firstStmtPos);
         return;
     } else {
         unreadChar();
@@ -874,7 +888,7 @@ void Mefody::evaluateForLoop()
 
     // While loop
     if ((symbol = readChar()) == L')') {
-        evaluateWhileLoop(firstStamentPos);
+        evaluateWhileLoop(firstStmtPos);
         return;
     } else {
         unreadChar();

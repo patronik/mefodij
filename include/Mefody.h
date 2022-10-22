@@ -132,8 +132,8 @@ class Mefody : public Parser
     void resolveMemberAccess(shared_ptr<Atom> & atom);
     void resolveAtom(shared_ptr<Atom> & atom);
     
-    void evaluateWhileLoop(int condStatementPos);
-    void evaluateRangeLoop();
+    void evaluateWhileLoop(int firstStmtPos);
+    void evaluateRangeLoop(int firstStmtPos);
     void evaluateForLoop();
     void evaluateIfStructure();
     void parseVariable(bool isConst = false);
