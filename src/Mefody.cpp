@@ -730,13 +730,6 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
             case L'|':
                 symbol = readChar();
                 if (symbol == L'|') {
-                    if (result->toBool()) {
-                        // in order to reduce amount of calculations,
-                        // skip the rest of expression and return result
-                        fastForward({L';', L',', L')'}, L'(');
-                        unreadChar();
-                        return result;
-                    }
                     joinAtoms(result, L"||", evaluateBoolExpression());
                 } else {
                     throwError("Unexpected token '" + wideStrToStr(booleanOp) + "' '" + wideStrToStr(symbol) + "'.");
@@ -745,13 +738,6 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
             case L'&':
                 symbol = readChar();
                 if (symbol == L'&') {
-                    if (!result->toBool()) {
-                        // in order to reduce amount of calculations,
-                        // skip the rest of expression and return result
-                        fastForward({L';', L',', L')'}, L'(');
-                        unreadChar();
-                        return result;
-                    }
                     joinAtoms(result, L"&&", evaluateBoolExpression());
                 } else {
                     throwError("Unexpected token '" + wideStrToStr(booleanOp) + "' '" + wideStrToStr(symbol) + "'.");
