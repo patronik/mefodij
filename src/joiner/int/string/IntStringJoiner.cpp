@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/int/string/IntStringJoiner.h"
 
-IntStringJoiner::IntStringJoiner(): Joiner({L"&"})
+IntStringJoiner::IntStringJoiner(): Joiner({L"+"})
 {
 }
 
@@ -9,7 +9,7 @@ void IntStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
 {
     validate(op);
     
-    if (op == L"&") {
+    if (op == L"+") {
         left->setString(
             to_wstring(left->getInt()) + right->getString()
         );

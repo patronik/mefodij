@@ -1,14 +1,14 @@
 
 #include "../../../../include/joiner/string/double/StringDoubleJoiner.h"
 
-StringDoubleJoiner::StringDoubleJoiner() : Joiner({L"&", L"="})
+StringDoubleJoiner::StringDoubleJoiner() : Joiner({L"+", L"="})
 {}
 
 void StringDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
     validate(op);
 
-    if (op == L"&") {
+    if (op == L"+") {
         left->setString(
             left->getString() + to_wstring(right->getDouble())
         );

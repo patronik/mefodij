@@ -3,14 +3,14 @@
 
 #include <regex>
 
-StringStringJoiner::StringStringJoiner() : Joiner({L"&", L"=", L"~", L"==", L"!="})
+StringStringJoiner::StringStringJoiner() : Joiner({L"+", L"=", L"~", L"==", L"!="})
 {}
 
 void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
     validate(op);
 
-    if (op == L"&") {
+    if (op == L"+") {
         left->setString(
             left->getString() + right->getString()
         );

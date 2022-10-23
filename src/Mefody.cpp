@@ -563,8 +563,7 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
                     unreadChar(2);
                     return result;
                 } else {
-                    unreadChar();
-                    joinAtoms(result, L"&", parseAtom());
+                    throwError("Unexpected token '" + wideStrToStr(atomOp) + "'.");
                 }
             break;
             case L'%':
