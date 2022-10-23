@@ -556,16 +556,6 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
             case L'/':
                 joinAtoms(result, L"/", parseAtom());
             break;
-            case L'&':
-                symbol = readChar();
-                if (symbol == L'&') {
-                    // Lower lever operator
-                    unreadChar(2);
-                    return result;
-                } else {
-                    throwError("Unexpected token '" + wideStrToStr(atomOp) + "'.");
-                }
-            break;
             case L'%':
                 joinAtoms(result, L"%", parseAtom());
             break;
@@ -615,6 +605,7 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
                 break;
             // Lower lever operators
             case L'!': // boolean not
+            case L'&': // start of boolean and
             case L'>': // less than
             case L'<': // greater than
             case L'|': // boolean "or" ||
@@ -742,7 +733,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
                     if (result->toBool()) {
                         // in order to reduce amount of calculations,
                         // skip the rest of expression and return result
-                        fastForward({L';', L')'}, L'(');
+                        fastForward({L';', L',', L')'}, L'(');
                         unreadChar();
                         return result;
                     }
@@ -757,7 +748,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
                     if (!result->toBool()) {
                         // in order to reduce amount of calculations,
                         // skip the rest of expression and return result
-                        fastForward({L';', L')'}, L'(');
+                        fastForward({L';', L',', L')'}, L'(');
                         unreadChar();
                         return result;
                     }
