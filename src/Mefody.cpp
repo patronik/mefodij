@@ -217,12 +217,60 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     return true;
 }
 
+bool Mefody::parseBinNumberLiteralAtom(shared_ptr<Atom> & atom)
+{   
+    wstring number{};
+    wchar_t symbol;
+    while (symbol = readChar(false, true)) {
+        if (binChars.find(symbol) != wstring::npos) {
+            number.push_back(symbol);
+            continue;
+        }
+
+        unreadChar(1, true);
+        break;
+    }
+    atom->setInt(wcstol(number.c_str(), nullptr, 2));
+    return true;
+}
+
+bool Mefody::parseHexNumberLiteralAtom(shared_ptr<Atom> & atom) 
+{
+    wstring number{};
+    wchar_t symbol;
+    while (symbol = readChar(false, true)) {
+        if (hexChars.find(symbol) != wstring::npos) {
+            number.push_back(symbol);
+            continue;
+        }
+
+        unreadChar(1, true);
+        break;
+    }
+    atom->setInt(wcstol(number.c_str(), nullptr, 16));
+    return true;
+}
+
 bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     wstring number{};
-    bool hasDot = false;
     if (isNumber(symbol)) {
         number.push_back(symbol);
+
+        // Check for other bases
+        symbol = readChar(false, true);
+        if (number[0] == L'0' && (symbol == L'b' || symbol == L'B')) {
+            number.push_back(symbol);
+            return parseBinNumberLiteralAtom(atom);
+        } else if (number[0] == L'0' && (symbol == L'x' || symbol == L'X')) {
+            number.push_back(symbol);
+            return parseHexNumberLiteralAtom(atom);
+        } else {
+            unreadChar(1, true);
+        }
+
+        // Decimal int or double
+        bool hasDot = false;
         while (symbol = readChar(false, true)) {
             if (isNumber(symbol))  {
                 number.push_back(symbol);
@@ -236,14 +284,8 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
                 continue;
             }
 
-            if (!isSpace(symbol)) {
-                unreadChar();
-            }
+            unreadChar(1, true);
             break;
-        }
-
-        if (symbol == L'.') {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
         }
 
         if (hasDot) {
@@ -481,7 +523,7 @@ shared_ptr<Atom> Mefody::parseAtom()
 
     shared_ptr<Atom> atom = make_shared<Atom>();
 
-    evaluateParentheticalAtom(atomChar, atom)
+    parseParentheticalAtom(atomChar, atom)
     || parseAlphabeticalAtom(atomChar, atom)
     || parseArrayLiteralAtom(atomChar, atom)
     || parseNumberLiteralAtom(atomChar, atom)
@@ -501,7 +543,7 @@ shared_ptr<Atom> Mefody::parseAtom()
     return atom;
 }
 
-shared_ptr<Atom> Mefody::evaluateMathBlock()
+shared_ptr<Atom> Mefody::evaluateMathExpression()
 {
     shared_ptr<Atom> result = parseAtom();
     wchar_t symbol;
@@ -603,21 +645,21 @@ shared_ptr<Atom> Mefody::evaluateMathBlock()
 
 shared_ptr<Atom> Mefody::evaluateBoolExpression()
 {
-    shared_ptr<Atom> result = evaluateMathBlock();
+    shared_ptr<Atom> result = evaluateMathExpression();
     wchar_t mathOp;
     wchar_t symbol;
     while (mathOp = readChar(true)) {
         switch (mathOp) {
             case L'+':
-                joinAtoms(result, L"+", evaluateMathBlock());
+                joinAtoms(result, L"+", evaluateMathExpression());
             break;
             case L'-':
-                joinAtoms(result, L"-", evaluateMathBlock());
+                joinAtoms(result, L"-", evaluateMathExpression());
             break;
             case L'=':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    joinAtoms(result, L"==", evaluateMathBlock());
+                    joinAtoms(result, L"==", evaluateMathExpression());
                 } else if (symbol == L'>')  {
                     // key-val separator
                     unreadChar(2);
@@ -630,7 +672,7 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
             case L'!':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    joinAtoms(result, L"!=", evaluateMathBlock());
+                    joinAtoms(result, L"!=", evaluateMathExpression());
                 } else {
                     throwError("Unexpected token '" + wideStrToStr(mathOp) + "' '" + wideStrToStr(symbol) + "'.");
                 }
@@ -638,23 +680,23 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
             case L'>':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    joinAtoms(result, L">=", evaluateMathBlock());
+                    joinAtoms(result, L">=", evaluateMathExpression());
                 } else {
                     unreadChar();
-                    joinAtoms(result, L">", evaluateMathBlock());
+                    joinAtoms(result, L">", evaluateMathExpression());
                 }
             break;
             case L'<':
                 symbol = readChar();
                 if (symbol == L'=') {
-                    joinAtoms(result, L"<=", evaluateMathBlock());
+                    joinAtoms(result, L"<=", evaluateMathExpression());
                 } else {
                     unreadChar();
-                    joinAtoms(result, L"<", evaluateMathBlock());
+                    joinAtoms(result, L"<", evaluateMathExpression());
                 }
                 break;
             case L'в': // find in set
-                joinAtoms(result, L"в", evaluateMathBlock());
+                joinAtoms(result, L"в", evaluateMathExpression());
             break;
             case L'~': // check against regex
                 joinAtoms(result, L"~", evaluateBoolExpression());
@@ -745,7 +787,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
     return result;
 }
 
-bool Mefody::evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Mefody::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol == L'(') {
         shared_ptr<Atom> subResult = evaluateBoolStatement();
@@ -1008,7 +1050,7 @@ void Mefody::evaluateIfStructure()
         throwError("Unexpected token '" + wideStrToStr(symbol) + "'." );
     }
 
-    evaluateParentheticalAtom(symbol, lastIfResult);
+    parseParentheticalAtom(symbol, lastIfResult);
 
     if (lastIfResult->toBool()) {
         evaluateBlockOrStatement();
@@ -1061,7 +1103,7 @@ void Mefody::evaluateIfStructure()
                     if ((symbol = readChar()) != L'(') {
                         throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
                     }
-                    evaluateParentheticalAtom(symbol, lastIfResult);
+                    parseParentheticalAtom(symbol, lastIfResult);
                     if (lastIfResult->toBool()) {
                         evaluateBlockOrStatement();
                     } else {

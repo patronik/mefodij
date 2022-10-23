@@ -15,7 +15,7 @@ Atom::Atom()
     initMembers();
 }
 
-Atom::Atom(int val) 
+Atom::Atom(long val) 
 {
    type = L"int";
    intVal = val;
@@ -99,7 +99,7 @@ void Atom::clearVal()
     charIndex = -1;
 }
 
-void Atom::setInt(int val) 
+void Atom::setInt(long val) 
 {
     clearVal();
     intVal = val;
@@ -171,7 +171,7 @@ void Atom::setCast(wstring val)
     type = Atom::typeCast;        
 }
 
-int Atom::getInt() 
+long Atom::getInt() 
 {
     if (type != Atom::typeInt) {
         throw runtime_error("Wrong atom type");

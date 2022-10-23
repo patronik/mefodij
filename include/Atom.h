@@ -19,7 +19,7 @@ class Atom
     wstring type = L"null";
 
     // supported values
-    int intVal = 0; // int
+    long intVal = 0; // int
 
     // float point number
     double doubleVal = 0.00; 
@@ -55,7 +55,7 @@ class Atom
     void clearVal();
 public:
   Atom();
-  Atom(int val);
+  Atom(long val);
   Atom(double val);
   Atom(wstring val);
   Atom(map<wstring, shared_ptr<Atom>> val);
@@ -70,7 +70,7 @@ public:
   const static wstring typeCast;
 
   // Getters
-  int getInt();
+  long getInt();
   double getDouble();
   wstring getString();
   map<wstring, shared_ptr<Atom>> getArray();
@@ -88,7 +88,7 @@ public:
   void setVar(shared_ptr<Atom> atom);
   void setArrayNextIndex(const int index);
   void setCharIndex(const int index);
-  void setInt(int val);
+  void setInt(long val);
   void setDouble(double val);
   void setString(wstring val);
   void setStringChar(wchar_t val, int charIndex);

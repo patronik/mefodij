@@ -31,6 +31,8 @@ class Parser
     wstring ukrainianLetters{L"АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя"};
     wstring englishLetters{L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"};
     wstring printableSymbols{L"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"};
+    wstring hexChars;
+    wstring binChars;
     wstring lettersNumsUnderscore;
     wstring printableLetters;
     wstring printableChars;
@@ -66,7 +68,7 @@ class Parser
     bool isSpace(wchar_t symbol);
     void skipSpaces();
     wchar_t readChar(bool toLower = false, bool allChars = false);
-    void unreadChar(int numOfSteps = 1);
+    void unreadChar(int numOfSteps = 1, bool allChars = false);
     void fastForward(vector<wchar_t> terminators, wchar_t nestedMarker = L'\0');
     void skipBlockOrStatement();
     bool parseCharacterSequence(wchar_t symbol, wstring & buffer);

@@ -6,6 +6,8 @@ Parser::Parser()
     printableChars = printableNumbers + ukrainianLetters + englishLetters + printableSymbols;
     lettersNumsUnderscore = ukrainianLetters + englishLetters + printableNumbers + wstring(L"_");
     printableLetters = ukrainianLetters + englishLetters;
+    hexChars = L"0123456789ABCDEFabcdef";
+    binChars = L"01";
 
     reservedKeywords = {
         L"int", 
@@ -67,12 +69,14 @@ wchar_t Parser::readChar(bool toLower, bool allChars)
     return symbol;
 }
 
-void Parser::unreadChar(int numOfSteps)
+void Parser::unreadChar(int numOfSteps, bool allChars)
 {
     do {
         pos--;
-        while (isSpace(src.at(pos))) {
-            pos -= 1;
+        if (!allChars) {
+            while (isSpace(src.at(pos))) {
+                pos -= 1;
+            }
         }
         numOfSteps--;
     } while (numOfSteps > 0);

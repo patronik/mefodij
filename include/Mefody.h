@@ -111,13 +111,19 @@ class Mefody : public Parser
 
     shared_ptr<Context> getContext();
 
-    shared_ptr<Atom> evaluateMathBlock();
-    shared_ptr<Atom> evaluateBoolExpression();
-    shared_ptr<Atom> evaluateBoolStatement();
+    // one atom
     shared_ptr<Atom> parseAtom();
+    // one or more atoms connected with high priority math operator 
+    shared_ptr<Atom> evaluateMathExpression(); 
+    // one ore more math expression connected with low level priority operator 
+    shared_ptr<Atom> evaluateBoolExpression(); 
+    // one or more bool expressions conntected with bool operator
+    shared_ptr<Atom> evaluateBoolStatement(); 
 
-    // Atoms are indivisible parts of statement
-    bool evaluateParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+    // Atoms parsers
+    bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+    bool parseBinNumberLiteralAtom(shared_ptr<Atom> & atom);
+    bool parseHexNumberLiteralAtom(shared_ptr<Atom> & atom);
     bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
@@ -125,6 +131,11 @@ class Mefody : public Parser
     bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
+    
+
+    // Parsers for function and variable declaration
+    void parseVariable(bool isConst = false);
+    void parseFunction();
     
     // Atom resolving
     void resolveStringAccess(shared_ptr<Atom> & atom);
@@ -136,8 +147,6 @@ class Mefody : public Parser
     void evaluateRangeLoop(int firstStmtPos);
     void evaluateForLoop();
     void evaluateIfStructure();
-    void parseVariable(bool isConst = false);
-    void parseFunction();
     void evaluateBlockOrStatement(bool stopOnBreak = false);
     void evaluateStatement();
     void evaluateStatements();
