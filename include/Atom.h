@@ -49,6 +49,8 @@ class Atom
     // Member resolvers
     void resolveStringSize();
     void resolveArraySize();
+    void resolveArrayFirst();
+    void resolveArraySecond();
 
     void initMembers();
     

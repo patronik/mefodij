@@ -552,7 +552,9 @@ void Atom::initMembers()
         },
         {
             L"array", {
-                {L"розмір", &Atom::resolveArraySize}
+                {L"розмір", &Atom::resolveArraySize},
+                {L"перший", &Atom::resolveArrayFirst},
+                {L"другий", &Atom::resolveArraySecond}
             }
         }
     };
@@ -570,6 +572,38 @@ void Atom::resolveArraySize()
     setInt(arrayVal.size());
     setVar(nullptr);
     setIsCalculated();
+}
+
+void Atom::resolveArrayFirst()
+{
+    if (arrayVal.size() < 1) {
+        throw runtime_error("First element of array does not exist.");
+    }
+
+    if (getVar() != nullptr) {
+        auto varRef = getVar();
+        setAtom(*(varRef->getArray().begin()->second));
+        setVar(varRef->getArray().begin()->second);
+    } else {
+        setAtom(*(arrayVal.begin()->second));
+        setVar(nullptr);
+    }
+}
+
+void Atom::resolveArraySecond()
+{
+    if (arrayVal.size() < 2) {
+        throw runtime_error("Second element of array does not exist.");
+    }
+
+    if (getVar() != nullptr) {
+        auto varRef = getVar();
+        setAtom(*((++(varRef->getArray().begin()))->second));
+        setVar((++(varRef->getArray().begin()))->second);
+    } else {
+        setAtom(*((++(arrayVal.begin()))->second));
+        setVar(nullptr);
+    }
 }
 
 void Atom::resolveMember(wstring name)

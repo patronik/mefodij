@@ -1142,10 +1142,6 @@ void Mefody::parseVariable(bool isConst)
         throwError("Variable '" + wideStrToStr(varName) + "' already defined." );
     }
 
-    if (getContext()->hasOwnFunction(varName)) {
-        throwError("This name '" + wideStrToStr(varName) + "' is already used by function." );
-    }
-
     if (inVector<wstring>(reservedKeywords,varName)) {
         throwError("This name '" + wideStrToStr(varName) + "' is reserved." );
     }
@@ -1180,10 +1176,6 @@ void Mefody::parseFunction()
 
     if (getContext()->hasOwnFunction(functionName)) {
         throwError("Function '" + wideStrToStr(functionName) + "' already defined." );
-    }
-
-    if (getContext()->hasOwnVar(functionName)) {
-        throwError("This name '" + wideStrToStr(functionName) + "' is already used by variable." );
     }
 
     if (inVector<wstring>(reservedKeywords,functionName)) {
