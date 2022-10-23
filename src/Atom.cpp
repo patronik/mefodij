@@ -576,15 +576,17 @@ void Atom::resolveArraySize()
 
 void Atom::resolveArrayFirst()
 {
-    if (arrayVal.size() < 1) {
-        throw runtime_error("First element of array does not exist.");
-    }
-
     if (getVar() != nullptr) {
         auto varRef = getVar();
+        if (varRef->getArray().size() < 1) {
+            throw runtime_error("First element of array does not exist.");
+        }
         setAtom(*(varRef->getArray().begin()->second));
         setVar(varRef->getArray().begin()->second);
     } else {
+        if (arrayVal.size() < 1) {
+            throw runtime_error("First element of array does not exist.");
+        }
         setAtom(*(arrayVal.begin()->second));
         setVar(nullptr);
     }
@@ -592,15 +594,17 @@ void Atom::resolveArrayFirst()
 
 void Atom::resolveArraySecond()
 {
-    if (arrayVal.size() < 2) {
-        throw runtime_error("Second element of array does not exist.");
-    }
-
     if (getVar() != nullptr) {
         auto varRef = getVar();
+        if (varRef->getArray().size() < 2) {
+            throw runtime_error("Second element of array does not exist.");
+        }
         setAtom(*((++(varRef->getArray().begin()))->second));
         setVar((++(varRef->getArray().begin()))->second);
     } else {
+        if (arrayVal.size() < 2) {
+            throw runtime_error("Second element of array does not exist.");
+        }
         setAtom(*((++(arrayVal.begin()))->second));
         setVar(nullptr);
     }
