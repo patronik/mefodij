@@ -3,7 +3,7 @@
 
 #include "tools.h"
 #include "Atom.h"
-#include "FunctionStorage.h"
+#include "FunctionContext.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ class Context {
     shared_ptr<Context> parentContext = nullptr;
     map<wstring, shared_ptr<Atom>> storage{};
     // Functions
-    FunctionStorage functions{};
+    FunctionContext functions{};
 
 public:
     // Variables
