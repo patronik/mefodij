@@ -30,7 +30,7 @@ shared_ptr<Atom> Context::getVar(wstring key)
     if (parentContext) {
         return parentContext->getVar(key);
     }
-    throw runtime_error("Variable '" + wideStrToStr(key) + "' does not exist.");
+    throw runtime_error("Variable '" + MefodyTools::wideStrToStr(key) + "' does not exist.");
 }
 
 void Context::setFunction(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params) 
@@ -64,7 +64,7 @@ pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & Context::getFunction(wstr
     if (parentContext) {
         return parentContext->getFunction(key);
     }
-    throw runtime_error("Function '" + wideStrToStr(key) + "' does not exist.");
+    throw runtime_error("Function '" + MefodyTools::wideStrToStr(key) + "' does not exist.");
 }
 
 void Context::setParent(shared_ptr<Context> parent)

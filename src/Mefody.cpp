@@ -9,7 +9,7 @@ void Mefody::throwError(string message)
     throw runtime_error(
         message 
         + " In file: '" 
-        + wideStrToStr(get<0>(currLoc)) 
+        + MefodyTools::wideStrToStr(get<0>(currLoc)) 
         +  "'" 
         + " At " 
         + to_string(get<1>(currLoc)) 
@@ -120,7 +120,7 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
 
 bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
 {
-    if (inVector<wstring>(Mefody::castTypes, varName)) {
+    if (MefodyTools::inVector<wstring>(Mefody::castTypes, varName)) {
             atom->setCast(varName);
         } else if (varName == L"true") {
             atom->setBool(true);
@@ -174,7 +174,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
             // No intializer means required parameter is missing
             if (funcData.second.at(argumentIndex).second == nullptr) {
                 throwError("Function required parameter '"
-                    + wideStrToStr(funcData.second.at(argumentIndex).first)
+                    + MefodyTools::wideStrToStr(funcData.second.at(argumentIndex).first)
                     + "' is missing."
                 );
             } else {
@@ -189,7 +189,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     }
 
     if (symbol != L')') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     functionStack->setParent(getContext());
@@ -254,7 +254,7 @@ bool Mefody::parseHexNumberLiteralAtom(shared_ptr<Atom> & atom)
 bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     wstring number{};
-    if (isNumber(symbol)) {
+    if (MefodyTools::isNumber(symbol)) {
         number.push_back(symbol);
 
         // Check for other bases
@@ -272,12 +272,12 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         // Decimal int or double
         bool hasDot = false;
         while (symbol = readChar(false, true)) {
-            if (isNumber(symbol))  {
+            if (MefodyTools::isNumber(symbol))  {
                 number.push_back(symbol);
                 continue;
             } else if (symbol == L'.') {
                 if (hasDot) {
-                    throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
                 }
                 hasDot = true;
                 number.push_back(symbol);
@@ -301,13 +301,13 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 void Mefody::resolveStringAccess(shared_ptr<Atom> & atom)
 {
     shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-    if (!inVector<wstring>({L"int"}, keyAtom->getType())) {
+    if (!MefodyTools::inVector<wstring>({L"int"}, keyAtom->getType())) {
         throwError("Only integer keys are supported.");
     }
 
     wchar_t symbol;
     if ((symbol = readChar()) != L']') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     if (atom->getCharIndex() > -1) {
@@ -351,13 +351,13 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
         atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
     } else {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!inVector<wstring>({L"string", L"int"}, keyAtom->getType())) {
+        if (!MefodyTools::inVector<wstring>({L"string", L"int"}, keyAtom->getType())) {
             throwError("Only string and integer array keys are supported.");
         }
 
         wchar_t symbol;
         if ((symbol = readChar()) != L']') {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+            throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
         arrayKey = keyAtom->toString();
     }
@@ -435,13 +435,13 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 
                 symbol = readChar();
             } else {
-                throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
             }
         }
     } while (symbol == L',');
 
     if (symbol != L']') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     atom->setArray(array);
@@ -460,8 +460,8 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         }
 
         // check if sequence is reserved 
-        if (inVector<wstring>(reservedKeywords, varName)) {
-            throwError("This name '" + wideStrToStr(varName) + "' is reserved.");
+        if (MefodyTools::inVector<wstring>(reservedKeywords, varName)) {
+            throwError("This name '" + MefodyTools::wideStrToStr(varName) + "' is reserved.");
         }
 
         // try to process function call atom
@@ -472,7 +472,7 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         // variable atom
         shared_ptr<Context> storage = getContext();
         if (!storage->hasVar(varName)) {
-            throwError("Variable '" + wideStrToStr(varName) + "' is not defined.");
+            throwError("Variable '" + MefodyTools::wideStrToStr(varName) + "' is not defined.");
         }
 
         // copy variable state to atom 
@@ -626,7 +626,7 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
                 return result;
                 break;
             default:
-                throwError("Unexpected token '" + wideStrToStr(atomOp) + "'.");
+                throwError("Unexpected token '" + MefodyTools::wideStrToStr(atomOp) + "'.");
                 break;
         }
     }
@@ -656,7 +656,7 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
                     return result;
                     break;
                 } else {
-                    throwError("Unexpected token '"+ wideStrToStr(mathOp) + "' '" + wideStrToStr(symbol) + "'.");
+                    throwError("Unexpected token '"+ MefodyTools::wideStrToStr(mathOp) + "' '" + MefodyTools::wideStrToStr(symbol) + "'.");
                 }
             break;
             case L'!':
@@ -664,7 +664,7 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
                 if (symbol == L'=') {
                     joinAtoms(result, L"!=", evaluateMathExpression());
                 } else {
-                    throwError("Unexpected token '" + wideStrToStr(mathOp) + "' '" + wideStrToStr(symbol) + "'.");
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(mathOp) + "' '" + MefodyTools::wideStrToStr(symbol) + "'.");
                 }
             break;
             case L'>':
@@ -709,7 +709,7 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
                 return result;
                 break;
             default:
-                throwError("Unexpected token '" + wideStrToStr(mathOp) + "'.");
+                throwError("Unexpected token '" + MefodyTools::wideStrToStr(mathOp) + "'.");
                 break;
         }
     }
@@ -732,7 +732,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
                 if (symbol == L'|') {
                     joinAtoms(result, L"||", evaluateBoolExpression());
                 } else {
-                    throwError("Unexpected token '" + wideStrToStr(booleanOp) + "' '" + wideStrToStr(symbol) + "'.");
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(booleanOp) + "' '" + MefodyTools::wideStrToStr(symbol) + "'.");
                 }
                 break;
             case L'&':
@@ -740,7 +740,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
                 if (symbol == L'&') {
                     joinAtoms(result, L"&&", evaluateBoolExpression());
                 } else {
-                    throwError("Unexpected token '" + wideStrToStr(booleanOp) + "' '" + wideStrToStr(symbol) + "'.");
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(booleanOp) + "' '" + MefodyTools::wideStrToStr(symbol) + "'.");
                 }
                 break;
             // end of argument
@@ -756,7 +756,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
                 return result;
                 break;
             default:
-                throwError("Unexpected token '" + wideStrToStr(booleanOp) + "'.");
+                throwError("Unexpected token '" + MefodyTools::wideStrToStr(booleanOp) + "'.");
                 break;
         }
     }
@@ -837,7 +837,7 @@ void Mefody::evaluateRangeLoop(int firstStmtPos)
 
     wchar_t symbol;
     if ((symbol = readChar()) != L')') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     int loopBodyPos = -1;
@@ -888,7 +888,7 @@ void Mefody::evaluateForLoop()
 
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     int firstStmtPos = pos;
@@ -913,7 +913,7 @@ void Mefody::evaluateForLoop()
     }
 
     if ((symbol = readChar()) != L';') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     // For loop
@@ -924,7 +924,7 @@ void Mefody::evaluateForLoop()
     do {
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+            throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
 
         if (!lastResult->toBool()) {
@@ -988,7 +988,7 @@ void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
         unreadChar();
         evaluateStatement();
         if ((symbol = readChar()) != L';') {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+            throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
     } else {
         wchar_t statementOp;
@@ -1011,7 +1011,7 @@ void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
                     evaluateStatement();
                     break;
                 default:
-                    throwError("Unexpected token '" + wideStrToStr(statementOp) + "'.");
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(statementOp) + "'.");
                 break;
             }
         }
@@ -1023,7 +1023,7 @@ void Mefody::evaluateIfStructure()
     shared_ptr<Atom> lastIfResult = make_shared<Atom>();
     wchar_t symbol;
     if ((symbol = readChar()) != L'(') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'." );
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'." );
     }
 
     parseParentheticalAtom(symbol, lastIfResult);
@@ -1071,13 +1071,13 @@ void Mefody::evaluateIfStructure()
                 // Evaluate else if
                 if (lastIfResult->toBool()) {
                     if ((symbol = readChar()) != L'(') {
-                        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
                     }
                     fastForward({L')'}, L'(');
                     skipBlockOrStatement();
                 } else {
                     if ((symbol = readChar()) != L'(') {
-                        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+                        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
                     }
                     parseParentheticalAtom(symbol, lastIfResult);
                     if (lastIfResult->toBool()) {
@@ -1115,11 +1115,11 @@ void Mefody::parseVariable(bool isConst)
     }
 
     if (getContext()->hasOwnVar(varName)) {
-        throwError("Variable '" + wideStrToStr(varName) + "' already defined." );
+        throwError("Variable '" + MefodyTools::wideStrToStr(varName) + "' already defined." );
     }
 
-    if (inVector<wstring>(reservedKeywords,varName)) {
-        throwError("This name '" + wideStrToStr(varName) + "' is reserved." );
+    if (MefodyTools::inVector<wstring>(reservedKeywords,varName)) {
+        throwError("This name '" + MefodyTools::wideStrToStr(varName) + "' is reserved." );
     }
 
     auto newVariable = make_shared<Atom>();
@@ -1151,15 +1151,15 @@ void Mefody::parseFunction()
     }
 
     if (getContext()->hasOwnFunction(functionName)) {
-        throwError("Function '" + wideStrToStr(functionName) + "' already defined." );
+        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' already defined." );
     }
 
-    if (inVector<wstring>(reservedKeywords,functionName)) {
-        throwError("This name '" + wideStrToStr(functionName) + "' is reserved." );
+    if (MefodyTools::inVector<wstring>(reservedKeywords,functionName)) {
+        throwError("This name '" + MefodyTools::wideStrToStr(functionName) + "' is reserved." );
     }
 
     if ((symbol = readChar()) != L'(') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     map<int, pair<wstring, shared_ptr<Atom>>> parameters;
@@ -1173,12 +1173,12 @@ void Mefody::parseFunction()
 
         wstring argName;
         if (!parseCharacterSequence(symbol, argName)) {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+            throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
 
         for (auto const & parameter : parameters) {
             if (parameter.second.first == argName) {
-                throwError("Parameter with name '" + wideStrToStr(argName) + "' already exists.");
+                throwError("Parameter with name '" + MefodyTools::wideStrToStr(argName) + "' already exists.");
             }
         }
 
@@ -1199,7 +1199,7 @@ void Mefody::parseFunction()
     } while ((symbol = readChar()) == L',');
 
     if (symbol != L')') {
-        throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
 
     getContext()->setFunction(functionName, pos, parameters);
@@ -1225,7 +1225,7 @@ void Mefody::evaluateStatement()
             evaluateStatement();
             return;
         } else {
-            throwError("Unexpected token '" + wideStrToStr(symbol) + "'.");
+            throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
     }
 
@@ -1358,7 +1358,7 @@ void Mefody::evaluateStatements()
                 evaluateStatement();
                 break;
             default:
-                throwError("Unexpected token '" + wideStrToStr(sep) + "'.");
+                throwError("Unexpected token '" + MefodyTools::wideStrToStr(sep) + "'.");
                 break;
         }
     }
@@ -1380,7 +1380,7 @@ wstring Mefody::evaluate()
                     evaluateStatements();
                     break;
                 default:
-                    throwError("Unexpected token '" + wideStrToStr(separator) + "'." );
+                    throwError("Unexpected token '" + MefodyTools::wideStrToStr(separator) + "'." );
                 break;
             }
         }

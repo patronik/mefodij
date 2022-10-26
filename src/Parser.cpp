@@ -117,7 +117,7 @@ void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
             if (nestedMarker && symbol == nestedMarker) {
                 depth++;
                 readChar(false, true);
-            } else if (inVector<wchar_t>(terminators, symbol)) {
+            } else if (MefodyTools::inVector<wchar_t>(terminators, symbol)) {
                 if (depth == 0) {
                     break;
                 } else {
@@ -182,11 +182,11 @@ tuple<wstring, int, int> Parser::getLastLocation()
 
 void Parser::insertSource(wstring wfilename)
 {
-    if (!fileExist(wideStrToStr(wfilename).c_str())) {
-        throw runtime_error("File '" + wideStrToStr(wfilename) + "' does not exist.");
+    if (!MefodyTools::fileExist(MefodyTools::wideStrToStr(wfilename).c_str())) {
+        throw runtime_error("File '" + MefodyTools::wideStrToStr(wfilename) + "' does not exist.");
     }
 
-    wstring source = readWideFile(wideStrToStr(wfilename).c_str());
+    wstring source = MefodyTools::readWideFile(MefodyTools::wideStrToStr(wfilename).c_str());
 
     src.insert(pos, source);
 

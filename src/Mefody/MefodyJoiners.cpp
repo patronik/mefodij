@@ -114,9 +114,9 @@ void Mefody::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right
         Mefody::nullNullJoiner->join(left, op, right);
     } else {
         throw runtime_error(
-            "Joiner for type " + wideStrToStr(left->getType())
-            + " operator " + wideStrToStr(op)
-            + " and type " + wideStrToStr(right->getType())
+            "Joiner for type " + MefodyTools::wideStrToStr(left->getType())
+            + " operator " + MefodyTools::wideStrToStr(op)
+            + " and type " + MefodyTools::wideStrToStr(right->getType())
             + " does not exist."
         );   
     }    

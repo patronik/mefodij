@@ -2,31 +2,31 @@
 
 using namespace std;
 
-bool isNumber(const wstring& src)
+bool MefodyTools::isNumber(const wstring& src)
 {
     wstring::const_iterator it = src.begin();
     while (it != src.end() && isdigit(*it)) ++it;
     return !src.empty() && it == src.end();
 }
 
-bool isNumber(const wchar_t src)
+bool MefodyTools::isNumber(const wchar_t src)
 {
-    return isNumber(wstring{src});
+    return MefodyTools::isNumber(wstring{src});
 }
 
-string wideStrToStr(wstring src)
+string MefodyTools::wideStrToStr(wstring src)
 {
     using convert_type = codecvt_utf8<wchar_t>;
     wstring_convert<convert_type, wchar_t> converter;
     return converter.to_bytes(src);
 }
 
-string wideStrToStr(wchar_t src)
+string MefodyTools::wideStrToStr(wchar_t src)
 {
-    return wideStrToStr(wstring{src});
+    return MefodyTools::wideStrToStr(wstring{src});
 }
 
-wstring readWideFile(const char * filename)
+wstring MefodyTools::readWideFile(const char * filename)
 {
     wifstream wif(filename);
     wif.imbue(locale("en_US.UTF-8"));
@@ -35,7 +35,7 @@ wstring readWideFile(const char * filename)
     return wss.str();
 }
 
-bool fileExist(const char * fileName)
+bool MefodyTools::fileExist(const char * fileName)
 {
     ifstream infile(fileName);
     return infile.good();

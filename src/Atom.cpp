@@ -135,7 +135,7 @@ void Atom::setArray(map<wstring, shared_ptr<Atom>> val)
         int topIndex = 0;
         for (auto elem: arrayVal) {
             try {
-                if (isNumber(elem.first)) {
+                if (MefodyTools::isNumber(elem.first)) {
                     int i = stoi(elem.first);
                     if (i > topIndex) {
                         topIndex = i;
@@ -615,7 +615,7 @@ void Atom::resolveMember(wstring name)
     if (!members.count(type)) {
         throw runtime_error(
             "Atom of type '" 
-            + wideStrToStr(type) 
+            + MefodyTools::wideStrToStr(type) 
             + "' does not have members."
         );
     }
@@ -623,9 +623,9 @@ void Atom::resolveMember(wstring name)
     if (!members[type].count(name)) {
         throw runtime_error(
             "Atom of type '" 
-            + wideStrToStr(type) 
+            + MefodyTools::wideStrToStr(type) 
             + "' does not have a member '" 
-            + wideStrToStr(name) 
+            + MefodyTools::wideStrToStr(name) 
             + "'."
         );
     }
