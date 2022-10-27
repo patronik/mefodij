@@ -147,7 +147,9 @@ void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
         int argumentIndex = 0;
         do {
             if (funcParams.count(argumentIndex)) {
-                functionStack->setVar(funcParams.at(argumentIndex).first, evaluateBoolStatement());
+                auto functionVar = evaluateBoolStatement();
+                functionVar->setVar(nullptr);
+                functionStack->setVar(funcParams.at(argumentIndex).first, functionVar);
             } else {
                 // skip arguments which are not expected by function
                 fastForward({L','});
@@ -213,7 +215,9 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         int argumentIndex = 0;
         do {
             if (funcData.second.count(argumentIndex)) {
-                functionStack->setVar(funcData.second.at(argumentIndex).first, evaluateBoolStatement());
+                auto functionVar = evaluateBoolStatement();
+                functionVar->setVar(nullptr);
+                functionStack->setVar(funcData.second.at(argumentIndex).first, functionVar);
             } else {
                 // skip arguments which are not expected by function
                 fastForward({L','});
@@ -1240,7 +1244,9 @@ void Mefody::parseFunction()
         if ((symbol = readChar()) == L'=') {
              // initializer for optional parameter
             hasOptional = true;
-            parameters[paramIndex] = {argName, evaluateBoolStatement()};
+            auto functionVar = evaluateBoolStatement();
+            functionVar->setVar(nullptr);
+            parameters[paramIndex] = {argName, functionVar};
         } else {
             // required parameter
             unreadChar();
