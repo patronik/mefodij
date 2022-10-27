@@ -2,20 +2,38 @@
 #define CORE_FUNCTION_RESOLVER_H
 
 #include "Atom.h"
+#include "Context.h"
 
 using namespace std;
 
 class CoreFunctionResolver {
-    map<wstring, void (CoreFunctionResolver::*)(), map<int, pair<wstring, shared_ptr<Atom>>>> functions;
+    typedef map<int, pair<wstring, shared_ptr<Atom>>> methodParams;
+    typedef void (CoreFunctionResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
+
+    map<wstring, pair<methodPtr, methodParams>> storage;
+
+    methodPtr getPointer(wstring name);
+
+    // core functions
+    void inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
+
     public:
-    bool has(wstring name);
-    void set(
+    CoreFunctionResolver();
+    methodParams & getParams(wstring name);
+
+    bool hasFunction(wstring name);
+
+    void setFunction(
         wstring name, 
-        void (CoreFunctionResolver::* method)(map<wstring, shared_ptr<Atom>>, shared_ptr<Atom> & ret), 
-        map<int, pair<wstring, shared_ptr<Atom>>> params
+        methodPtr method,
+        methodParams params
     ); 
-    void resolve(wstring name, map<int, pair<wstring, shared_ptr<Atom>>> params, shared_ptr<Atom> & ret);
-    CoreFunctionResolver(): functions{} {};
+
+    void resolveCall(
+        wstring name, 
+        shared_ptr<Context> & stack, 
+        shared_ptr<Atom> & result
+    );
 };
 
 #endif

@@ -19,7 +19,7 @@ void Mefody::throwError(string message)
     );
 }
 
-Mefody::Mefody() : Parser(), lastResult(nullptr), stack()
+Mefody::Mefody() : Parser(), lastResult(nullptr), stack(), coreFuncResolver()
 {
     context = make_shared<Context>();
 }
@@ -134,6 +134,56 @@ bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
         return true;
 }
 
+void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
+{
+    map<int, pair<wstring, shared_ptr<Atom>>> & funcParams = coreFuncResolver.getParams(functionName);
+
+    shared_ptr<Context> functionStack = make_shared<Context>();
+
+    wchar_t symbol = readChar();
+    if (symbol != L')') {
+        unreadChar();
+        // parse arguments
+        int argumentIndex = 0;
+        do {
+            if (funcParams.count(argumentIndex)) {
+                functionStack->setVar(funcParams.at(argumentIndex).first, evaluateBoolStatement());
+            } else {
+                // skip arguments which are not expected by function
+                fastForward({L','});
+                unreadChar();
+            }
+            argumentIndex++;
+            symbol = readChar();
+        } while (symbol == L',');
+
+
+        // Check required paramaters and set parameters with default values
+        while(funcParams.count(argumentIndex)) {
+            // No intializer means required parameter is missing
+            if (funcParams.at(argumentIndex).second == nullptr) {
+                throwError("Function required parameter '"
+                    + MefodyTools::wideStrToStr(funcParams.at(argumentIndex).first)
+                    + "' is missing."
+                );
+            } else {
+                // Set default value
+                functionStack->setVar(
+                    funcParams.at(argumentIndex).first, 
+                    funcParams.at(argumentIndex).second
+                );
+            }
+            argumentIndex++;
+        }
+    }
+
+    if (symbol != L')') {
+        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
+    }
+
+    coreFuncResolver.resolveCall(functionName, functionStack, atom);
+}
+
 bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     // function call left parentheses
@@ -143,10 +193,15 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         return false;
     }
 
+    // resolve core function
+    if (coreFuncResolver.hasFunction(varName)) {
+        resolveCoreCall(varName, atom);
+        return true;
+    }
+
     // check if function exists
     if (!getContext()->hasFunction(varName)) {
-        unreadChar(); // unread (
-        return false;
+        throwError("'" + MefodyTools::wideStrToStr(varName) + "' is not a function.");
     }
 
     pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & funcData = getContext()->getFunction(varName);
@@ -1148,6 +1203,10 @@ void Mefody::parseFunction()
     wstring functionName;
     if (!parseCharacterSequence(symbol, functionName)) {
         throwError("Failed to parse function name." );
+    }
+
+    if (coreFuncResolver.hasFunction(functionName)) {
+        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' is core function." );
     }
 
     if (getContext()->hasOwnFunction(functionName)) {

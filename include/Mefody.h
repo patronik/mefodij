@@ -10,6 +10,7 @@
 #include "Parser.h"
 #include "Atom.h"
 #include "Context.h"
+#include "CoreFunctionResolver.h"
 
 #include "joiner/bool/bool/BoolBoolJoiner.h"
 #include "joiner/bool/int/BoolIntJoiner.h"
@@ -66,6 +67,8 @@ class Mefody : public Parser
 
     // Stack
     vector<shared_ptr<Context>> stack{};
+
+    CoreFunctionResolver coreFuncResolver;
 
     static vector<wstring> castTypes;
 
@@ -138,6 +141,7 @@ class Mefody : public Parser
     void parseFunction();
     
     // Atom resolving
+    void resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom);
     void resolveStringAccess(shared_ptr<Atom> & atom);
     void resolveArrayAccess(shared_ptr<Atom> & atom);
     void resolveMemberAccess(shared_ptr<Atom> & atom);
