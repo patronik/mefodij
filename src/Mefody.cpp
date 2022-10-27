@@ -817,17 +817,17 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
 bool Mefody::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol == L'(') {
-        shared_ptr<Atom> subResult = evaluateBoolStatement();
+        shared_ptr<Atom> subExpr = evaluateBoolStatement();
         if (readChar() != L')') {
             throwError("Syntax error. Wrong number of parentheses.");
         }
-        if (subResult->getType() == Atom::typeCast) {
+        if (subExpr->getType() == Atom::typeCast) {
             // Type casting
             atom = parseAtom();
-            atom->cast(subResult->getCast());
+            atom->cast(subExpr->getCast());
         } else {
             // atom is a result of subexpression
-            atom = subResult;
+            atom = subExpr;
         }
         return true;
     }
