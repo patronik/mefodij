@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/double/array/DoubleArrayJoiner.h"
 
-DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"в", L"="})
+DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"="})
 {
 }
 
@@ -9,18 +9,7 @@ void DoubleArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom>
 {
     validate(op);
 
-    if (op == L"в") {
-        bool found = false;
-        for (const auto & kv : right->getArray()) {
-            if (kv.second->getType() == Atom::typeDouble) {
-                if (kv.second->getDouble() == left->getDouble()) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-        left->setBool(found);
-    } else if (op == L"=") { 
+    if (op == L"=") { 
         left->getVar()->setArray(right->getArray());
         left->setArray(right->getArray());
     }

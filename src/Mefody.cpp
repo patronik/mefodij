@@ -665,7 +665,6 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
             case L'<': // greater than
             case L'|': // boolean "or" ||
             case L'~': // check against regex
-            case L'в': // find in set
             // end of argument or statement
             case L',':
             // end of subexpression
@@ -740,9 +739,6 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
                     joinAtoms(result, L"<", evaluateMathExpression());
                 }
                 break;
-            case L'в': // find in set
-                joinAtoms(result, L"в", evaluateMathExpression());
-            break;
             case L'~': // check against regex
                 joinAtoms(result, L"~", evaluateBoolExpression());
             break;

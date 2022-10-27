@@ -15,7 +15,6 @@ Parser::Parser()
         L"string", 
         L"array", 
         L"bool", 
-        L"в",
         statementLem,
         statementConst,
         statementFunc,

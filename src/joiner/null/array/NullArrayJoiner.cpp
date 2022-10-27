@@ -1,23 +1,14 @@
 
 #include "../../../../include/joiner/null/array/NullArrayJoiner.h"
 
-NullArrayJoiner::NullArrayJoiner() : Joiner({L"=", L"в"})
+NullArrayJoiner::NullArrayJoiner() : Joiner({L"="})
 {}
 
 void NullArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
 {
     validate(op);
 
-    if (op == L"в") {
-        bool found = false;
-        for (const auto & kv : right->getArray()) {
-            if (kv.second->getType() == Atom::typeNull) {
-                found = true;
-                break;
-            }
-        }
-        left->setBool(found);
-    } else if (op == L"=") {
+    if (op == L"=") {
         left->getVar()->setArray(right->getArray());
         left->setArray(right->getArray());
     }  
