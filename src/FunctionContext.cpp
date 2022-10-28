@@ -1,6 +1,6 @@
 #include "../include/FunctionContext.h"
 
-void FunctionContext::set(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params) 
+void FunctionContext::set(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
 {
     storage.insert({key, {pos, params}});
 }
@@ -9,7 +9,7 @@ bool FunctionContext::has(wstring key) {
     return storage.count(key) != 0;
 }
 
-pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & FunctionContext::get(wstring key) 
+pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & FunctionContext::get(wstring key) 
 {
     return storage.at(key);
 }

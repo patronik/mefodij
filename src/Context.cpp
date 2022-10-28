@@ -2,6 +2,8 @@
 
 void Context::setVar(wstring key, shared_ptr<Atom> var) 
 {
+    // remove reference to source variable
+    var->setVar(nullptr);
     storage.insert({key, var});
 }
 
@@ -33,7 +35,7 @@ shared_ptr<Atom> Context::getVar(wstring key)
     throw runtime_error("Variable '" + MefodyTools::wideStrToStr(key) + "' does not exist.");
 }
 
-void Context::setFunction(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params) 
+void Context::setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
 {
     return functions.set(key, pos, params);
 }
@@ -55,7 +57,7 @@ bool Context::hasFunction(wstring key)
     return false;
 }
 
-pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & Context::getFunction(wstring key) 
+pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & Context::getFunction(wstring key) 
 {    
     bool hasOwn = functions.has(key);
     if (hasOwn) {

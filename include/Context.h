@@ -20,10 +20,10 @@ public:
     bool hasOwnVar(wstring key);
     shared_ptr<Atom> getVar(wstring key);
     // Functions
-    void setFunction(wstring key, int pos, map<int, pair<wstring, shared_ptr<Atom>>> params); 
+    void setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params); 
     bool hasFunction(wstring key);
     bool hasOwnFunction(wstring key);
-    pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & getFunction(wstring key);
+    pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & getFunction(wstring key);
     // Parent context
     void setParent(shared_ptr<Context> parent);
     Context();

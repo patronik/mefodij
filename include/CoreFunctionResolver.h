@@ -7,7 +7,7 @@
 using namespace std;
 
 class CoreFunctionResolver {
-    typedef map<int, pair<wstring, shared_ptr<Atom>>> methodParams;
+    typedef map<int, tuple<wstring, shared_ptr<Atom>, bool>> methodParams;
     typedef void (CoreFunctionResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
 
     map<wstring, pair<methodPtr, methodParams>> storage;

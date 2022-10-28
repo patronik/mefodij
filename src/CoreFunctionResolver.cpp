@@ -7,8 +7,8 @@ CoreFunctionResolver::CoreFunctionResolver(): storage{}
     setFunction(L"вМасиві",
         &CoreFunctionResolver::inArray,
         {
-            {0, {L"елемент", nullptr}},
-            {1, {L"масив", nullptr}}
+            {0, {L"елемент", nullptr, false}},
+            {1, {L"масив", nullptr, false}}
         }
     );
 }

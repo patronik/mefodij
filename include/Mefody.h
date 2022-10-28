@@ -122,7 +122,7 @@ class Mefody : public Parser
     shared_ptr<Atom> evaluateBoolStatement(); 
 
     // helper functions
-    shared_ptr<Context> prepareCallStack(map<int, pair<wstring, shared_ptr<Atom>>> params);
+    shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params);
 
     // Atoms parsers
     bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
