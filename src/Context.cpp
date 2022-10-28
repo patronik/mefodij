@@ -4,7 +4,6 @@ void Context::setVar(wstring key, shared_ptr<Atom> var)
 {
     // remove reference to source variable
     var->setVar(nullptr);
-    
     storage.insert({key, var});
 }
 

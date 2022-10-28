@@ -9,6 +9,13 @@ const wstring Atom::typeBool(L"bool");
 const wstring Atom::typeNull(L"null");
 const wstring Atom::typeCast(L"cast");
 
+const wstring Atom::castInt(L"ціле");
+const wstring Atom::castDouble(L"дійсне");
+const wstring Atom::castString(L"строка");
+const wstring Atom::castArray(L"масив");
+const wstring Atom::castBool(L"бул");
+const wstring Atom::castNull(L"нул");
+
 Atom::Atom()
 {
     type = L"null";
@@ -411,25 +418,25 @@ void Atom::unaryOperator(wstring op)
 void Atom::cast(wstring typeTo)
 {
     if (type == Atom::typeString) {
-        if (typeTo == L"int") {
+        if (typeTo == Atom::castString) {
+            return;
+        } else if (typeTo == Atom::castInt) {
             setInt(wcstol(getString().c_str(), nullptr, 10));
-        } else if (typeTo == L"double") {
+        } else if (typeTo == Atom::castDouble) {
             setDouble(wcstod(getString().c_str(), nullptr));
-        } else if (typeTo == L"bool") {
-            if (getString() != L"") {
-                setBool(true);
-            } else {
-                setBool(false);
-            }
-        } else if (typeTo == L"array") {
+        } else if (typeTo == Atom::castBool) {
+            setBool(getString() != L"");
+        } else if (typeTo == Atom::castArray) {
             int i = 0;
             map<wstring, shared_ptr<Atom>> arrayVal;
             while (i < getString().size()) {
-                arrayVal[to_wstring(i)] = make_shared<Atom>(wstring(1, getString().at(i)));
+                arrayVal[to_wstring(i)] = make_shared<Atom>(
+                    wstring(1, getString().at(i))
+                );
                 i++;
             }
             setArray(arrayVal);
-        } else if (typeTo == L"null") {
+        } else if (typeTo == Atom::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
@@ -437,7 +444,9 @@ void Atom::cast(wstring typeTo)
     }
 
     if (type == Atom::typeArray) {
-        if (typeTo == Atom::typeString) {
+        if (typeTo == Atom::castArray) {
+            return;
+        } else if (typeTo == Atom::castString) {
             wstring stringVal;
             for (auto elem: arrayVal) {
                 stringVal += elem.second->toString();
@@ -449,19 +458,19 @@ void Atom::cast(wstring typeTo)
     }
 
     if (type == Atom::typeBool) {
-        if (typeTo == L"int") {
+        if (typeTo == Atom::castBool) {
+            return;
+        } else if (typeTo == Atom::castInt) {
             setInt((int) getBool());
-        } else if (typeTo == L"string") {
+        } else if (typeTo == Atom::castString) {
             if (getBool()) {
                 setString(L"true");
             } else {
                 setString(L"false");
             }
-        } else if (typeTo == L"double") {
+        } else if (typeTo == Atom::castDouble) {
             setDouble((double) getBool());
-        } else if (typeTo == L"bool") {
-            
-        } else if (typeTo == L"null") {
+        } else if (typeTo == Atom::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
@@ -469,14 +478,15 @@ void Atom::cast(wstring typeTo)
     }
 
     if (type == Atom::typeInt) {
-        if (typeTo == L"int") {
-        } else if (typeTo == L"string") {
+        if (typeTo == Atom::castInt) {
+            return;
+        } else if (typeTo == Atom::castString) {
             setString(to_wstring(getInt()));
-        } else if (typeTo == L"double") {
+        } else if (typeTo == Atom::castDouble) {
             setDouble((double) getInt());
-        } else if (typeTo == L"bool") {
+        } else if (typeTo == Atom::castBool) {
             setBool((bool) getInt());
-        } else if (typeTo == L"null") {
+        } else if (typeTo == Atom::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
@@ -484,14 +494,15 @@ void Atom::cast(wstring typeTo)
     }
 
     if (type == Atom::typeDouble) {
-        if (typeTo == L"int") {
+        if (typeTo == Atom::castDouble) {
+            return;
+        } else if (typeTo == Atom::castInt) {
             setInt((int) getDouble());
-        } else if (typeTo == L"string") {
+        } else if (typeTo == Atom::castString) {
             setString(to_wstring(getDouble()));
-        } else if (typeTo == L"double") {
-        } else if (typeTo == L"bool") {
+        } else if (typeTo == Atom::castBool) {
             setBool((bool) getDouble());
-        } else if (typeTo == L"null") {
+        } else if (typeTo == Atom::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
@@ -499,10 +510,10 @@ void Atom::cast(wstring typeTo)
     }
 
     if (type == Atom::typeNull) {
-        if (typeTo == L"bool") {
-            setBool(false);
+        if (typeTo == Atom::castNull) {
+            return;
         } else {
-            throw runtime_error("Cast failed.");
+            setNull();
         }
     }
 }

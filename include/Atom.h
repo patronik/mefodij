@@ -71,6 +71,13 @@ public:
   const static wstring typeNull;
   const static wstring typeCast;
 
+  const static wstring castInt;
+  const static wstring castDouble;
+  const static wstring castString;
+  const static wstring castArray;
+  const static wstring castBool;
+  const static wstring castNull;
+
   // Getters
   long getInt();
   double getDouble();

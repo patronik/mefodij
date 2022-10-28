@@ -70,8 +70,6 @@ class Mefody : public Parser
 
     CoreFunctionResolver coreFuncResolver;
 
-    static vector<wstring> castTypes;
-
     static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
     static unique_ptr<BoolIntJoiner> boolIntJoiner;
     static unique_ptr<BoolNullJoiner> boolNullJoiner;

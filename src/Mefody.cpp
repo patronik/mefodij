@@ -1,8 +1,6 @@
 #include "../include/Mefody.h"
 #include "../include/tools.h"
 
-vector<wstring> Mefody::castTypes{L"int", L"double", L"string", L"array", L"bool", L"null"};
-
 void Mefody::throwError(string message)
 {
     tuple<wstring, int, int> currLoc = getLastLocation();
@@ -120,7 +118,13 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
 
 bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
 {
-    if (MefodyTools::inVector<wstring>(Mefody::castTypes, varName)) {
+    if (varName == Atom::castInt
+        || varName == Atom::castDouble
+        || varName == Atom::castBool
+        || varName == Atom::castArray
+        || varName == Atom::castString
+        || varName == Atom::castNull
+        ) {
             atom->setCast(varName);
         } else if (varName == L"true") {
             atom->setBool(true);
@@ -147,7 +151,10 @@ void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
         int argumentIndex = 0;
         do {
             if (funcParams.count(argumentIndex)) {
-                functionStack->setVar(funcParams.at(argumentIndex).first, evaluateBoolStatement());
+                functionStack->setVar(
+                    funcParams.at(argumentIndex).first, 
+                    evaluateBoolStatement()
+                );
             } else {
                 // skip arguments which are not expected by function
                 fastForward({L','});
@@ -213,7 +220,10 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
         int argumentIndex = 0;
         do {
             if (funcData.second.count(argumentIndex)) {
-                functionStack->setVar(funcData.second.at(argumentIndex).first, evaluateBoolStatement());
+                functionStack->setVar(
+                    funcData.second.at(argumentIndex).first, 
+                    evaluateBoolStatement()
+                );
             } else {
                 // skip arguments which are not expected by function
                 fastForward({L','});
@@ -1298,7 +1308,7 @@ void Mefody::evaluateStatement()
     wstring keyWord;
     // handle statements with preceding keywords
     if (parseCharacterSequence(symbol, keyWord)) {
-        
+
         // IMPORT STATEMENT
         if (keyWord == statementImport) {
             evaluateStatement();
