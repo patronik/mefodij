@@ -138,10 +138,8 @@ bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
         return true;
 }
 
-void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
+shared_ptr<Context> Mefody::prepareCallStack(map<int, pair<wstring, shared_ptr<Atom>>> params)
 {
-    map<int, pair<wstring, shared_ptr<Atom>>> & funcParams = coreFuncResolver.getParams(functionName);
-
     shared_ptr<Context> functionStack = make_shared<Context>();
 
     wchar_t symbol = readChar();
@@ -150,10 +148,13 @@ void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
         // parse arguments
         int argumentIndex = 0;
         do {
-            if (funcParams.count(argumentIndex)) {
+            if (params.count(argumentIndex)) {
+                auto funcVar = evaluateBoolStatement();
+                // remove reference to source variable
+                funcVar->setVar(nullptr);
                 functionStack->setVar(
-                    funcParams.at(argumentIndex).first, 
-                    evaluateBoolStatement()
+                    params.at(argumentIndex).first, 
+                    funcVar
                 );
             } else {
                 // skip arguments which are not expected by function
@@ -166,18 +167,18 @@ void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
 
 
         // Check required paramaters and set parameters with default values
-        while(funcParams.count(argumentIndex)) {
+        while(params.count(argumentIndex)) {
             // No intializer means required parameter is missing
-            if (funcParams.at(argumentIndex).second == nullptr) {
+            if (params.at(argumentIndex).second == nullptr) {
                 throwError("Function required parameter '"
-                    + MefodyTools::wideStrToStr(funcParams.at(argumentIndex).first)
+                    + MefodyTools::wideStrToStr(params.at(argumentIndex).first)
                     + "' is missing."
                 );
             } else {
                 // Set default value
                 functionStack->setVar(
-                    funcParams.at(argumentIndex).first, 
-                    funcParams.at(argumentIndex).second
+                    params.at(argumentIndex).first, 
+                    params.at(argumentIndex).second
                 );
             }
             argumentIndex++;
@@ -187,6 +188,15 @@ void Mefody::resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom)
     if (symbol != L')') {
         throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
     }
+
+    return functionStack;
+}
+
+void Mefody::resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom)
+{
+    map<int, pair<wstring, shared_ptr<Atom>>> & funcParams = coreFuncResolver.getParams(functionName);
+
+    shared_ptr<Context> functionStack = prepareCallStack(funcParams);
 
     coreFuncResolver.resolveCall(functionName, functionStack, atom);
 }
@@ -202,7 +212,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
 
     // resolve core function
     if (coreFuncResolver.hasFunction(varName)) {
-        resolveCoreCall(varName, atom);
+        resolveCoreFunctionCall(varName, atom);
         return true;
     }
 
@@ -212,50 +222,8 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     }
 
     pair<int, map<int, pair<wstring, shared_ptr<Atom>>>> & funcData = getContext()->getFunction(varName);
-    shared_ptr<Context> functionStack = make_shared<Context>();
-    symbol = readChar();
-    if (symbol != L')') {
-        unreadChar();
-        // parse arguments
-        int argumentIndex = 0;
-        do {
-            if (funcData.second.count(argumentIndex)) {
-                functionStack->setVar(
-                    funcData.second.at(argumentIndex).first, 
-                    evaluateBoolStatement()
-                );
-            } else {
-                // skip arguments which are not expected by function
-                fastForward({L','});
-                unreadChar();
-            }
-            argumentIndex++;
-            symbol = readChar();
-        } while (symbol == L',');
 
-
-        // Check required paramaters and set parameters with default values
-        while(funcData.second.count(argumentIndex)) {
-            // No intializer means required parameter is missing
-            if (funcData.second.at(argumentIndex).second == nullptr) {
-                throwError("Function required parameter '"
-                    + MefodyTools::wideStrToStr(funcData.second.at(argumentIndex).first)
-                    + "' is missing."
-                );
-            } else {
-                // Set default value
-                functionStack->setVar(
-                    funcData.second.at(argumentIndex).first, 
-                    funcData.second.at(argumentIndex).second
-                );
-            }
-            argumentIndex++;
-        }
-    }
-
-    if (symbol != L')') {
-        throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
-    }
+    shared_ptr<Context> functionStack = prepareCallStack(funcData.second);
 
     functionStack->setParent(getContext());
 
@@ -1206,19 +1174,19 @@ void Mefody::parseFunction()
     wchar_t symbol = readChar();
     wstring functionName;
     if (!parseCharacterSequence(symbol, functionName)) {
-        throwError("Failed to parse function name." );
+        throwError("Failed to parse function name.");
     }
 
     if (coreFuncResolver.hasFunction(functionName)) {
-        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' is core function." );
+        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' is core function.");
     }
 
     if (getContext()->hasOwnFunction(functionName)) {
-        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' already defined." );
+        throwError("Function '" + MefodyTools::wideStrToStr(functionName) + "' already defined.");
     }
 
     if (MefodyTools::inVector<wstring>(reservedKeywords,functionName)) {
-        throwError("This name '" + MefodyTools::wideStrToStr(functionName) + "' is reserved." );
+        throwError("This name '" + MefodyTools::wideStrToStr(functionName) + "' is reserved.");
     }
 
     if ((symbol = readChar()) != L'(') {
@@ -1248,7 +1216,10 @@ void Mefody::parseFunction()
         if ((symbol = readChar()) == L'=') {
              // initializer for optional parameter
             hasOptional = true;
-            parameters[paramIndex] = {argName, evaluateBoolStatement()};
+            auto funcVarInitializer = evaluateBoolStatement();
+            // remove reference to source variable
+            funcVarInitializer->setVar(nullptr);
+            parameters[paramIndex] = {argName, funcVarInitializer};
         } else {
             // required parameter
             unreadChar();

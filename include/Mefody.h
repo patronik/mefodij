@@ -121,6 +121,9 @@ class Mefody : public Parser
     // one or more bool expressions conntected with bool operator
     shared_ptr<Atom> evaluateBoolStatement(); 
 
+    // helper functions
+    shared_ptr<Context> prepareCallStack(map<int, pair<wstring, shared_ptr<Atom>>> params);
+
     // Atoms parsers
     bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseBinNumberLiteralAtom(shared_ptr<Atom> & atom);
@@ -132,14 +135,13 @@ class Mefody : public Parser
     bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
     bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
     bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
-    
 
     // Parsers for function and variable declaration
     void parseVariable(bool isConst = false);
     void parseFunction();
     
     // Atom resolving
-    void resolveCoreCall(wstring functionName, shared_ptr<Atom> & atom);
+    void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom);
     void resolveStringAccess(shared_ptr<Atom> & atom);
     void resolveArrayAccess(shared_ptr<Atom> & atom);
     void resolveMemberAccess(shared_ptr<Atom> & atom);
