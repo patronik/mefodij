@@ -15,17 +15,6 @@ using namespace std;
 class Parser
 {
     protected:
-
-    enum StateType {
-      beforeStmt,
-      inComment,
-      inStmt,
-      afterStmt,
-      flowControl,
-    }; 
-
-    StateType state = beforeStmt;
-    
     wchar_t endOfFile = L'\0';
     wstring printableNumbers{L"0123456789"};
     wstring ukrainianLetters{L"АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя"};

@@ -53,9 +53,6 @@ wchar_t Parser::readChar(bool toLower, bool allChars)
     }
 
     if (pos >= src.size()) {
-        if (state == inStmt) {
-            throw runtime_error("Unexpected end of file.");
-        }
         // end of script
         return endOfFile;
     }
@@ -83,8 +80,6 @@ void Parser::unreadChar(int numOfSteps, bool allChars)
 
 void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
 {
-    state = flowControl;
-
     bool inSingleQuotedStr = false;
     bool inDoubleQuotedStr = false;
     int depth = 0;
@@ -131,8 +126,6 @@ void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)
 
 void Parser::skipBlockOrStatement()
 {
-    state = flowControl;
-
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved

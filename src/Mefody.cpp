@@ -546,8 +546,6 @@ shared_ptr<Atom> Mefody::parseAtom()
 
     wchar_t atomChar = readChar();
 
-    state = inStmt;
-
     // check for boolean inversion
     if (atomChar == L'!') {
         boolInversion = true;
@@ -1041,7 +1039,6 @@ void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
         if ((symbol = readChar()) != L';') {
             throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
-        state = afterStmt;
     } else {
         wchar_t statementOp;
         int depth = 0;
@@ -1265,7 +1262,6 @@ void Mefody::parseFunction()
 
 void Mefody::evaluateStatement()
 {    
-    state = beforeStmt;
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
         // EOF is achieved
@@ -1275,7 +1271,6 @@ void Mefody::evaluateStatement()
     // Handle comments
     if (symbol == L'/') {
         if ((symbol = readChar(false, true)) == L'/') {
-            state = inComment;
             // Comment
             fastForward({L'\n'});
             evaluateStatement();
@@ -1285,11 +1280,8 @@ void Mefody::evaluateStatement()
         }
     }
 
-    state = beforeStmt;
-
     // Empty statement
     if (symbol == L';') {
-        state = afterStmt;
         // Last result is set to emtpy atom
         lastResult->setAtom(Atom());
         // Skip to next statement
@@ -1299,18 +1291,14 @@ void Mefody::evaluateStatement()
 
     // handle braces
     if (symbol == L'{' || symbol == L'}') {
-        state = flowControl;
         unreadChar();
         return;
     }
 
-    state = beforeStmt;
-
     wstring keyWord;
     // handle statements with preceding keywords
     if (parseCharacterSequence(symbol, keyWord)) {
-        state = inStmt;
-
+        
         // IMPORT STATEMENT
         if (keyWord == statementImport) {
             evaluateStatement();
