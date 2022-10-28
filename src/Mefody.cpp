@@ -1041,6 +1041,7 @@ void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
         if ((symbol = readChar()) != L';') {
             throwError("Unexpected token '" + MefodyTools::wideStrToStr(symbol) + "'.");
         }
+        state = afterStmt;
     } else {
         wchar_t statementOp;
         int depth = 0;
