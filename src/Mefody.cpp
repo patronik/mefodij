@@ -428,8 +428,9 @@ void Mefody::resolveMemberAccess(shared_ptr<Atom> & atom)
 
 void Mefody::resolveAtom(shared_ptr<Atom> & atom)
 {
-     wchar_t symbol = readChar();
-     if (symbol == L'[') {
+    wchar_t symbol = readChar();
+    // Resolve element/member access
+    if (symbol == L'[') {
         if (atom->getType() == Atom::typeString) {
             resolveStringAccess(atom);
         } else {
@@ -437,13 +438,52 @@ void Mefody::resolveAtom(shared_ptr<Atom> & atom)
             // recursevily resolve the whole chain
             resolveAtom(atom);
         }
-     } else if (symbol == L'.') {
+    } else if (symbol == L'.') {
         resolveMemberAccess(atom);
         // recursevily resolve the whole chain
         resolveAtom(atom);
-     } else {
+    } else {
         unreadChar();
-     }
+    }
+
+    // Resolve assignment
+    symbol = readChar();
+    if (symbol == L'=') {
+        symbol = readChar();
+        if (symbol == L'=') {
+            // equality
+            unreadChar(2);
+            return;
+        } else if (symbol == L'>')  {
+            // key-val separator
+            unreadChar(2);
+            return;
+        } else {
+            unreadChar();
+            // execute assignment statement
+            assignToAtom(atom, L"=", evaluateBoolStatement());
+        }
+    } else if (symbol == L'+') {
+        symbol = readChar();
+        if (symbol == L'=') {
+            joinAtoms(atom, L"+", evaluateBoolStatement());
+            assignToAtom(atom, L"=", atom);
+        } else {
+            unreadChar(2);
+            return;
+        }
+    } else if (symbol == L'-') {
+        symbol = readChar();
+        if (symbol == L'=') {
+            joinAtoms(atom, L"-", evaluateBoolStatement());
+            assignToAtom(atom, L"=", atom);
+        } else {
+            unreadChar(2);
+            return;
+        }
+    } else {
+        unreadChar();
+    }
 }
 
 bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
@@ -602,9 +642,6 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
                 symbol = readChar();
                 if (symbol == L'+') {
                     result->postOperator(L"++");
-                } else if (symbol == L'=') {
-                    joinAtoms(result, L"+", evaluateBoolStatement());
-                    assignToAtom(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
@@ -615,34 +652,14 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
                 symbol = readChar();
                 if (symbol == L'-') {
                     result->postOperator(L"--");
-                } else if (symbol == L'=') {
-                    joinAtoms(result, L"-", evaluateBoolStatement());
-                    assignToAtom(result, L"=", result);
                 } else {
                     // Lower lever operator
                     unreadChar(2);
                     return result;
                 }
                 break;
-            case L'=':
-                symbol = readChar();
-                if (symbol == L'=') {
-                    // equality
-                    unreadChar(2);
-                    return result;
-                    break;
-                } else if (symbol == L'>')  {
-                    // key-val separator
-                    unreadChar(2);
-                    return result;
-                    break;
-                } else {
-                    unreadChar();
-                    // execute assignment statement
-                    assignToAtom(result, L"=", evaluateBoolStatement());
-                }
-                break;
             // Lower lever operators
+            case L'=': // => or ==
             case L'!': // boolean not
             case L'&': // start of boolean and
             case L'>': // less than

@@ -58,6 +58,5 @@ void IntIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> righ
         );
     } else if (op == L"=") { 
         left->getVar()->setInt(right->getInt());
-        left->setInt(right->getInt());
     } 
 }

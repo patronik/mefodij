@@ -23,6 +23,5 @@ void IntDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
         );
     } else if (op == L"=") {
         left->getVar()->setInt((int)right->getDouble());
-        left->setInt((int)right->getDouble()); 
     }
 }

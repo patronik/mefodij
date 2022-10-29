@@ -54,6 +54,5 @@ void DoubleIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
         );
     } else if (op == L"=") { 
         left->getVar()->setDouble((double) right->getInt());
-        left->setDouble((double) right->getInt());
     } 
 }

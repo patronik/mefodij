@@ -18,6 +18,5 @@ void StringIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
         }
         
         left->getVar()->setString(to_wstring(right->getInt()));
-        left->setString(to_wstring(right->getInt())); 
     }
 }

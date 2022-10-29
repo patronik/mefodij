@@ -11,6 +11,5 @@ void NullStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         left->setString(right->getString());
     } else if (op == L"=") { 
         left->getVar()->setString(right->getString());
-        left->setString(right->getString());
     }
 }

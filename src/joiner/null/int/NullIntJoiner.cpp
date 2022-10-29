@@ -10,6 +10,5 @@ void NullIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> rig
 
     if (op == L"=") {
         left->getVar()->setInt(right->getInt());
-        left->setInt(right->getInt());
     }
 }

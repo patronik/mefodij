@@ -10,6 +10,5 @@ void BoolStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
 
     if (op == L"=") {
         left->getVar()->setBool(right->getString().size() > 0);
-        left->setBool(right->getString().size() > 0); 
     }
 }

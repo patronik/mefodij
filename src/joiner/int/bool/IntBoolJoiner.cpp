@@ -22,6 +22,5 @@ void IntBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> rig
         );
     } else if (op == L"=") {
         left->getVar()->setInt((int)right->getBool());
-        left->setInt((int)right->getBool()); 
     }
 }

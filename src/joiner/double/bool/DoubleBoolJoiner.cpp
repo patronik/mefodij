@@ -23,6 +23,5 @@ void DoubleBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         );
     } else if (op == L"=") {
         left->getVar()->setDouble((int)right->getBool());
-        left->setDouble((int)right->getBool()); 
     }
 }

@@ -140,6 +140,5 @@ void Mefody::assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> ri
 
     if (!left->getIsAssigned()) {
         left->getVar()->setIsAssigned();
-        left->setIsAssigned();
     }
 }

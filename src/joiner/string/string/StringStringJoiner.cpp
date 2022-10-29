@@ -38,11 +38,9 @@ void StringStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
             if (right->getString().size() > 1) {
                 throw runtime_error("Cannot assign multiple characters to one");
             }
-            left->getVar()->setStringChar(right->getString().at(0), left->getCharIndex());  
-            left->setStringChar(right->getString().at(0), 0);         
+            left->getVar()->setStringChar(right->getString().at(0), left->getCharIndex());        
         } else {
             left->getVar()->setString(right->getString());
-            left->setString(right->getString()); 
         } 
     }
 }

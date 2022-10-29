@@ -15,6 +15,5 @@ void StringNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> 
         }
 
         left->getVar()->setNull();
-        left->setNull(); 
     }
 }

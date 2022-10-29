@@ -18,6 +18,5 @@ void StringDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom
         }
         
         left->getVar()->setString(to_wstring(right->getDouble()));
-        left->setString(to_wstring(right->getDouble())); 
     }
 }

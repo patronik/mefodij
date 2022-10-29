@@ -10,6 +10,5 @@ void ArrayNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> r
 
     if (op == L"=") {
         left->getVar()->setNull();
-        left->setNull(); 
     }
 }
