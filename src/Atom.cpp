@@ -1,20 +1,6 @@
+#include "../include/Atom/AtomType.h"
 #include "../include/Atom.h"
 #include "../include/tools.h"
-
-const wstring Atom::typeInt(L"int");
-const wstring Atom::typeDouble(L"double");
-const wstring Atom::typeString(L"string");
-const wstring Atom::typeArray(L"array");
-const wstring Atom::typeBool(L"bool");
-const wstring Atom::typeNull(L"null");
-const wstring Atom::typeCast(L"cast");
-
-const wstring Atom::castInt(L"ціле");
-const wstring Atom::castDouble(L"дійсне");
-const wstring Atom::castString(L"строка");
-const wstring Atom::castArray(L"масив");
-const wstring Atom::castBool(L"бул");
-const wstring Atom::castNull(L"нул");
 
 Atom::Atom()
 {
@@ -63,6 +49,7 @@ int Atom::getArrayNextIndex()
 {
     return arrayNextIndex;
 }
+
 void Atom::setArrayNextIndex(const int index)
 {
     arrayNextIndex = index;
@@ -110,21 +97,21 @@ void Atom::setInt(long val)
 {
     clearVal();
     intVal = val;
-    type = Atom::typeInt;        
+    type = AtomType::typeInt;        
 }
 
 void Atom::setDouble(double val) 
 {
     clearVal();
     doubleVal = val;
-    type = Atom::typeDouble;        
+    type = AtomType::typeDouble;        
 }
 
 void Atom::setString(wstring val) 
 {
     clearVal();
     stringVal = val;
-    type = Atom::typeString;        
+    type = AtomType::typeString;        
 }
 
 void Atom::setStringChar(wchar_t val, int charIndex)
@@ -136,7 +123,7 @@ void Atom::setArray(map<wstring, shared_ptr<Atom>> val)
 {
     clearVal();
     arrayVal = val;
-    type = Atom::typeArray; 
+    type = AtomType::typeArray; 
     
     if (arrayVal.size() > 0) {
         int topIndex = 0;
@@ -162,25 +149,25 @@ void Atom::setBool(bool val)
 {
     clearVal();
     boolVal = val;
-    type = Atom::typeBool;        
+    type = AtomType::typeBool;        
 }
 
 void Atom::setNull() 
 {
     clearVal();
-    type = Atom::typeNull;        
+    type = AtomType::typeNull;        
 }
 
 void Atom::setCast(wstring val) 
 {
     clearVal();
     castVal = val;
-    type = Atom::typeCast;        
+    type = AtomType::typeCast;        
 }
 
 long Atom::getInt() 
 {
-    if (type != Atom::typeInt) {
+    if (type != AtomType::typeInt) {
         throw runtime_error("Wrong atom type");
     }
     return intVal;
@@ -188,7 +175,7 @@ long Atom::getInt()
 
 double Atom::getDouble() 
 {
-    if (type != Atom::typeDouble) {
+    if (type != AtomType::typeDouble) {
         throw runtime_error("Wrong atom type");
     }
     return doubleVal;
@@ -196,7 +183,7 @@ double Atom::getDouble()
 
 wstring Atom::getString() 
 {
-    if (type != Atom::typeString) {
+    if (type != AtomType::typeString) {
         throw runtime_error("Wrong atom type");
     }
     return stringVal;
@@ -204,7 +191,7 @@ wstring Atom::getString()
 
 map<wstring, shared_ptr<Atom>> Atom::getArray() 
 {
-    if (type != Atom::typeArray) {
+    if (type != AtomType::typeArray) {
         throw runtime_error("Wrong atom type");
     }
     return arrayVal;
@@ -212,7 +199,7 @@ map<wstring, shared_ptr<Atom>> Atom::getArray()
 
 bool Atom::getBool() 
 {
-    if (type != Atom::typeBool) {
+    if (type != AtomType::typeBool) {
         throw runtime_error("Wrong atom type");
     }
     return boolVal;
@@ -220,7 +207,7 @@ bool Atom::getBool()
 
 wstring Atom::getCast() 
 {
-    if (type != Atom::typeCast) {
+    if (type != AtomType::typeCast) {
         throw runtime_error("Wrong atom type");
     }
     return castVal;
@@ -228,7 +215,7 @@ wstring Atom::getCast()
 
 bool Atom::issetAt(wstring key)
 {
-    if (type != Atom::typeArray) {
+    if (type != AtomType::typeArray) {
         throw runtime_error("Method is not supported by non array atom");
     }
 
@@ -240,7 +227,7 @@ bool Atom::issetAt(wstring key)
 
 shared_ptr<Atom> Atom::elementAt(wstring key)
 {
-    if (type != Atom::typeArray) {
+    if (type != AtomType::typeArray) {
         throw runtime_error("Method is not supported by non array atom");
     }
 
@@ -253,7 +240,7 @@ shared_ptr<Atom> Atom::elementAt(wstring key)
 
 void Atom::createAt(wstring key, shared_ptr<Atom> val) 
 {
-    if (type != Atom::typeArray) {
+    if (type != AtomType::typeArray) {
         throw runtime_error("Method is not supported by non array atom");
     }
 
@@ -262,25 +249,25 @@ void Atom::createAt(wstring key, shared_ptr<Atom> val)
 
 bool Atom::toBool()
 {
-    if (type == Atom::typeInt) {
+    if (type == AtomType::typeInt) {
         return intVal > 0;
     }
-    if (type == Atom::typeDouble ) {
+    if (type == AtomType::typeDouble ) {
         return doubleVal > 0;
     }
-    if (type == Atom::typeString ) {
+    if (type == AtomType::typeString ) {
         return !stringVal.empty();
     }
-    if (type == Atom::typeArray) {
+    if (type == AtomType::typeArray) {
         return arrayVal.size() > 0;
     }
-    if (type == Atom::typeBool) {
+    if (type == AtomType::typeBool) {
         return boolVal;
     }
-    if (type == Atom::typeNull) {
+    if (type == AtomType::typeNull) {
         return false;
     }
-    if (type == Atom::typeCast ) {
+    if (type == AtomType::typeCast ) {
         return !castVal.empty();
     }
     throw runtime_error("Not supported atom type");
@@ -288,29 +275,29 @@ bool Atom::toBool()
 
 wstring Atom::toString() 
 {
-    if (type == Atom::typeInt) {
+    if (type == AtomType::typeInt) {
         return to_wstring(intVal);
     }
-    if (type == Atom::typeDouble ) {
+    if (type == AtomType::typeDouble ) {
         return to_wstring(doubleVal);
     }
-    if (type == Atom::typeString ) {
+    if (type == AtomType::typeString ) {
         return stringVal;
     }
-    if (type == Atom::typeArray) {
+    if (type == AtomType::typeArray) {
         wstring str;
         for (auto elem: arrayVal) {
             str += elem.second->toString();
         }
         return str;
     }
-    if (type == Atom::typeBool) {
+    if (type == AtomType::typeBool) {
         return boolVal ? L"true" : L"false";
     }
-    if (type == Atom::typeCast) {
+    if (type == AtomType::typeCast) {
         throw runtime_error("Cast to string conversion");
     }
-    if (type == Atom::typeNull) {
+    if (type == AtomType::typeNull) {
         return L"";
     }
     throw runtime_error("Not supported atom type");
@@ -323,27 +310,27 @@ void Atom::preOperator(wstring op)
     }
 
     if (op == L"++") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             ++intVal;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             ++doubleVal;
         } else {
             throw runtime_error("Pre increment is not supported by type " + string(type.begin(), type.end()));
         }
     } else if (op == L"--") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             --intVal;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             --doubleVal;
         } else {
             throw runtime_error("Pre decrement is not supported by type " + string(type.begin(), type.end()));
         }
     } else if (op == L"!") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             setBool(!((bool) intVal));
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             setBool(!((bool) doubleVal));
-        } else if (type == Atom::typeBool) {
+        } else if (type == AtomType::typeBool) {
             setBool(!(boolVal));
         } else {
             throw runtime_error("Boolean inversion is not supported by type " + string(type.begin(), type.end()));
@@ -360,17 +347,17 @@ void Atom::postOperator(wstring op)
     }
 
     if (op == L"++") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             intVal++;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             doubleVal++;
         } else {
             throw runtime_error("Post increment is not supported by type " + string(type.begin(), type.end()));
         }
     } else if (op == L"--") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             intVal--;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             doubleVal--;
         } else {
             throw runtime_error("Post decrement is not supported by type " + string(type.begin(), type.end()));
@@ -387,9 +374,9 @@ void Atom::unaryOperator(wstring op)
     }
 
     if (op == L"+") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             +intVal;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             -doubleVal;
         } else {
             throw runtime_error(
@@ -399,9 +386,9 @@ void Atom::unaryOperator(wstring op)
             );
         }
     } else if (op == L"-") {
-        if (type == Atom::typeInt) {
+        if (type == AtomType::typeInt) {
             -intVal;
-        } else if (type == Atom::typeDouble) {
+        } else if (type == AtomType::typeDouble) {
             -doubleVal;
         } else {
             throw runtime_error(
@@ -417,16 +404,16 @@ void Atom::unaryOperator(wstring op)
 
 void Atom::cast(wstring typeTo)
 {
-    if (type == Atom::typeString) {
-        if (typeTo == Atom::castString) {
+    if (type == AtomType::typeString) {
+        if (typeTo == AtomType::castString) {
             return;
-        } else if (typeTo == Atom::castInt) {
+        } else if (typeTo == AtomType::castInt) {
             setInt(wcstol(getString().c_str(), nullptr, 10));
-        } else if (typeTo == Atom::castDouble) {
+        } else if (typeTo == AtomType::castDouble) {
             setDouble(wcstod(getString().c_str(), nullptr));
-        } else if (typeTo == Atom::castBool) {
+        } else if (typeTo == AtomType::castBool) {
             setBool(getString() != L"");
-        } else if (typeTo == Atom::castArray) {
+        } else if (typeTo == AtomType::castArray) {
             int i = 0;
             map<wstring, shared_ptr<Atom>> arrayVal;
             while (i < getString().size()) {
@@ -436,17 +423,17 @@ void Atom::cast(wstring typeTo)
                 i++;
             }
             setArray(arrayVal);
-        } else if (typeTo == Atom::castNull) {
+        } else if (typeTo == AtomType::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
         }
     }
 
-    if (type == Atom::typeArray) {
-        if (typeTo == Atom::castArray) {
+    if (type == AtomType::typeArray) {
+        if (typeTo == AtomType::castArray) {
             return;
-        } else if (typeTo == Atom::castString) {
+        } else if (typeTo == AtomType::castString) {
             wstring stringVal;
             for (auto elem: arrayVal) {
                 stringVal += elem.second->toString();
@@ -457,60 +444,60 @@ void Atom::cast(wstring typeTo)
         }
     }
 
-    if (type == Atom::typeBool) {
-        if (typeTo == Atom::castBool) {
+    if (type == AtomType::typeBool) {
+        if (typeTo == AtomType::castBool) {
             return;
-        } else if (typeTo == Atom::castInt) {
+        } else if (typeTo == AtomType::castInt) {
             setInt((int) getBool());
-        } else if (typeTo == Atom::castString) {
+        } else if (typeTo == AtomType::castString) {
             if (getBool()) {
                 setString(L"true");
             } else {
                 setString(L"false");
             }
-        } else if (typeTo == Atom::castDouble) {
+        } else if (typeTo == AtomType::castDouble) {
             setDouble((double) getBool());
-        } else if (typeTo == Atom::castNull) {
+        } else if (typeTo == AtomType::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
         }
     }
 
-    if (type == Atom::typeInt) {
-        if (typeTo == Atom::castInt) {
+    if (type == AtomType::typeInt) {
+        if (typeTo == AtomType::castInt) {
             return;
-        } else if (typeTo == Atom::castString) {
+        } else if (typeTo == AtomType::castString) {
             setString(to_wstring(getInt()));
-        } else if (typeTo == Atom::castDouble) {
+        } else if (typeTo == AtomType::castDouble) {
             setDouble((double) getInt());
-        } else if (typeTo == Atom::castBool) {
+        } else if (typeTo == AtomType::castBool) {
             setBool((bool) getInt());
-        } else if (typeTo == Atom::castNull) {
+        } else if (typeTo == AtomType::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
         }
     }
 
-    if (type == Atom::typeDouble) {
-        if (typeTo == Atom::castDouble) {
+    if (type == AtomType::typeDouble) {
+        if (typeTo == AtomType::castDouble) {
             return;
-        } else if (typeTo == Atom::castInt) {
+        } else if (typeTo == AtomType::castInt) {
             setInt((int) getDouble());
-        } else if (typeTo == Atom::castString) {
+        } else if (typeTo == AtomType::castString) {
             setString(to_wstring(getDouble()));
-        } else if (typeTo == Atom::castBool) {
+        } else if (typeTo == AtomType::castBool) {
             setBool((bool) getDouble());
-        } else if (typeTo == Atom::castNull) {
+        } else if (typeTo == AtomType::castNull) {
             setNull();
         } else {
             throw runtime_error("Cast failed.");
         }
     }
 
-    if (type == Atom::typeNull) {
-        if (typeTo == Atom::castNull) {
+    if (type == AtomType::typeNull) {
+        if (typeTo == AtomType::castNull) {
             return;
         } else {
             setNull();

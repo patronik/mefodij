@@ -63,21 +63,6 @@ public:
   Atom(map<wstring, shared_ptr<Atom>> val);
   Atom(bool val);
 
-  const static wstring typeInt;
-  const static wstring typeDouble;
-  const static wstring typeString;
-  const static wstring typeArray;
-  const static wstring typeBool;
-  const static wstring typeNull;
-  const static wstring typeCast;
-
-  const static wstring castInt;
-  const static wstring castDouble;
-  const static wstring castString;
-  const static wstring castArray;
-  const static wstring castBool;
-  const static wstring castNull;
-
   // Getters
   long getInt();
   double getDouble();

@@ -1,4 +1,5 @@
 #include "../include/Mefody.h"
+#include "../include/Atom/AtomType.h"
 #include "../include/tools.h"
 
 void Mefody::throwError(string message)
@@ -118,12 +119,12 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
 
 bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
 {
-    if (varName == Atom::castInt
-        || varName == Atom::castDouble
-        || varName == Atom::castBool
-        || varName == Atom::castArray
-        || varName == Atom::castString
-        || varName == Atom::castNull
+    if (varName == AtomType::castInt
+        || varName == AtomType::castDouble
+        || varName == AtomType::castBool
+        || varName == AtomType::castArray
+        || varName == AtomType::castString
+        || varName == AtomType::castNull
         ) {
             atom->setCast(varName);
         } else if (varName == L"true") {
@@ -355,7 +356,7 @@ void Mefody::resolveStringAccess(shared_ptr<Atom> & atom)
         throw runtime_error("Individual characters cannot be accessed with array access.");
     }
 
-    if (keyAtom->getType() != Atom::typeInt) {
+    if (keyAtom->getType() != AtomType::typeInt) {
         throw runtime_error("Only integer keys can be used for accessing string character.");
     }
 
@@ -382,7 +383,7 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
         unreadChar();
     }
 
-    if (atom->getVar()->getType() != Atom::typeArray) {
+    if (atom->getVar()->getType() != AtomType::typeArray) {
         atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
     }
 
@@ -431,7 +432,7 @@ void Mefody::resolveAtom(shared_ptr<Atom> & atom)
     wchar_t symbol = readChar();
     // Resolve element/member access
     if (symbol == L'[') {
-        if (atom->getType() == Atom::typeString) {
+        if (atom->getType() == AtomType::typeString) {
             resolveStringAccess(atom);
         } else {
             resolveArrayAccess(atom);
@@ -822,7 +823,7 @@ bool Mefody::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
         if (readChar() != L')') {
             throw runtime_error("Syntax error. Wrong number of parentheses.");
         }
-        if (subExpr->getType() == Atom::typeCast) {
+        if (subExpr->getType() == AtomType::typeCast) {
             // Type casting
             atom = parseAtom();
             atom->cast(subExpr->getCast());
@@ -881,7 +882,7 @@ void Mefody::evaluateRangeLoop(int firstStmtPos)
     evaluateStatement();
 
     if (lastResult->getVar() == nullptr 
-        || lastResult->getVar()->getType() != Atom::typeArray
+        || lastResult->getVar()->getType() != AtomType::typeArray
     ) {
         throw runtime_error("Separator must be followed by an array.");
     }

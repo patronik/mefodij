@@ -1,5 +1,6 @@
 
 #include "../include/CoreFunctionResolver.h"
+#include "../include/Atom/AtomType.h"
 
 
 CoreFunctionResolver::CoreFunctionResolver(): storage{}
@@ -66,42 +67,42 @@ void CoreFunctionResolver::inArray(shared_ptr<Context> & stack, shared_ptr<Atom>
             continue;
         }
 
-        if (kv.second->getType() == Atom::typeInt) {
+        if (kv.second->getType() == AtomType::typeInt) {
             if (kv.second->getInt() == element->getInt()) {
                 found = true;
                 break;
             }
         }
 
-        if (kv.second->getType() == Atom::typeDouble) {
+        if (kv.second->getType() == AtomType::typeDouble) {
             if (kv.second->getDouble() == element->getDouble()) {
                 found = true;
                 break;
             }
         }
 
-        if (kv.second->getType() == Atom::typeString) {
+        if (kv.second->getType() == AtomType::typeString) {
             if (kv.second->getString() == element->getString()) {
                 found = true;
                 break;
             }
         }
 
-        if (kv.second->getType() == Atom::typeBool) {
+        if (kv.second->getType() == AtomType::typeBool) {
             if (kv.second->getBool() == element->getBool()) {
                 found = true;
                 break;
             }
         }
 
-        if (kv.second->getType() == Atom::typeArray) {
+        if (kv.second->getType() == AtomType::typeArray) {
             if (kv.second->getArray() == element->getArray()) {
                 found = true;
                 break;
             }
         }
 
-        if (kv.second->getType() == Atom::typeNull) {
+        if (kv.second->getType() == AtomType::typeNull) {
             found = true;
             break;
         }

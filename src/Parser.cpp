@@ -1,5 +1,6 @@
 #include "../include/Parser.h"
 #include "../include/tools.h"
+#include "../include/Atom/AtomType.h"
 #include "../include/Atom.h"
 
 Parser::Parser()
@@ -11,12 +12,12 @@ Parser::Parser()
     binChars = L"01";
 
     reservedKeywords = {
-        Atom::castInt, 
-        Atom::castDouble, 
-        Atom::castString, 
-        Atom::castArray, 
-        Atom::castBool, 
-        Atom::castNull,
+        AtomType::castInt, 
+        AtomType::castDouble, 
+        AtomType::castString, 
+        AtomType::castArray, 
+        AtomType::castBool, 
+        AtomType::castNull,
         statementLem,
         statementConst,
         statementFunc,
