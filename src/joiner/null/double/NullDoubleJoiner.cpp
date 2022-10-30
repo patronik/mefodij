@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/null/double/NullDoubleJoiner.h"
 
-NullDoubleJoiner::NullDoubleJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void NullDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    NullDoubleJoiner::NullDoubleJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") { 
-        left->getVar()->setDouble(right->getDouble());
+    void NullDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") { 
+            left->getVar()->setDouble(right->getDouble());
+        }
     }
+
 }

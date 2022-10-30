@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/null/bool/NullBoolJoiner.h"
 
-NullBoolJoiner::NullBoolJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void NullBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    NullBoolJoiner::NullBoolJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") {
-        left->getVar()->setBool(right->getBool());
+    void NullBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVar()->setBool(right->getBool());
+        }
     }
+
 }

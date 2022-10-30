@@ -1,26 +1,30 @@
 
 #include "../../../../include/joiner/bool/int/BoolIntJoiner.h"
 
-BoolIntJoiner::BoolIntJoiner() : Joiner({L"==", L"||", L"&&", L"="})
-{}
+namespace Mefody {
 
-void BoolIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    BoolIntJoiner::BoolIntJoiner() : Joiner({L"==", L"||", L"&&", L"="})
+    {}
 
-    if (op == L"==") {
-        left->setBool(
-            left->getBool() == ((bool) right->getInt())
-        );
-    } else if (op == L"||") {
-        left->setBool(
-            left->getBool() || ((bool) right->getInt())
-        );
-    } else if (op == L"&&") {
-         left->setBool(
-            left->getBool() && ((bool) right->getInt())
-        );
-    } else if (op == L"=") {
-        left->getVar()->setBool((bool) right->getInt());
+    void BoolIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"==") {
+            left->setBool(
+                left->getBool() == ((bool) right->getInt())
+            );
+        } else if (op == L"||") {
+            left->setBool(
+                left->getBool() || ((bool) right->getInt())
+            );
+        } else if (op == L"&&") {
+            left->setBool(
+                left->getBool() && ((bool) right->getInt())
+            );
+        } else if (op == L"=") {
+            left->getVar()->setBool((bool) right->getInt());
+        }
     }
+
 }

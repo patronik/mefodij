@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/null/int/NullIntJoiner.h"
 
-NullIntJoiner::NullIntJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void NullIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    NullIntJoiner::NullIntJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") {
-        left->getVar()->setInt(right->getInt());
+    void NullIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVar()->setInt(right->getInt());
+        }
     }
+
 }

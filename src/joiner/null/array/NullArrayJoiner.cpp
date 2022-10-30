@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/null/array/NullArrayJoiner.h"
 
-NullArrayJoiner::NullArrayJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void NullArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    NullArrayJoiner::NullArrayJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") {
-        left->getVar()->setArray(right->getArray());
-    }  
+    void NullArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVar()->setArray(right->getArray());
+        }  
+    }
+
 }

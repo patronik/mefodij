@@ -1,30 +1,34 @@
 
 #include "../../../../include/joiner/string/bool/StringBoolJoiner.h"
 
-StringBoolJoiner::StringBoolJoiner() : Joiner({L"==", L"||", L"&&", L"="})
-{}
+namespace Mefody {
 
-void StringBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    StringBoolJoiner::StringBoolJoiner() : Joiner({L"==", L"||", L"&&", L"="})
+    {}
 
-    if (op == L"==") {
-        left->setBool(
-            (bool) (left->getString().size() > 0) == right->getBool()
-        );
-    } else if (op == L"||") {
-         left->setBool(
-            (bool) (left->getString().size() > 0) || right->getBool()
-         );
-    } else if (op == L"&&") {
-        left->setBool(
-            (bool) (left->getString().size() > 0) && right->getBool()
-        );
-    } else if (op == L"=") { 
-        if (left->getCharIndex() > -1) {
-            throw new runtime_error("Cannot assign non string value to string character");
+    void StringBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"==") {
+            left->setBool(
+                (bool) (left->getString().size() > 0) == right->getBool()
+            );
+        } else if (op == L"||") {
+            left->setBool(
+                (bool) (left->getString().size() > 0) || right->getBool()
+            );
+        } else if (op == L"&&") {
+            left->setBool(
+                (bool) (left->getString().size() > 0) && right->getBool()
+            );
+        } else if (op == L"=") { 
+            if (left->getCharIndex() > -1) {
+                throw new runtime_error("Cannot assign non string value to string character");
+            }
+            
+            left->getVar()->setBool(right->getBool());
         }
-        
-        left->getVar()->setBool(right->getBool());
     }
+
 }

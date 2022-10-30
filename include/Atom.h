@@ -8,112 +8,116 @@
 #include <memory>
 #include <map>
 
-using namespace std;
+namespace Mefody {
 
-class Atom
-{
-    // atom state
-    bitset<sizeof(int)> options{0};
+  using namespace std;
 
-    // atom type
-    wstring type = L"null";
+  class Atom
+  {
+      // atom state
+      bitset<sizeof(int)> options{0};
 
-    // supported values
-    long intVal = 0; // int
+      // atom type
+      wstring type = L"null";
 
-    // float point number
-    double doubleVal = 0.00; 
+      // supported values
+      long intVal = 0; // int
 
-     // string
-    wstring stringVal = L"";
-    // postion of a character in string
-    int charIndex  = -1; 
+      // float point number
+      double doubleVal = 0.00; 
 
-    // boolean value
-    bool boolVal = false; 
+      // string
+      wstring stringVal = L"";
+      // postion of a character in string
+      int charIndex  = -1; 
 
-    // next not used integer key in array
-    int arrayNextIndex = 0; 
-    // array of atoms (values)
-    map<wstring, shared_ptr<Atom>> arrayVal; 
+      // boolean value
+      bool boolVal = false; 
 
-    // string representing catst type
-    wstring castVal = L""; 
+      // next not used integer key in array
+      int arrayNextIndex = 0; 
+      // array of atoms (values)
+      map<wstring, shared_ptr<Atom>> arrayVal; 
 
-    // Reference to variable
-    shared_ptr<Atom> varRef = nullptr;
+      // string representing catst type
+      wstring castVal = L""; 
 
-    // Members
-    map<wstring, map<wstring, void (Atom::*)()>> members{};
+      // Reference to variable
+      shared_ptr<Atom> varRef = nullptr;
 
-    // Member resolvers
-    void resolveStringSize();
-    void resolveArraySize();
-    void resolveArrayFirst();
-    void resolveArraySecond();
+      // Members
+      map<wstring, map<wstring, void (Atom::*)()>> members{};
 
-    void initMembers();
-    
-    void clearVal();
-public:
-  Atom();
-  Atom(long val);
-  Atom(double val);
-  Atom(wstring val);
-  Atom(map<wstring, shared_ptr<Atom>> val);
-  Atom(bool val);
+      // Member resolvers
+      void resolveStringSize();
+      void resolveArraySize();
+      void resolveArrayFirst();
+      void resolveArraySecond();
 
-  // Getters
-  long getInt();
-  double getDouble();
-  wstring getString();
-  map<wstring, shared_ptr<Atom>> getArray();
-  bool getBool();
-  wstring getCast();
-  int getCharIndex();
-  int getArrayNextIndex();
-  shared_ptr<Atom> getVar();
-  wstring getType();
-  bool getIsConst();
-  bool getIsAssigned();
-  bool getIsCalculated();
+      void initMembers();
+      
+      void clearVal();
+  public:
+    Atom();
+    Atom(long val);
+    Atom(double val);
+    Atom(wstring val);
+    Atom(map<wstring, shared_ptr<Atom>> val);
+    Atom(bool val);
 
-  // Setters
-  void setVar(shared_ptr<Atom> atom);
-  void setArrayNextIndex(const int index);
-  void setCharIndex(const int index);
-  void setInt(long val);
-  void setDouble(double val);
-  void setString(wstring val);
-  void setStringChar(wchar_t val, int charIndex);
-  void setArray(map<wstring, shared_ptr<Atom>> val);
-  void setBool(bool val);
-  void setNull();
-  void setCast(wstring val);
-  void setAtom(const Atom & src);
-  void setIsConst();
-  void setIsAssigned();
-  void setIsCalculated();
+    // Getters
+    long getInt();
+    double getDouble();
+    wstring getString();
+    map<wstring, shared_ptr<Atom>> getArray();
+    bool getBool();
+    wstring getCast();
+    int getCharIndex();
+    int getArrayNextIndex();
+    shared_ptr<Atom> getVar();
+    wstring getType();
+    bool getIsConst();
+    bool getIsAssigned();
+    bool getIsCalculated();
 
-  // Array related
-  bool issetAt(wstring key);
-  shared_ptr<Atom> elementAt(wstring key);
-  void createAt(wstring key, shared_ptr<Atom> val);
+    // Setters
+    void setVar(shared_ptr<Atom> atom);
+    void setArrayNextIndex(const int index);
+    void setCharIndex(const int index);
+    void setInt(long val);
+    void setDouble(double val);
+    void setString(wstring val);
+    void setStringChar(wchar_t val, int charIndex);
+    void setArray(map<wstring, shared_ptr<Atom>> val);
+    void setBool(bool val);
+    void setNull();
+    void setCast(wstring val);
+    void setAtom(const Atom & src);
+    void setIsConst();
+    void setIsAssigned();
+    void setIsCalculated();
 
-  // Convertors
-  bool toBool();
-  wstring toString();
+    // Array related
+    bool issetAt(wstring key);
+    shared_ptr<Atom> elementAt(wstring key);
+    void createAt(wstring key, shared_ptr<Atom> val);
 
-  // Operators supported by atom
-  void preOperator(wstring op);
-  void postOperator(wstring op);
-  void unaryOperator(wstring op);
+    // Convertors
+    bool toBool();
+    wstring toString();
 
-  // Convert atom from one type to another
-  void cast(wstring typeTo);
+    // Operators supported by atom
+    void preOperator(wstring op);
+    void postOperator(wstring op);
+    void unaryOperator(wstring op);
 
-  // Member resolver
-  void resolveMember(wstring name);
-};
+    // Convert atom from one type to another
+    void cast(wstring typeTo);
+
+    // Member resolver
+    void resolveMember(wstring name);
+  };
+
+}
 
 #endif

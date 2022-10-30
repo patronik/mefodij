@@ -10,18 +10,21 @@
 #include "tools.h"
 #include "Atom.h"
 
-using namespace std;
+namespace Mefody {
 
+    using namespace std;
 
-class Joiner 
-{
-    protected:
-    vector<wstring> operators;
-    virtual void validate(wstring op);
+    class Joiner 
+    {
+        protected:
+        vector<wstring> operators;
+        virtual void validate(wstring op);
 
-    public:
-    Joiner(vector<wstring> ops);
-    virtual void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right) = 0;
-};
+        public:
+        Joiner(vector<wstring> ops);
+        virtual void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right) = 0;
+    };
+
+}
 
 #endif

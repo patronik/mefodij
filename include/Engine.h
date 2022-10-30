@@ -49,122 +49,126 @@
 #include "joiner/string/double/StringDoubleJoiner.h"
 #include "joiner/string/string/StringStringJoiner.h"
 
-using namespace std;
+namespace Mefody {
 
-class Engine : public Parser
-{
-    // Return flag
-    bool isReturn = false;
+  using namespace std;
 
-    // Breaks loop execution
-    bool isBreak = false;
+  class Engine : public Parser
+  {
+      // Return flag
+      bool isReturn = false;
 
-    // Result of last executed statement
-    shared_ptr<Atom> lastResult{};
+      // Breaks loop execution
+      bool isBreak = false;
 
-    // Global context
-    shared_ptr<Context> context = nullptr;
+      // Result of last executed statement
+      shared_ptr<Atom> lastResult{};
 
-    // Stack
-    vector<shared_ptr<Context>> stack{};
+      // Global context
+      shared_ptr<Context> context = nullptr;
 
-    CoreFunctionResolver coreFuncResolver;
+      // Stack
+      vector<shared_ptr<Context>> stack{};
 
-    static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
-    static unique_ptr<BoolIntJoiner> boolIntJoiner;
-    static unique_ptr<BoolNullJoiner> boolNullJoiner;
-    static unique_ptr<BoolArrayJoiner> boolArrayJoiner;
-    static unique_ptr<BoolDoubleJoiner> boolDoubleJoiner;
-    static unique_ptr<BoolStringJoiner> boolStringJoiner;
-    static unique_ptr<IntBoolJoiner> intBoolJoiner;
-    static unique_ptr<IntIntJoiner> intIntJoiner;
-    static unique_ptr<IntNullJoiner> intNullJoiner;
-    static unique_ptr<IntArrayJoiner> intArrayJoiner;
-    static unique_ptr<IntDoubleJoiner> intDoubleJoiner;
-    static unique_ptr<IntStringJoiner> intStringJoiner;
-    static unique_ptr<NullBoolJoiner> nullBoolJoiner;
-    static unique_ptr<NullIntJoiner> nullIntJoiner;
-    static unique_ptr<NullNullJoiner> nullNullJoiner;
-    static unique_ptr<NullArrayJoiner> nullArrayJoiner;
-    static unique_ptr<NullDoubleJoiner> nullDoubleJoiner;
-    static unique_ptr<NullStringJoiner> nullStringJoiner;
-    static unique_ptr<ArrayBoolJoiner> arrayBoolJoiner;
-    static unique_ptr<ArrayIntJoiner> arrayIntJoiner;
-    static unique_ptr<ArrayNullJoiner> arrayNullJoiner;
-    static unique_ptr<ArrayArrayJoiner> arrayArrayJoiner;
-    static unique_ptr<ArrayDoubleJoiner> arrayDoubleJoiner;
-    static unique_ptr<ArrayStringJoiner> arrayStringJoiner;
-    static unique_ptr<DoubleBoolJoiner> doubleBoolJoiner;
-    static unique_ptr<DoubleIntJoiner> doubleIntJoiner;
-    static unique_ptr<DoubleNullJoiner> doubleNullJoiner;
-    static unique_ptr<DoubleArrayJoiner> doubleArrayJoiner;
-    static unique_ptr<DoubleDoubleJoiner> doubleDoubleJoiner;
-    static unique_ptr<DoubleStringJoiner> doubleStringJoiner;
-    static unique_ptr<StringBoolJoiner> stringBoolJoiner;
-    static unique_ptr<StringIntJoiner> stringIntJoiner;
-    static unique_ptr<StringNullJoiner> stringNullJoiner;
-    static unique_ptr<StringArrayJoiner> stringArrayJoiner;
-    static unique_ptr<StringDoubleJoiner> stringDoubleJoiner;
-    static unique_ptr<StringStringJoiner> stringStringJoiner;
+      CoreFunctionResolver coreFuncResolver;
 
-    void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
-    void assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
+      static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
+      static unique_ptr<BoolIntJoiner> boolIntJoiner;
+      static unique_ptr<BoolNullJoiner> boolNullJoiner;
+      static unique_ptr<BoolArrayJoiner> boolArrayJoiner;
+      static unique_ptr<BoolDoubleJoiner> boolDoubleJoiner;
+      static unique_ptr<BoolStringJoiner> boolStringJoiner;
+      static unique_ptr<IntBoolJoiner> intBoolJoiner;
+      static unique_ptr<IntIntJoiner> intIntJoiner;
+      static unique_ptr<IntNullJoiner> intNullJoiner;
+      static unique_ptr<IntArrayJoiner> intArrayJoiner;
+      static unique_ptr<IntDoubleJoiner> intDoubleJoiner;
+      static unique_ptr<IntStringJoiner> intStringJoiner;
+      static unique_ptr<NullBoolJoiner> nullBoolJoiner;
+      static unique_ptr<NullIntJoiner> nullIntJoiner;
+      static unique_ptr<NullNullJoiner> nullNullJoiner;
+      static unique_ptr<NullArrayJoiner> nullArrayJoiner;
+      static unique_ptr<NullDoubleJoiner> nullDoubleJoiner;
+      static unique_ptr<NullStringJoiner> nullStringJoiner;
+      static unique_ptr<ArrayBoolJoiner> arrayBoolJoiner;
+      static unique_ptr<ArrayIntJoiner> arrayIntJoiner;
+      static unique_ptr<ArrayNullJoiner> arrayNullJoiner;
+      static unique_ptr<ArrayArrayJoiner> arrayArrayJoiner;
+      static unique_ptr<ArrayDoubleJoiner> arrayDoubleJoiner;
+      static unique_ptr<ArrayStringJoiner> arrayStringJoiner;
+      static unique_ptr<DoubleBoolJoiner> doubleBoolJoiner;
+      static unique_ptr<DoubleIntJoiner> doubleIntJoiner;
+      static unique_ptr<DoubleNullJoiner> doubleNullJoiner;
+      static unique_ptr<DoubleArrayJoiner> doubleArrayJoiner;
+      static unique_ptr<DoubleDoubleJoiner> doubleDoubleJoiner;
+      static unique_ptr<DoubleStringJoiner> doubleStringJoiner;
+      static unique_ptr<StringBoolJoiner> stringBoolJoiner;
+      static unique_ptr<StringIntJoiner> stringIntJoiner;
+      static unique_ptr<StringNullJoiner> stringNullJoiner;
+      static unique_ptr<StringArrayJoiner> stringArrayJoiner;
+      static unique_ptr<StringDoubleJoiner> stringDoubleJoiner;
+      static unique_ptr<StringStringJoiner> stringStringJoiner;
 
-    shared_ptr<Context> getContext();
+      void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
+      void assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
-    // one atom
-    shared_ptr<Atom> parseAtom();
-    // one or more atoms connected with high priority math operator 
-    shared_ptr<Atom> evaluateMathExpression(); 
-    // one ore more math expression connected with low level priority operator 
-    shared_ptr<Atom> evaluateBoolExpression(); 
-    // one or more bool expressions conntected with bool operator
-    shared_ptr<Atom> evaluateBoolStatement(); 
+      shared_ptr<Context> getContext();
 
-    // helper functions
-    shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params);
+      // one atom
+      shared_ptr<Atom> parseAtom();
+      // one or more atoms connected with high priority math operator 
+      shared_ptr<Atom> evaluateMathExpression(); 
+      // one ore more math expression connected with low level priority operator 
+      shared_ptr<Atom> evaluateBoolExpression(); 
+      // one or more bool expressions conntected with bool operator
+      shared_ptr<Atom> evaluateBoolStatement(); 
 
-    // Atoms parsers
-    bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseBinNumberLiteralAtom(shared_ptr<Atom> & atom);
-    bool parseHexNumberLiteralAtom(shared_ptr<Atom> & atom);
-    bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-    bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
-    bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
+      // helper functions
+      shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params);
 
-    // Parsers for function and variable declaration
-    void parseVariable(bool isConst = false);
-    void parseFunction();
-    
-    // Atom resolving
-    void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom);
-    void resolveStringAccess(shared_ptr<Atom> & atom);
-    void resolveArrayAccess(shared_ptr<Atom> & atom);
-    void resolveMemberAccess(shared_ptr<Atom> & atom);
-    void resolveAtomAssignment(shared_ptr<Atom> & atom);
-    void resolveAtomAccess(shared_ptr<Atom> & atom);
-    
-    void evaluateWhileLoop(int firstStmtPos);
-    void evaluateRangeLoop(int firstStmtPos);
-    void evaluateForLoop();
-    void evaluateIfStructure();
-    void evaluateBlockOrStatement(bool stopOnBreak = false);
-    void evaluateStatement();
-    void evaluateStatements();
+      // Atoms parsers
+      bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseBinNumberLiteralAtom(shared_ptr<Atom> & atom);
+      bool parseHexNumberLiteralAtom(shared_ptr<Atom> & atom);
+      bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+      bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
+      bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
 
-    tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState();
-    void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state);
+      // Parsers for function and variable declaration
+      void parseVariable(bool isConst = false);
+      void parseFunction();
+      
+      // Atom resolving
+      void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom);
+      void resolveStringAccess(shared_ptr<Atom> & atom);
+      void resolveArrayAccess(shared_ptr<Atom> & atom);
+      void resolveMemberAccess(shared_ptr<Atom> & atom);
+      void resolveAtomAssignment(shared_ptr<Atom> & atom);
+      void resolveAtomAccess(shared_ptr<Atom> & atom);
+      
+      void evaluateWhileLoop(int firstStmtPos);
+      void evaluateRangeLoop(int firstStmtPos);
+      void evaluateForLoop();
+      void evaluateIfStructure();
+      void evaluateBlockOrStatement(bool stopOnBreak = false);
+      void evaluateStatement();
+      void evaluateStatements();
 
-    void throwError(const string message);
-public:
-  Engine();
-  wstring evaluate();
-  wstring evaluateFile(string filename);
-  wstring evaluateFile(wstring wfilename);
-};
+      tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState();
+      void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state);
+
+      void throwError(const string message);
+  public:
+    Engine();
+    wstring evaluate();
+    wstring evaluateFile(string filename);
+    wstring evaluateFile(wstring wfilename);
+  };
+
+}
 
 #endif

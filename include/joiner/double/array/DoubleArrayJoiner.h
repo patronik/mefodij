@@ -4,6 +4,8 @@
 
 #include "../../../Joiner.h"
 
+namespace Mefody {
+
 class DoubleArrayJoiner: public Joiner 
 {
  
@@ -12,5 +14,7 @@ class DoubleArrayJoiner: public Joiner
  void join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
 };
+
+}
 
 #endif

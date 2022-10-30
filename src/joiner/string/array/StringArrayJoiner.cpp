@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/string/array/StringArrayJoiner.h"
 
-StringArrayJoiner::StringArrayJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void StringArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    StringArrayJoiner::StringArrayJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") { 
-        left->getVar()->setArray(right->getArray());
+    void StringArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") { 
+            left->getVar()->setArray(right->getArray());
+        }
     }
+
 }

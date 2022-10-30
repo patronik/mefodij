@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/array/null/ArrayNullJoiner.h"
 
-ArrayNullJoiner::ArrayNullJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void ArrayNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    ArrayNullJoiner::ArrayNullJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") {
-        left->getVar()->setNull();
+    void ArrayNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVar()->setNull();
+        }
     }
+
 }

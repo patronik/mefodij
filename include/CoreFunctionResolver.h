@@ -4,36 +4,40 @@
 #include "Atom.h"
 #include "Context.h"
 
-using namespace std;
+namespace Mefody {
 
-class CoreFunctionResolver {
-    typedef map<int, tuple<wstring, shared_ptr<Atom>, bool>> methodParams;
-    typedef void (CoreFunctionResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
+    using namespace std;
 
-    map<wstring, pair<methodPtr, methodParams>> storage;
+    class CoreFunctionResolver {
+        typedef map<int, tuple<wstring, shared_ptr<Atom>, bool>> methodParams;
+        typedef void (CoreFunctionResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
 
-    methodPtr getPointer(wstring name);
+        map<wstring, pair<methodPtr, methodParams>> storage;
 
-    // core functions
-    void inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
+        methodPtr getPointer(wstring name);
 
-    public:
-    CoreFunctionResolver();
-    methodParams & getParams(wstring name);
+        // core functions
+        void inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
 
-    bool hasFunction(wstring name);
+        public:
+        CoreFunctionResolver();
+        methodParams & getParams(wstring name);
 
-    void setFunction(
-        wstring name, 
-        methodPtr method,
-        methodParams params
-    ); 
+        bool hasFunction(wstring name);
 
-    void resolveCall(
-        wstring name, 
-        shared_ptr<Context> & stack, 
-        shared_ptr<Atom> & result
-    );
-};
+        void setFunction(
+            wstring name, 
+            methodPtr method,
+            methodParams params
+        ); 
+
+        void resolveCall(
+            wstring name, 
+            shared_ptr<Context> & stack, 
+            shared_ptr<Atom> & result
+        );
+    };
+
+}
 
 #endif

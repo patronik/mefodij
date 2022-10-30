@@ -1,79 +1,83 @@
 #include "../include/Context.h"
 
-void Context::setVar(wstring key, shared_ptr<Atom> var) 
-{
-    // remove reference to source variable
-    var->setVar(nullptr);
-    storage.insert({key, var});
-}
+namespace Mefody {
 
-bool Context::hasOwnVar(wstring key) 
-{
-    return storage.count(key) != 0;
-}
-
-bool Context::hasVar(wstring key) {
-    bool hasOwn = storage.count(key) != 0;
-    if (hasOwn) {
-        return true;
+    void Context::setVar(wstring key, shared_ptr<Atom> var) 
+    {
+        // remove reference to source variable
+        var->setVar(nullptr);
+        storage.insert({key, var});
     }
-    if (parentContext) {
-        return parentContext->hasVar(key);
-    }
-    return false;
-}
 
-shared_ptr<Atom> Context::getVar(wstring key) 
-{
-    bool hasOwn = storage.count(key) != 0;
-    if (hasOwn) {
-        return storage.at(key);
+    bool Context::hasOwnVar(wstring key) 
+    {
+        return storage.count(key) != 0;
     }
-    if (parentContext) {
-        return parentContext->getVar(key);
+
+    bool Context::hasVar(wstring key) {
+        bool hasOwn = storage.count(key) != 0;
+        if (hasOwn) {
+            return true;
+        }
+        if (parentContext) {
+            return parentContext->hasVar(key);
+        }
+        return false;
     }
-    throw runtime_error("Variable '" + MefodyTools::wideStrToStr(key) + "' does not exist.");
-}
 
-void Context::setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
-{
-    return functions.set(key, pos, params);
-}
-
-bool Context::hasOwnFunction(wstring key) 
-{
-    return functions.has(key);
-}
-
-bool Context::hasFunction(wstring key) 
-{
-    bool hasOwn = functions.has(key);
-    if (hasOwn) {
-        return true;
+    shared_ptr<Atom> Context::getVar(wstring key) 
+    {
+        bool hasOwn = storage.count(key) != 0;
+        if (hasOwn) {
+            return storage.at(key);
+        }
+        if (parentContext) {
+            return parentContext->getVar(key);
+        }
+        throw runtime_error("Variable '" + Mefody::Tools::wideStrToStr(key) + "' does not exist.");
     }
-    if (parentContext) {
-        return parentContext->hasFunction(key);
-    }
-    return false;
-}
 
-pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & Context::getFunction(wstring key) 
-{    
-    bool hasOwn = functions.has(key);
-    if (hasOwn) {
-        return functions.get(key);
+    void Context::setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
+    {
+        return functions.set(key, pos, params);
     }
-    if (parentContext) {
-        return parentContext->getFunction(key);
+
+    bool Context::hasOwnFunction(wstring key) 
+    {
+        return functions.has(key);
     }
-    throw runtime_error("Function '" + MefodyTools::wideStrToStr(key) + "' does not exist.");
-}
 
-void Context::setParent(shared_ptr<Context> parent)
-{
-    parentContext = parent;
-}
+    bool Context::hasFunction(wstring key) 
+    {
+        bool hasOwn = functions.has(key);
+        if (hasOwn) {
+            return true;
+        }
+        if (parentContext) {
+            return parentContext->hasFunction(key);
+        }
+        return false;
+    }
 
-Context::Context(): storage(), functions(), parentContext(nullptr)
-{
+    pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & Context::getFunction(wstring key) 
+    {    
+        bool hasOwn = functions.has(key);
+        if (hasOwn) {
+            return functions.get(key);
+        }
+        if (parentContext) {
+            return parentContext->getFunction(key);
+        }
+        throw runtime_error("Function '" + Mefody::Tools::wideStrToStr(key) + "' does not exist.");
+    }
+
+    void Context::setParent(shared_ptr<Context> parent)
+    {
+        parentContext = parent;
+    }
+
+    Context::Context(): storage(), functions(), parentContext(nullptr)
+    {
+    }
+
 }

@@ -1,14 +1,18 @@
 
 #include "../../../../include/joiner/bool/array/BoolArrayJoiner.h"
 
-BoolArrayJoiner::BoolArrayJoiner() : Joiner({L"="})
-{}
+namespace Mefody {
 
-void BoolArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
-{
-    validate(op);
+    BoolArrayJoiner::BoolArrayJoiner() : Joiner({L"="})
+    {}
 
-    if (op == L"=") {
-        left->getVar()->setArray(right->getArray());
+    void BoolArrayJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVar()->setArray(right->getArray());
+        }
     }
+
 }
