@@ -887,12 +887,9 @@ namespace Mefody {
         // Container statement
         evaluateStatement();
 
-        if (lastResult->getVar() == nullptr 
-            || lastResult->getVar()->getType() != AtomType::typeArray
-        ) {
+        if (lastResult->getType() != AtomType::typeArray) {
             throw runtime_error("Separator must be followed by an array.");
         }
-        auto arrayVar = lastResult->getVar();
 
         wchar_t symbol;
         if ((symbol = readChar()) != L')') {
@@ -901,7 +898,8 @@ namespace Mefody {
 
         int loopBodyPos = -1;
 
-        for (auto elem: arrayVar->getArray()) {
+        auto array = lastResult->getArray();
+        for (auto elem: array) {
             elementVar->setArray({
                 {L"0", make_shared<Atom>(elem.first)},
                 {L"1", elem.second}
