@@ -1,8 +1,8 @@
-#include "../include/Mefody.h"
+#include "../include/Engine.h"
 #include "../include/Atom/AtomType.h"
 #include "../include/tools.h"
 
-void Mefody::throwError(string message)
+void Engine::throwError(string message)
 {
     tuple<wstring, int, int> currLoc = getLastLocation();
     throw runtime_error(
@@ -18,17 +18,17 @@ void Mefody::throwError(string message)
     );
 }
 
-Mefody::Mefody() : Parser(), lastResult(nullptr), stack(), coreFuncResolver()
+Engine::Engine() : Parser(), lastResult(nullptr), stack(), coreFuncResolver()
 {
     context = make_shared<Context>();
 }
 
-tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> Mefody::getState()
+tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> Engine::getState()
 {
     return tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>>{pos, src, dynamicSrc, isReturn, isBreak, lastResult};
 }
 
-void Mefody::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state)
+void Engine::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state)
 {
     lastResult = get<5>(state);
     isBreak = get<4>(state);
@@ -38,7 +38,7 @@ void Mefody::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<
     pos = get<0>(state);
 }
 
-shared_ptr<Context> Mefody::getContext()
+shared_ptr<Context> Engine::getContext()
 {
     if (stack.size() > 0) {
         return stack.at(stack.size() - 1);
@@ -46,7 +46,7 @@ shared_ptr<Context> Mefody::getContext()
     return context;
 }
 
-bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Engine::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // string in double quotes
     if (symbol == L'"') {
@@ -85,7 +85,7 @@ bool Mefody::parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
     return false;
 }
 
-bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Engine::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // string in single quotes
     if (symbol == L'\'') {
@@ -117,7 +117,7 @@ bool Mefody::parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom
     return false;
 }
 
-bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
+bool Engine::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     if (varName == AtomType::castInt
         || varName == AtomType::castDouble
@@ -139,7 +139,7 @@ bool Mefody::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
         return true;
 }
 
-shared_ptr<Context> Mefody::prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params)
+shared_ptr<Context> Engine::prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params)
 {
     shared_ptr<Context> functionStack = make_shared<Context>();
 
@@ -201,7 +201,7 @@ shared_ptr<Context> Mefody::prepareCallStack(map<int, tuple<wstring, shared_ptr<
     return functionStack;
 }
 
-void Mefody::resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom)
+void Engine::resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom)
 {
     map<int, tuple<wstring, shared_ptr<Atom>, bool>> & funcParams = coreFuncResolver.getParams(functionName);
 
@@ -210,7 +210,7 @@ void Mefody::resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & at
     coreFuncResolver.resolveCall(functionName, functionStack, atom);
 }
 
-bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
+bool Engine::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
 {
     // function call left parentheses
     wchar_t symbol = readChar();
@@ -259,7 +259,7 @@ bool Mefody::parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom)
     return true;
 }
 
-bool Mefody::parseBinNumberLiteralAtom(shared_ptr<Atom> & atom)
+bool Engine::parseBinNumberLiteralAtom(shared_ptr<Atom> & atom)
 {   
     wstring number{};
     wchar_t symbol;
@@ -276,7 +276,7 @@ bool Mefody::parseBinNumberLiteralAtom(shared_ptr<Atom> & atom)
     return true;
 }
 
-bool Mefody::parseHexNumberLiteralAtom(shared_ptr<Atom> & atom) 
+bool Engine::parseHexNumberLiteralAtom(shared_ptr<Atom> & atom) 
 {
     wstring number{};
     wchar_t symbol;
@@ -293,7 +293,7 @@ bool Mefody::parseHexNumberLiteralAtom(shared_ptr<Atom> & atom)
     return true;
 }
 
-bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Engine::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     wstring number{};
     if (MefodyTools::isNumber(symbol)) {
@@ -340,7 +340,7 @@ bool Mefody::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
-void Mefody::resolveStringAccess(shared_ptr<Atom> & atom)
+void Engine::resolveStringAccess(shared_ptr<Atom> & atom)
 {
     shared_ptr<Atom> keyAtom = evaluateBoolExpression();
     if (!MefodyTools::inVector<wstring>({L"int"}, keyAtom->getType())) {
@@ -373,7 +373,7 @@ void Mefody::resolveStringAccess(shared_ptr<Atom> & atom)
     atom->setCharIndex(keyAtom->getInt());
 }
 
-void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom) 
+void Engine::resolveArrayAccess(shared_ptr<Atom> & atom) 
 {
     int implicitKey = false;
     wchar_t symbol;
@@ -418,7 +418,7 @@ void Mefody::resolveArrayAccess(shared_ptr<Atom> & atom)
     atom->setVar(varPtr->elementAt(arrayKey));
 }
 
-void Mefody::resolveMemberAccess(shared_ptr<Atom> & atom)
+void Engine::resolveMemberAccess(shared_ptr<Atom> & atom)
 {
     wstring memberName{};
     if (!parseCharacterSequence(readChar(), memberName)) {
@@ -427,28 +427,10 @@ void Mefody::resolveMemberAccess(shared_ptr<Atom> & atom)
     atom->resolveMember(memberName);
 }
 
-void Mefody::resolveAtom(shared_ptr<Atom> & atom)
+void Engine::resolveAtomAssignment(shared_ptr<Atom> & atom)
 {
-    wchar_t symbol = readChar();
-    // Resolve element/member access
-    if (symbol == L'[') {
-        if (atom->getType() == AtomType::typeString) {
-            resolveStringAccess(atom);
-        } else {
-            resolveArrayAccess(atom);
-            // recursevily resolve the whole chain
-            resolveAtom(atom);
-        }
-    } else if (symbol == L'.') {
-        resolveMemberAccess(atom);
-        // recursevily resolve the whole chain
-        resolveAtom(atom);
-    } else {
-        unreadChar();
-    }
-
     // Resolve assignment
-    symbol = readChar();
+    wchar_t symbol = readChar();
     if (symbol == L'=') {
         symbol = readChar();
         if (symbol == L'=') {
@@ -487,7 +469,28 @@ void Mefody::resolveAtom(shared_ptr<Atom> & atom)
     }
 }
 
-bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+void Engine::resolveAtomAccess(shared_ptr<Atom> & atom)
+{
+    wchar_t symbol = readChar();
+    // Resolve element/member access
+    if (symbol == L'[') {
+        if (atom->getType() == AtomType::typeString) {
+            resolveStringAccess(atom);
+        } else {
+            resolveArrayAccess(atom);
+            // recursevily resolve the whole chain
+            resolveAtomAccess(atom);
+        }
+    } else if (symbol == L'.') {
+        resolveMemberAccess(atom);
+        // recursevily resolve the whole chain
+        resolveAtomAccess(atom);
+    } else {
+        unreadChar();
+    }
+}
+
+bool Engine::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol != L'[') {
         return false;
@@ -531,7 +534,7 @@ bool Mefody::parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return true;
 }
 
-bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Engine::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     // alphabetical atom
     wstring varName{};
@@ -566,7 +569,7 @@ bool Mefody::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
-shared_ptr<Atom> Mefody::parseAtom()
+shared_ptr<Atom> Engine::parseAtom()
 {
     bool boolInversion = false;
     wstring preOperator{};
@@ -610,7 +613,8 @@ shared_ptr<Atom> Mefody::parseAtom()
     || parseSingleQuotedStringAtom(atomChar, atom)
     || parseDoubleQuotedStringAtom(atomChar, atom);
 
-    resolveAtom(atom);
+    resolveAtomAccess(atom);
+    resolveAtomAssignment(atom);
 
     if (preOperator.size()) {
         atom->preOperator(preOperator);
@@ -623,7 +627,7 @@ shared_ptr<Atom> Mefody::parseAtom()
     return atom;
 }
 
-shared_ptr<Atom> Mefody::evaluateMathExpression()
+shared_ptr<Atom> Engine::evaluateMathExpression()
 {
     shared_ptr<Atom> result = parseAtom();
     wchar_t symbol;
@@ -689,7 +693,7 @@ shared_ptr<Atom> Mefody::evaluateMathExpression()
     return result;
 }
 
-shared_ptr<Atom> Mefody::evaluateBoolExpression()
+shared_ptr<Atom> Engine::evaluateBoolExpression()
 {
     shared_ptr<Atom> result = evaluateMathExpression();
     wchar_t mathOp;
@@ -769,7 +773,7 @@ shared_ptr<Atom> Mefody::evaluateBoolExpression()
     return result;
 }
 
-shared_ptr<Atom> Mefody::evaluateBoolStatement()
+shared_ptr<Atom> Engine::evaluateBoolStatement()
 {
     /**
      * If expression contains only 1 math block - return as math expression result,
@@ -816,7 +820,7 @@ shared_ptr<Atom> Mefody::evaluateBoolStatement()
     return result;
 }
 
-bool Mefody::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+bool Engine::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
 {
     if (symbol == L'(') {
         shared_ptr<Atom> subExpr = evaluateBoolStatement();
@@ -836,7 +840,7 @@ bool Mefody::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     return false;
 }
 
-void Mefody::evaluateWhileLoop(int firstStmtPos)
+void Engine::evaluateWhileLoop(int firstStmtPos)
 {
     int loopBodyPos = pos;
 
@@ -871,7 +875,7 @@ void Mefody::evaluateWhileLoop(int firstStmtPos)
     stack.pop_back();
 }
 
-void Mefody::evaluateRangeLoop(int firstStmtPos)
+void Engine::evaluateRangeLoop(int firstStmtPos)
 {
     if (lastResult->getVar() == nullptr) {
         throw runtime_error("Initial statement should resolve to variable.");
@@ -932,7 +936,7 @@ void Mefody::evaluateRangeLoop(int firstStmtPos)
     stack.pop_back();
 }
 
-void Mefody::evaluateForLoop()
+void Engine::evaluateForLoop()
 {
     shared_ptr<Context> loopStack = make_shared<Context>();
     loopStack->setParent(getContext());
@@ -1033,7 +1037,7 @@ void Mefody::evaluateForLoop()
     stack.pop_back();
 }
 
-void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
+void Engine::evaluateBlockOrStatement(bool stopOnBreak)
 {
     wchar_t symbol;
     if ((symbol = readChar()) != L'{') {
@@ -1071,7 +1075,7 @@ void Mefody::evaluateBlockOrStatement(bool stopOnBreak)
     }
 }
 
-void Mefody::evaluateIfStructure()
+void Engine::evaluateIfStructure()
 {
     shared_ptr<Atom> lastIfResult = make_shared<Atom>();
     wchar_t symbol;
@@ -1156,7 +1160,7 @@ void Mefody::evaluateIfStructure()
     }
 }
 
-void Mefody::parseVariable(bool isConst) 
+void Engine::parseVariable(bool isConst) 
 {
     // Backup pos
     int prevPos = pos;
@@ -1195,7 +1199,7 @@ void Mefody::parseVariable(bool isConst)
     }
 }
 
-void Mefody::parseFunction()
+void Engine::parseFunction()
 {
     wchar_t symbol = readChar();
     wstring functionName;
@@ -1276,7 +1280,7 @@ void Mefody::parseFunction()
     skipBlockOrStatement();
 }
 
-void Mefody::evaluateStatement()
+void Engine::evaluateStatement()
 {    
     wchar_t symbol;
     if ((symbol = readChar()) == endOfFile) {
@@ -1401,7 +1405,7 @@ void Mefody::evaluateStatement()
     lastResult = evaluateBoolStatement();
 }
 
-void Mefody::evaluateStatements()
+void Engine::evaluateStatements()
 {
     evaluateStatement();
     wchar_t sep;
@@ -1424,7 +1428,7 @@ void Mefody::evaluateStatements()
     }
 }
 
-wstring Mefody::evaluate()
+wstring Engine::evaluate()
 {
     try {
         evaluateStatements();
@@ -1456,13 +1460,13 @@ wstring Mefody::evaluate()
     return L"";
 }
 
-wstring Mefody::evaluateFile(string filename)
+wstring Engine::evaluateFile(string filename)
 {
     wstring wfilename(filename.begin(), filename.end()); 
     return evaluateFile(wfilename);
 }
 
-wstring Mefody::evaluateFile(wstring wfilename)
+wstring Engine::evaluateFile(wstring wfilename)
 {
     insertSource(wfilename);
     return evaluate();

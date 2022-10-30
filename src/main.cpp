@@ -1,5 +1,5 @@
 #include "../include/tools.h"
-#include "../include/Mefody.h"
+#include "../include/Engine.h"
 #include <iostream>
 #include <cwchar>
 
@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     try {
         init();
         if (argc > 1) {
-            Mefody mefody{};
+            Engine mefody{};
             wcout << mefody.evaluateFile(argv[1]);
         } else {
             throw runtime_error("Input file is missing.");

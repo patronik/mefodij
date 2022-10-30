@@ -51,7 +51,7 @@
 
 using namespace std;
 
-class Mefody : public Parser
+class Engine : public Parser
 {
     // Return flag
     bool isReturn = false;
@@ -145,7 +145,8 @@ class Mefody : public Parser
     void resolveStringAccess(shared_ptr<Atom> & atom);
     void resolveArrayAccess(shared_ptr<Atom> & atom);
     void resolveMemberAccess(shared_ptr<Atom> & atom);
-    void resolveAtom(shared_ptr<Atom> & atom);
+    void resolveAtomAssignment(shared_ptr<Atom> & atom);
+    void resolveAtomAccess(shared_ptr<Atom> & atom);
     
     void evaluateWhileLoop(int firstStmtPos);
     void evaluateRangeLoop(int firstStmtPos);
@@ -160,7 +161,7 @@ class Mefody : public Parser
 
     void throwError(const string message);
 public:
-  Mefody();
+  Engine();
   wstring evaluate();
   wstring evaluateFile(string filename);
   wstring evaluateFile(wstring wfilename);
