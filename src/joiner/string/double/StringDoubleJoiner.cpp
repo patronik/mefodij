@@ -20,6 +20,7 @@ namespace Mefody {
             }
             
             left->getVar()->setString(to_wstring(right->getDouble()));
+            left->setString(to_wstring(right->getDouble()));
         }
     }
 

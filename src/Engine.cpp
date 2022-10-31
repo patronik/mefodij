@@ -879,10 +879,10 @@ namespace Mefody {
 
     void Engine::evaluateRangeLoop(int firstStmtPos)
     {
-        if (lastResult->getVar() == nullptr) {
+        auto elementVar = lastResult->getVar();
+        if (elementVar == nullptr) {
             throw runtime_error("Initial statement should resolve to variable.");
         }
-        auto elementVar = lastResult->getVar();
 
         // Container statement
         evaluateStatement();
@@ -900,9 +900,9 @@ namespace Mefody {
 
         auto array = lastResult->getArray();
         for (auto elem: array) {
+            // Set element per iteration
             elementVar->setArray({
-                {L"0", make_shared<Atom>(elem.first)},
-                {L"1", elem.second}
+                {L"0", make_shared<Atom>(elem.first)}, {L"1", elem.second}
             });
 
             shared_ptr<Context> iterationStack = make_shared<Context>();

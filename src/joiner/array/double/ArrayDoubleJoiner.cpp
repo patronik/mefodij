@@ -11,6 +11,7 @@ namespace Mefody {
         validate(op);
         if (op == L"=") {
             left->getVar()->setDouble(right->getDouble());
+            left->setDouble(right->getDouble());
         } 
     }
 

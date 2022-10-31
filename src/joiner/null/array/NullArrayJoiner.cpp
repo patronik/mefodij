@@ -12,6 +12,7 @@ namespace Mefody {
 
         if (op == L"=") {
             left->getVar()->setArray(right->getArray());
+            left->setArray(right->getArray());
         }  
     }
 

@@ -11,6 +11,7 @@ namespace Mefody {
         validate(op);
         if (op == L"=") {
             left->getVar()->setArray(right->getArray());
+            left->setArray(right->getArray());
         } 
     }
 

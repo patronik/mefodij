@@ -24,6 +24,7 @@ namespace Mefody {
             );
         } else if (op == L"=") {
             left->getVar()->setBool((bool) right->getInt());
+            left->setBool((bool) right->getInt());
         }
     }
 

@@ -13,6 +13,7 @@ namespace Mefody {
             left->setString(right->getString());
         } else if (op == L"=") { 
             left->getVar()->setString(right->getString());
+            left->setString(right->getString());
         }
     }
 

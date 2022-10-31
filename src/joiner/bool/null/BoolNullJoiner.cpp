@@ -12,6 +12,7 @@ namespace Mefody {
 
         if (op == L"=") {
             left->getVar()->setNull();
+            left->setNull();
         }
     }
 

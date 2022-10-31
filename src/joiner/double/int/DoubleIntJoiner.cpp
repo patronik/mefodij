@@ -56,6 +56,7 @@ namespace Mefody {
             );
         } else if (op == L"=") { 
             left->getVar()->setDouble((double) right->getInt());
+            left->setDouble((double) right->getInt());
         } 
     }
 

@@ -3,7 +3,7 @@
 
 namespace Mefody {
 
-    IntStringJoiner::IntStringJoiner(): Joiner({L"+"})
+    IntStringJoiner::IntStringJoiner(): Joiner({L"+", L"="})
     {}
 
     void IntStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -14,6 +14,9 @@ namespace Mefody {
             left->setString(
                 to_wstring(left->getInt()) + right->getString()
             );
+        } else if (op == L"=") {
+           left->getVar()->setString(right->getString());
+           left->setString(right->getString());
         }
     }
 

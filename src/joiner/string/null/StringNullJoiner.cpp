@@ -17,6 +17,7 @@ namespace Mefody {
             }
 
             left->getVar()->setNull();
+            left->setNull();
         }
     }
 

@@ -28,6 +28,7 @@ namespace Mefody {
             }
             
             left->getVar()->setBool(right->getBool());
+            left->setBool(right->getBool());
         }
     }
 
