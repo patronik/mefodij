@@ -126,14 +126,13 @@ namespace Mefody {
             || varName == AtomType::castBool
             || varName == AtomType::castArray
             || varName == AtomType::castString
-            || varName == AtomType::castNull
             ) {
                 atom->setCast(varName);
-            } else if (varName == L"true") {
+            } else if (varName == AtomType::keywordTrue) {
                 atom->setBool(true);
-            } else if (varName == L"false") {
+            } else if (varName == AtomType::keywordFalse) {
                 atom->setBool(false);
-            }  else if (varName == L"null") {
+            }  else if (varName == AtomType::keywordNull) {
                 atom->setNull();
             } else {
                 return false;
@@ -345,7 +344,7 @@ namespace Mefody {
     void Engine::resolveStringAccess(shared_ptr<Atom> & atom)
     {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!Mefody::Tools::inVector<wstring>({L"int"}, keyAtom->getType())) {
+        if (!Mefody::Tools::inVector<wstring>({AtomType::typeInt}, keyAtom->getType())) {
             throw runtime_error("Only integer keys are supported.");
         }
 
@@ -395,7 +394,7 @@ namespace Mefody {
             atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-            if (!Mefody::Tools::inVector<wstring>({L"string", L"int"}, keyAtom->getType())) {
+            if (!Mefody::Tools::inVector<wstring>({AtomType::typeString, AtomType::typeInt}, keyAtom->getType())) {
                 throw runtime_error("Only string and integer array keys are supported.");
             }
 
@@ -509,9 +508,9 @@ namespace Mefody {
                 symbol = readChar();
                 if (symbol == L'>') {
                     shared_ptr<Atom> arrayVal = evaluateBoolExpression();
-                    if (keyOrVal->getType() == L"string") {
+                    if (keyOrVal->getType() == AtomType::typeString) {
                         array[keyOrVal->getString()] = arrayVal;
-                    } else if (keyOrVal->getType() == L"int") {
+                    } else if (keyOrVal->getType() == AtomType::typeInt) {
                         if (keyOrVal->getInt() >= implicitKey) {
                             implicitKey = keyOrVal->getInt() + 1;
                         }

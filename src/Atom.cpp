@@ -5,45 +5,45 @@ namespace Mefody {
 
     Atom::Atom()
     {
-        type = L"null";
+        type = AtomType::typeNull;
         initMembers();
     }
 
     Atom::Atom(long val) 
     {
-    type = L"int";
-    intVal = val;
-    initMembers();
+        type = AtomType::typeInt;
+        intVal = val;
+        initMembers();
     }
 
 
     Atom::Atom(double val) 
     {
-    type = L"double";
-    doubleVal = val;
-    initMembers();
+        type = AtomType::typeDouble;
+        doubleVal = val;
+        initMembers();
     }
 
     Atom::Atom(wstring val) 
     {
-    type = L"string";
-    stringVal = val;
-    initMembers();
+        type = AtomType::typeString;
+        stringVal = val;
+        initMembers();
     }
 
 
     Atom::Atom(map<wstring, shared_ptr<Atom>> val) 
     {
-    type = L"array";
-    arrayVal = val;
-    initMembers();
+        type = AtomType::typeArray;
+        arrayVal = val;
+        initMembers();
     }
 
     Atom::Atom(bool val) 
     {
-    type = L"bool";
-    boolVal = val;
-    initMembers();
+        type = AtomType::typeBool;
+        boolVal = val;
+        initMembers();
     }
 
     int Atom::getArrayNextIndex()
@@ -293,7 +293,7 @@ namespace Mefody {
             return str;
         }
         if (type == AtomType::typeBool) {
-            return boolVal ? L"true" : L"false";
+            return boolVal ? AtomType::keywordTrue : AtomType::keywordFalse;
         }
         if (type == AtomType::typeCast) {
             throw runtime_error("Cast to string conversion");
@@ -424,8 +424,6 @@ namespace Mefody {
                     i++;
                 }
                 setArray(arrayVal);
-            } else if (typeTo == AtomType::castNull) {
-                setNull();
             } else {
                 throw runtime_error("Cast failed.");
             }
@@ -452,14 +450,12 @@ namespace Mefody {
                 setInt((int) getBool());
             } else if (typeTo == AtomType::castString) {
                 if (getBool()) {
-                    setString(L"true");
+                    setString(AtomType::keywordTrue);
                 } else {
-                    setString(L"false");
+                    setString(AtomType::keywordFalse);
                 }
             } else if (typeTo == AtomType::castDouble) {
                 setDouble((double) getBool());
-            } else if (typeTo == AtomType::castNull) {
-                setNull();
             } else {
                 throw runtime_error("Cast failed.");
             }
@@ -474,8 +470,6 @@ namespace Mefody {
                 setDouble((double) getInt());
             } else if (typeTo == AtomType::castBool) {
                 setBool((bool) getInt());
-            } else if (typeTo == AtomType::castNull) {
-                setNull();
             } else {
                 throw runtime_error("Cast failed.");
             }
@@ -490,19 +484,13 @@ namespace Mefody {
                 setString(to_wstring(getDouble()));
             } else if (typeTo == AtomType::castBool) {
                 setBool((bool) getDouble());
-            } else if (typeTo == AtomType::castNull) {
-                setNull();
             } else {
                 throw runtime_error("Cast failed.");
             }
         }
 
         if (type == AtomType::typeNull) {
-            if (typeTo == AtomType::castNull) {
-                return;
-            } else {
-                setNull();
-            }
+            throw runtime_error("Cannot cast null.");
         }
     }
 

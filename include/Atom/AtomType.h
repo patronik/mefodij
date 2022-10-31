@@ -21,7 +21,10 @@ class AtomType
   const static wstring castString;
   const static wstring castArray;
   const static wstring castBool;
-  const static wstring castNull;
+
+  const static wstring keywordTrue;
+  const static wstring keywordFalse;
+  const static wstring keywordNull;
 };
 
 #endif

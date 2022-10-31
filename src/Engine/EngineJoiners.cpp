@@ -1,5 +1,6 @@
 
 #include "../../include/Engine.h"
+#include "../../include/Atom/AtomType.h"
 
 namespace Mefody {
 
@@ -42,77 +43,77 @@ namespace Mefody {
 
     void Engine::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {   
-        if (left->getType() == L"int" && right->getType() == L"int") {
+        if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeInt) {
             Engine::intIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"int" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeDouble) {
             Engine::intDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"int" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeString) {
             Engine::intStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"int" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeArray) {
             Engine::intArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"int" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeBool) {
             Engine::intBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"int" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeNull) {
             Engine::intNullJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"int") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeInt) {
             Engine::doubleIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeDouble) {
             Engine::doubleDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeString) {
             Engine::doubleStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeArray) {
             Engine::doubleArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeBool) {
             Engine::doubleBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"double" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeNull) {
             Engine::doubleNullJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"int") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeInt) {
             Engine::stringIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeDouble) {
             Engine::stringDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeString) {
             Engine::stringStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeArray) {
             Engine::stringArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeBool) {
             Engine::stringBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"string" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeNull) {
             Engine::stringNullJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"int") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeInt) {
             Engine::arrayIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeDouble) {
             Engine::arrayDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeString) {
             Engine::arrayStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeArray) {
             Engine::arrayArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeBool) {
             Engine::arrayBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"array" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeNull) {
             Engine::arrayNullJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"int") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeInt) {
             Engine::boolIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeDouble) {
             Engine::boolDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeString) {
             Engine::boolStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeArray) {
             Engine::boolArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeBool) {
             Engine::boolBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"bool" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeNull) {
             Engine::boolNullJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"int") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeInt) {
             Engine::nullIntJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"double") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeDouble) {
             Engine::nullDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"string") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeString) {
             Engine::nullStringJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"array") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeArray) {
             Engine::nullArrayJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"bool") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeBool) {
             Engine::nullBoolJoiner->join(left, op, right);
-        } else if (left->getType() == L"null" && right->getType() == L"null") {
+        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeNull) {
             Engine::nullNullJoiner->join(left, op, right);
         } else {
             throw runtime_error(

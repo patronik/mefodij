@@ -13,4 +13,7 @@ const wstring AtomType::castDouble(L"дійсне");
 const wstring AtomType::castString(L"строка");
 const wstring AtomType::castArray(L"масив");
 const wstring AtomType::castBool(L"бул");
-const wstring AtomType::castNull(L"нул");
+
+const wstring AtomType::keywordTrue(L"так");
+const wstring AtomType::keywordFalse(L"ні");
+const wstring AtomType::keywordNull(L"нал");
