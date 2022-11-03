@@ -32,7 +32,7 @@ namespace Mefody {
     }
 
 
-    Atom::Atom(map<wstring, shared_ptr<Atom>> val) 
+    Atom::Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val) 
     {
         type = Keyword::typeArray;
         arrayVal = val;
@@ -120,7 +120,7 @@ namespace Mefody {
         stringVal[charIndex] = val;
     }
 
-    void Atom::setArray(map<wstring, shared_ptr<Atom>> val) 
+    void Atom::setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val) 
     {
         clearVal();
         arrayVal = val;
@@ -190,7 +190,7 @@ namespace Mefody {
         return stringVal;
     }
 
-    map<wstring, shared_ptr<Atom>> Atom::getArray() 
+    map<wstring, shared_ptr<Atom>, Tools::arrayCmp> Atom::getArray() 
     {
         if (type != Keyword::typeArray) {
             throw runtime_error("Wrong atom type");
@@ -415,15 +415,13 @@ namespace Mefody {
             } else if (typeTo == Keyword::castBool) {
                 setBool(getString() != L"");
             } else if (typeTo == Keyword::castArray) {
-                int i = 0;
-                map<wstring, shared_ptr<Atom>> arrayVal;
-                while (i < getString().size()) {
-                    arrayVal[to_wstring(i)] = make_shared<Atom>(
-                        wstring(1, getString().at(i))
-                    );
-                    i++;
+                map<wstring, shared_ptr<Atom>, Tools::arrayCmp> tmpArray; 
+                for (int i = 0; i < stringVal.size(); i++) {
+                    tmpArray.insert(
+                        {to_wstring(i), make_shared<Atom>(wstring(1, stringVal.at(i)))}
+                    ); 
                 }
-                setArray(arrayVal);
+                setArray(tmpArray);
             } else {
                 throw runtime_error("Cast failed.");
             }

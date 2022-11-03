@@ -8,6 +8,8 @@
 #include <memory>
 #include <map>
 
+#include "tools.h"
+
 namespace Mefody {
 
   using namespace std;
@@ -36,8 +38,9 @@ namespace Mefody {
 
       // next not used integer key in array
       int arrayNextIndex = 0; 
+
       // array of atoms (values)
-      map<wstring, shared_ptr<Atom>> arrayVal; 
+      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
 
       // string representing catst type
       wstring castVal = L""; 
@@ -62,14 +65,14 @@ namespace Mefody {
     Atom(long val);
     Atom(double val);
     Atom(wstring val);
-    Atom(map<wstring, shared_ptr<Atom>> val);
+    Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
     Atom(bool val);
 
     // Getters
     long getInt();
     double getDouble();
     wstring getString();
-    map<wstring, shared_ptr<Atom>> getArray();
+    map<wstring, shared_ptr<Atom>, Tools::arrayCmp> getArray();
     bool getBool();
     wstring getCast();
     int getCharIndex();
@@ -88,7 +91,7 @@ namespace Mefody {
     void setDouble(double val);
     void setString(wstring val);
     void setStringChar(wchar_t val, int charIndex);
-    void setArray(map<wstring, shared_ptr<Atom>> val);
+    void setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
     void setBool(bool val);
     void setNull();
     void setCast(wstring val);

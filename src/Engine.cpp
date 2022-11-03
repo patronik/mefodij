@@ -385,7 +385,7 @@ namespace Mefody {
         }
 
         if (atom->getVar()->getType() != Keyword::typeArray) {
-            atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
+            atom->getVar()->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
         }
 
         wstring arrayKey;
@@ -497,7 +497,17 @@ namespace Mefody {
             return false;
         }
 
-        map<wstring, shared_ptr<Atom>> array{};
+        map<wstring, shared_ptr<Atom>, Tools::arrayCmp> array{};
+
+        // handle empty array
+        symbol = readChar();
+        if (symbol == L']') {
+            atom->setArray(array);
+            return true;
+        } else {
+            unreadChar();
+        }
+
         int implicitKey = 0;
         do {
             shared_ptr<Atom> keyOrVal = evaluateBoolExpression();

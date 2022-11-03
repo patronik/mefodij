@@ -24,6 +24,14 @@ namespace Mefody {
         }
         wstring readWideFile(const char * filename);
         bool fileExist(const char * fileName);
+        struct arrayCmp {
+            bool operator()(const wstring& a, const wstring& b) const {
+                if (isNumber(a) && isNumber(b)) {
+                    return stoi(a) < stoi(b);
+                }
+                return a < b;
+            }
+        };
     };
 
 }
