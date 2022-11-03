@@ -1,11 +1,11 @@
-#ifndef ATOM_TYPE_H
-#define ATOM_TYPE_H
+#ifndef KEYWORD_H
+#define KEYWORD_H
 
 #include <string>
 
 using namespace std;
 
-class AtomType
+class Keyword
 {
   public:
   const static wstring typeInt;
@@ -25,6 +25,18 @@ class AtomType
   const static wstring keywordTrue;
   const static wstring keywordFalse;
   const static wstring keywordNull;
+
+  const static wstring keywordLength;
+  const static wstring keywordSize;
+  const static wstring keywordFirst;
+  const static wstring keywordSecond;
+
+  // internal functions
+  const static wstring inArrayFunc;
+
+  // function parameters
+  const static wstring elemParam;
+  const static wstring arrayParam;
 };
 
 #endif

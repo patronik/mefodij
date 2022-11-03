@@ -1,6 +1,6 @@
 
 #include "../../include/Engine.h"
-#include "../../include/Atom/AtomType.h"
+#include "../../include/Atom/Keyword.h"
 
 namespace Mefody {
 
@@ -43,77 +43,77 @@ namespace Mefody {
 
     void Engine::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {   
-        if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeInt) {
+        if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeInt) {
             Engine::intIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeDouble) {
             Engine::intDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeString) {
             Engine::intStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeArray) {
             Engine::intArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeBool) {
             Engine::intBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeInt && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeNull) {
             Engine::intNullJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeInt) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeInt) {
             Engine::doubleIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeDouble) {
             Engine::doubleDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeString) {
             Engine::doubleStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeArray) {
             Engine::doubleArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeBool) {
             Engine::doubleBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeDouble && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeNull) {
             Engine::doubleNullJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeInt) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeInt) {
             Engine::stringIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeDouble) {
             Engine::stringDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeString) {
             Engine::stringStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeArray) {
             Engine::stringArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeBool) {
             Engine::stringBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeString && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeNull) {
             Engine::stringNullJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeInt) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeInt) {
             Engine::arrayIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeDouble) {
             Engine::arrayDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeString) {
             Engine::arrayStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeArray) {
             Engine::arrayArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeBool) {
             Engine::arrayBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeArray && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeNull) {
             Engine::arrayNullJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeInt) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeInt) {
             Engine::boolIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeDouble) {
             Engine::boolDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeString) {
             Engine::boolStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeArray) {
             Engine::boolArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeBool) {
             Engine::boolBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeBool && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeNull) {
             Engine::boolNullJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeInt) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeInt) {
             Engine::nullIntJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeDouble) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeDouble) {
             Engine::nullDoubleJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeString) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeString) {
             Engine::nullStringJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeArray) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeArray) {
             Engine::nullArrayJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeBool) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeBool) {
             Engine::nullBoolJoiner->join(left, op, right);
-        } else if (left->getType() == AtomType::typeNull && right->getType() == AtomType::typeNull) {
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeNull) {
             Engine::nullNullJoiner->join(left, op, right);
         } else {
             throw runtime_error(

@@ -1,6 +1,6 @@
 #include "../include/Parser.h"
 #include "../include/tools.h"
-#include "../include/Atom/AtomType.h"
+#include "../include/Atom/Keyword.h"
 #include "../include/Atom.h"
 
 namespace Mefody {
@@ -14,14 +14,14 @@ namespace Mefody {
         binChars = L"01";
 
         reservedKeywords = {
-            AtomType::castInt, 
-            AtomType::castDouble, 
-            AtomType::castString, 
-            AtomType::castArray, 
-            AtomType::castBool, 
-            AtomType::keywordTrue,
-            AtomType::keywordFalse,
-            AtomType::keywordNull,
+            Keyword::castInt, 
+            Keyword::castDouble, 
+            Keyword::castString, 
+            Keyword::castArray, 
+            Keyword::castBool, 
+            Keyword::keywordTrue,
+            Keyword::keywordFalse,
+            Keyword::keywordNull,
             statementLem,
             statementConst,
             statementFunc,

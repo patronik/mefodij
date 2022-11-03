@@ -1,5 +1,5 @@
 #include "../include/Engine.h"
-#include "../include/Atom/AtomType.h"
+#include "../include/Atom/Keyword.h"
 #include "../include/tools.h"
 
 namespace Mefody {
@@ -121,18 +121,18 @@ namespace Mefody {
 
     bool Engine::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
     {
-        if (varName == AtomType::castInt
-            || varName == AtomType::castDouble
-            || varName == AtomType::castBool
-            || varName == AtomType::castArray
-            || varName == AtomType::castString
+        if (varName == Keyword::castInt
+            || varName == Keyword::castDouble
+            || varName == Keyword::castBool
+            || varName == Keyword::castArray
+            || varName == Keyword::castString
             ) {
                 atom->setCast(varName);
-            } else if (varName == AtomType::keywordTrue) {
+            } else if (varName == Keyword::keywordTrue) {
                 atom->setBool(true);
-            } else if (varName == AtomType::keywordFalse) {
+            } else if (varName == Keyword::keywordFalse) {
                 atom->setBool(false);
-            }  else if (varName == AtomType::keywordNull) {
+            }  else if (varName == Keyword::keywordNull) {
                 atom->setNull();
             } else {
                 return false;
@@ -344,7 +344,7 @@ namespace Mefody {
     void Engine::resolveStringAccess(shared_ptr<Atom> & atom)
     {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!Mefody::Tools::inVector<wstring>({AtomType::typeInt}, keyAtom->getType())) {
+        if (!Mefody::Tools::inVector<wstring>({Keyword::typeInt}, keyAtom->getType())) {
             throw runtime_error("Only integer keys are supported.");
         }
 
@@ -357,7 +357,7 @@ namespace Mefody {
             throw runtime_error("Individual characters cannot be accessed with array access.");
         }
 
-        if (keyAtom->getType() != AtomType::typeInt) {
+        if (keyAtom->getType() != Keyword::typeInt) {
             throw runtime_error("Only integer keys can be used for accessing string character.");
         }
 
@@ -384,7 +384,7 @@ namespace Mefody {
             unreadChar();
         }
 
-        if (atom->getVar()->getType() != AtomType::typeArray) {
+        if (atom->getVar()->getType() != Keyword::typeArray) {
             atom->getVar()->setArray(map<wstring, shared_ptr<Atom>>{});
         }
 
@@ -394,7 +394,7 @@ namespace Mefody {
             atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-            if (!Mefody::Tools::inVector<wstring>({AtomType::typeString, AtomType::typeInt}, keyAtom->getType())) {
+            if (!Mefody::Tools::inVector<wstring>({Keyword::typeString, Keyword::typeInt}, keyAtom->getType())) {
                 throw runtime_error("Only string and integer array keys are supported.");
             }
 
@@ -475,7 +475,7 @@ namespace Mefody {
         wchar_t symbol = readChar();
         // Resolve element/member access
         if (symbol == L'[') {
-            if (atom->getType() == AtomType::typeString) {
+            if (atom->getType() == Keyword::typeString) {
                 resolveStringAccess(atom);
             } else {
                 resolveArrayAccess(atom);
@@ -508,9 +508,9 @@ namespace Mefody {
                 symbol = readChar();
                 if (symbol == L'>') {
                     shared_ptr<Atom> arrayVal = evaluateBoolExpression();
-                    if (keyOrVal->getType() == AtomType::typeString) {
+                    if (keyOrVal->getType() == Keyword::typeString) {
                         array[keyOrVal->getString()] = arrayVal;
-                    } else if (keyOrVal->getType() == AtomType::typeInt) {
+                    } else if (keyOrVal->getType() == Keyword::typeInt) {
                         if (keyOrVal->getInt() >= implicitKey) {
                             implicitKey = keyOrVal->getInt() + 1;
                         }
@@ -828,7 +828,7 @@ namespace Mefody {
             if (readChar() != L')') {
                 throw runtime_error("Syntax error. Wrong number of parentheses.");
             }
-            if (subExpr->getType() == AtomType::typeCast) {
+            if (subExpr->getType() == Keyword::typeCast) {
                 // Type casting
                 atom = parseAtom();
                 atom->cast(subExpr->getCast());
@@ -886,7 +886,7 @@ namespace Mefody {
         // Container statement
         evaluateStatement();
 
-        if (lastResult->getType() != AtomType::typeArray) {
+        if (lastResult->getType() != Keyword::typeArray) {
             throw runtime_error("Separator must be followed by an array.");
         }
 

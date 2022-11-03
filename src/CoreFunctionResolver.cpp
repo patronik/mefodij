@@ -1,16 +1,16 @@
 
 #include "../include/CoreFunctionResolver.h"
-#include "../include/Atom/AtomType.h"
+#include "../include/Atom/Keyword.h"
 
 namespace Mefody {
 
     CoreFunctionResolver::CoreFunctionResolver(): storage{}
     {
-        setFunction(L"вМасиві",
+        setFunction(Keyword::inArrayFunc,
             &CoreFunctionResolver::inArray,
             {
-                {0, {L"елемент", nullptr, false}},
-                {1, {L"масив", nullptr, false}}
+                {0, {Keyword::elemParam, nullptr, false}},
+                {1, {Keyword::arrayParam, nullptr, false}}
             }
         );
     }
@@ -59,8 +59,8 @@ namespace Mefody {
 
     void CoreFunctionResolver::inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
     {
-        shared_ptr<Atom> element = stack->getVar(L"елемент");
-        shared_ptr<Atom> array = stack->getVar(L"масив");
+        shared_ptr<Atom> element = stack->getVar(Keyword::elemParam);
+        shared_ptr<Atom> array = stack->getVar(Keyword::arrayParam);
         bool found = false;
 
         for (const auto & kv : array->getArray()) {
@@ -68,42 +68,42 @@ namespace Mefody {
                 continue;
             }
 
-            if (kv.second->getType() == AtomType::typeInt) {
+            if (kv.second->getType() == Keyword::typeInt) {
                 if (kv.second->getInt() == element->getInt()) {
                     found = true;
                     break;
                 }
             }
 
-            if (kv.second->getType() == AtomType::typeDouble) {
+            if (kv.second->getType() == Keyword::typeDouble) {
                 if (kv.second->getDouble() == element->getDouble()) {
                     found = true;
                     break;
                 }
             }
 
-            if (kv.second->getType() == AtomType::typeString) {
+            if (kv.second->getType() == Keyword::typeString) {
                 if (kv.second->getString() == element->getString()) {
                     found = true;
                     break;
                 }
             }
 
-            if (kv.second->getType() == AtomType::typeBool) {
+            if (kv.second->getType() == Keyword::typeBool) {
                 if (kv.second->getBool() == element->getBool()) {
                     found = true;
                     break;
                 }
             }
 
-            if (kv.second->getType() == AtomType::typeArray) {
+            if (kv.second->getType() == Keyword::typeArray) {
                 if (kv.second->getArray() == element->getArray()) {
                     found = true;
                     break;
                 }
             }
 
-            if (kv.second->getType() == AtomType::typeNull) {
+            if (kv.second->getType() == Keyword::typeNull) {
                 found = true;
                 break;
             }

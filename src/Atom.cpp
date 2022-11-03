@@ -1,17 +1,17 @@
-#include "../include/Atom/AtomType.h"
+#include "../include/Atom/Keyword.h"
 #include "../include/Atom.h"
 #include "../include/tools.h"
 namespace Mefody {
 
     Atom::Atom()
     {
-        type = AtomType::typeNull;
+        type = Keyword::typeNull;
         initMembers();
     }
 
     Atom::Atom(long val) 
     {
-        type = AtomType::typeInt;
+        type = Keyword::typeInt;
         intVal = val;
         initMembers();
     }
@@ -19,14 +19,14 @@ namespace Mefody {
 
     Atom::Atom(double val) 
     {
-        type = AtomType::typeDouble;
+        type = Keyword::typeDouble;
         doubleVal = val;
         initMembers();
     }
 
     Atom::Atom(wstring val) 
     {
-        type = AtomType::typeString;
+        type = Keyword::typeString;
         stringVal = val;
         initMembers();
     }
@@ -34,14 +34,14 @@ namespace Mefody {
 
     Atom::Atom(map<wstring, shared_ptr<Atom>> val) 
     {
-        type = AtomType::typeArray;
+        type = Keyword::typeArray;
         arrayVal = val;
         initMembers();
     }
 
     Atom::Atom(bool val) 
     {
-        type = AtomType::typeBool;
+        type = Keyword::typeBool;
         boolVal = val;
         initMembers();
     }
@@ -98,21 +98,21 @@ namespace Mefody {
     {
         clearVal();
         intVal = val;
-        type = AtomType::typeInt;        
+        type = Keyword::typeInt;        
     }
 
     void Atom::setDouble(double val) 
     {
         clearVal();
         doubleVal = val;
-        type = AtomType::typeDouble;        
+        type = Keyword::typeDouble;        
     }
 
     void Atom::setString(wstring val) 
     {
         clearVal();
         stringVal = val;
-        type = AtomType::typeString;        
+        type = Keyword::typeString;        
     }
 
     void Atom::setStringChar(wchar_t val, int charIndex)
@@ -124,7 +124,7 @@ namespace Mefody {
     {
         clearVal();
         arrayVal = val;
-        type = AtomType::typeArray; 
+        type = Keyword::typeArray; 
         
         if (arrayVal.size() > 0) {
             int topIndex = 0;
@@ -150,25 +150,25 @@ namespace Mefody {
     {
         clearVal();
         boolVal = val;
-        type = AtomType::typeBool;        
+        type = Keyword::typeBool;        
     }
 
     void Atom::setNull() 
     {
         clearVal();
-        type = AtomType::typeNull;        
+        type = Keyword::typeNull;        
     }
 
     void Atom::setCast(wstring val) 
     {
         clearVal();
         castVal = val;
-        type = AtomType::typeCast;        
+        type = Keyword::typeCast;        
     }
 
     long Atom::getInt() 
     {
-        if (type != AtomType::typeInt) {
+        if (type != Keyword::typeInt) {
             throw runtime_error("Wrong atom type");
         }
         return intVal;
@@ -176,7 +176,7 @@ namespace Mefody {
 
     double Atom::getDouble() 
     {
-        if (type != AtomType::typeDouble) {
+        if (type != Keyword::typeDouble) {
             throw runtime_error("Wrong atom type");
         }
         return doubleVal;
@@ -184,7 +184,7 @@ namespace Mefody {
 
     wstring Atom::getString() 
     {
-        if (type != AtomType::typeString) {
+        if (type != Keyword::typeString) {
             throw runtime_error("Wrong atom type");
         }
         return stringVal;
@@ -192,7 +192,7 @@ namespace Mefody {
 
     map<wstring, shared_ptr<Atom>> Atom::getArray() 
     {
-        if (type != AtomType::typeArray) {
+        if (type != Keyword::typeArray) {
             throw runtime_error("Wrong atom type");
         }
         return arrayVal;
@@ -200,7 +200,7 @@ namespace Mefody {
 
     bool Atom::getBool() 
     {
-        if (type != AtomType::typeBool) {
+        if (type != Keyword::typeBool) {
             throw runtime_error("Wrong atom type");
         }
         return boolVal;
@@ -208,7 +208,7 @@ namespace Mefody {
 
     wstring Atom::getCast() 
     {
-        if (type != AtomType::typeCast) {
+        if (type != Keyword::typeCast) {
             throw runtime_error("Wrong atom type");
         }
         return castVal;
@@ -216,7 +216,7 @@ namespace Mefody {
 
     bool Atom::issetAt(wstring key)
     {
-        if (type != AtomType::typeArray) {
+        if (type != Keyword::typeArray) {
             throw runtime_error("Method is not supported by non array atom");
         }
 
@@ -228,7 +228,7 @@ namespace Mefody {
 
     shared_ptr<Atom> Atom::elementAt(wstring key)
     {
-        if (type != AtomType::typeArray) {
+        if (type != Keyword::typeArray) {
             throw runtime_error("Method is not supported by non array atom");
         }
 
@@ -241,7 +241,7 @@ namespace Mefody {
 
     void Atom::createAt(wstring key, shared_ptr<Atom> val) 
     {
-        if (type != AtomType::typeArray) {
+        if (type != Keyword::typeArray) {
             throw runtime_error("Method is not supported by non array atom");
         }
 
@@ -250,25 +250,25 @@ namespace Mefody {
 
     bool Atom::toBool()
     {
-        if (type == AtomType::typeInt) {
+        if (type == Keyword::typeInt) {
             return intVal > 0;
         }
-        if (type == AtomType::typeDouble ) {
+        if (type == Keyword::typeDouble ) {
             return doubleVal > 0;
         }
-        if (type == AtomType::typeString ) {
+        if (type == Keyword::typeString ) {
             return !stringVal.empty();
         }
-        if (type == AtomType::typeArray) {
+        if (type == Keyword::typeArray) {
             return arrayVal.size() > 0;
         }
-        if (type == AtomType::typeBool) {
+        if (type == Keyword::typeBool) {
             return boolVal;
         }
-        if (type == AtomType::typeNull) {
+        if (type == Keyword::typeNull) {
             return false;
         }
-        if (type == AtomType::typeCast ) {
+        if (type == Keyword::typeCast ) {
             return !castVal.empty();
         }
         throw runtime_error("Not supported atom type");
@@ -276,29 +276,29 @@ namespace Mefody {
 
     wstring Atom::toString() 
     {
-        if (type == AtomType::typeInt) {
+        if (type == Keyword::typeInt) {
             return to_wstring(intVal);
         }
-        if (type == AtomType::typeDouble ) {
+        if (type == Keyword::typeDouble ) {
             return to_wstring(doubleVal);
         }
-        if (type == AtomType::typeString ) {
+        if (type == Keyword::typeString ) {
             return stringVal;
         }
-        if (type == AtomType::typeArray) {
+        if (type == Keyword::typeArray) {
             wstring str;
             for (auto elem: arrayVal) {
                 str += elem.second->toString();
             }
             return str;
         }
-        if (type == AtomType::typeBool) {
-            return boolVal ? AtomType::keywordTrue : AtomType::keywordFalse;
+        if (type == Keyword::typeBool) {
+            return boolVal ? Keyword::keywordTrue : Keyword::keywordFalse;
         }
-        if (type == AtomType::typeCast) {
+        if (type == Keyword::typeCast) {
             throw runtime_error("Cast to string conversion");
         }
-        if (type == AtomType::typeNull) {
+        if (type == Keyword::typeNull) {
             return L"";
         }
         throw runtime_error("Not supported atom type");
@@ -311,27 +311,27 @@ namespace Mefody {
         }
 
         if (op == L"++") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 ++intVal;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 ++doubleVal;
             } else {
                 throw runtime_error("Pre increment is not supported by type " + string(type.begin(), type.end()));
             }
         } else if (op == L"--") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 --intVal;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 --doubleVal;
             } else {
                 throw runtime_error("Pre decrement is not supported by type " + string(type.begin(), type.end()));
             }
         } else if (op == L"!") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 setBool(!((bool) intVal));
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 setBool(!((bool) doubleVal));
-            } else if (type == AtomType::typeBool) {
+            } else if (type == Keyword::typeBool) {
                 setBool(!(boolVal));
             } else {
                 throw runtime_error("Boolean inversion is not supported by type " + string(type.begin(), type.end()));
@@ -348,17 +348,17 @@ namespace Mefody {
         }
 
         if (op == L"++") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 intVal++;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 doubleVal++;
             } else {
                 throw runtime_error("Post increment is not supported by type " + string(type.begin(), type.end()));
             }
         } else if (op == L"--") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 intVal--;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 doubleVal--;
             } else {
                 throw runtime_error("Post decrement is not supported by type " + string(type.begin(), type.end()));
@@ -375,9 +375,9 @@ namespace Mefody {
         }
 
         if (op == L"+") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 +intVal;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 -doubleVal;
             } else {
                 throw runtime_error(
@@ -387,9 +387,9 @@ namespace Mefody {
                 );
             }
         } else if (op == L"-") {
-            if (type == AtomType::typeInt) {
+            if (type == Keyword::typeInt) {
                 -intVal;
-            } else if (type == AtomType::typeDouble) {
+            } else if (type == Keyword::typeDouble) {
                 -doubleVal;
             } else {
                 throw runtime_error(
@@ -405,16 +405,16 @@ namespace Mefody {
 
     void Atom::cast(wstring typeTo)
     {
-        if (type == AtomType::typeString) {
-            if (typeTo == AtomType::castString) {
+        if (type == Keyword::typeString) {
+            if (typeTo == Keyword::castString) {
                 return;
-            } else if (typeTo == AtomType::castInt) {
+            } else if (typeTo == Keyword::castInt) {
                 setInt(wcstol(getString().c_str(), nullptr, 10));
-            } else if (typeTo == AtomType::castDouble) {
+            } else if (typeTo == Keyword::castDouble) {
                 setDouble(wcstod(getString().c_str(), nullptr));
-            } else if (typeTo == AtomType::castBool) {
+            } else if (typeTo == Keyword::castBool) {
                 setBool(getString() != L"");
-            } else if (typeTo == AtomType::castArray) {
+            } else if (typeTo == Keyword::castArray) {
                 int i = 0;
                 map<wstring, shared_ptr<Atom>> arrayVal;
                 while (i < getString().size()) {
@@ -429,10 +429,10 @@ namespace Mefody {
             }
         }
 
-        if (type == AtomType::typeArray) {
-            if (typeTo == AtomType::castArray) {
+        if (type == Keyword::typeArray) {
+            if (typeTo == Keyword::castArray) {
                 return;
-            } else if (typeTo == AtomType::castString) {
+            } else if (typeTo == Keyword::castString) {
                 wstring stringVal;
                 for (auto elem: arrayVal) {
                     stringVal += elem.second->toString();
@@ -443,53 +443,53 @@ namespace Mefody {
             }
         }
 
-        if (type == AtomType::typeBool) {
-            if (typeTo == AtomType::castBool) {
+        if (type == Keyword::typeBool) {
+            if (typeTo == Keyword::castBool) {
                 return;
-            } else if (typeTo == AtomType::castInt) {
+            } else if (typeTo == Keyword::castInt) {
                 setInt((int) getBool());
-            } else if (typeTo == AtomType::castString) {
+            } else if (typeTo == Keyword::castString) {
                 if (getBool()) {
-                    setString(AtomType::keywordTrue);
+                    setString(Keyword::keywordTrue);
                 } else {
-                    setString(AtomType::keywordFalse);
+                    setString(Keyword::keywordFalse);
                 }
-            } else if (typeTo == AtomType::castDouble) {
+            } else if (typeTo == Keyword::castDouble) {
                 setDouble((double) getBool());
             } else {
                 throw runtime_error("Cast failed.");
             }
         }
 
-        if (type == AtomType::typeInt) {
-            if (typeTo == AtomType::castInt) {
+        if (type == Keyword::typeInt) {
+            if (typeTo == Keyword::castInt) {
                 return;
-            } else if (typeTo == AtomType::castString) {
+            } else if (typeTo == Keyword::castString) {
                 setString(to_wstring(getInt()));
-            } else if (typeTo == AtomType::castDouble) {
+            } else if (typeTo == Keyword::castDouble) {
                 setDouble((double) getInt());
-            } else if (typeTo == AtomType::castBool) {
+            } else if (typeTo == Keyword::castBool) {
                 setBool((bool) getInt());
             } else {
                 throw runtime_error("Cast failed.");
             }
         }
 
-        if (type == AtomType::typeDouble) {
-            if (typeTo == AtomType::castDouble) {
+        if (type == Keyword::typeDouble) {
+            if (typeTo == Keyword::castDouble) {
                 return;
-            } else if (typeTo == AtomType::castInt) {
+            } else if (typeTo == Keyword::castInt) {
                 setInt((int) getDouble());
-            } else if (typeTo == AtomType::castString) {
+            } else if (typeTo == Keyword::castString) {
                 setString(to_wstring(getDouble()));
-            } else if (typeTo == AtomType::castBool) {
+            } else if (typeTo == Keyword::castBool) {
                 setBool((bool) getDouble());
             } else {
                 throw runtime_error("Cast failed.");
             }
         }
 
-        if (type == AtomType::typeNull) {
+        if (type == Keyword::typeNull) {
             throw runtime_error("Cannot cast null.");
         }
     }
@@ -534,14 +534,14 @@ namespace Mefody {
         members = {
             {
                 L"string", {
-                    {L"довжина", &Atom::resolveStringSize}
+                    {Keyword::keywordLength, &Atom::resolveStringSize}
                 }
             },
             {
                 L"array", {
-                    {L"розмір", &Atom::resolveArraySize},
-                    {L"перший", &Atom::resolveArrayFirst},
-                    {L"другий", &Atom::resolveArraySecond}
+                    {Keyword::keywordSize, &Atom::resolveArraySize},
+                    {Keyword::keywordFirst, &Atom::resolveArrayFirst},
+                    {Keyword::keywordSecond, &Atom::resolveArraySecond}
                 }
             }
         };
