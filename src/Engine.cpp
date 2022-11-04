@@ -673,32 +673,10 @@ namespace Mefody {
                         unreadChar(2);
                         return result;
                     }
-                    break;
-                // Lower lever operators
-                case L'=': // => or ==
-                case L'!': // boolean not
-                case L'&': // start of boolean and
-                case L'>': // less than
-                case L'<': // greater than
-                case L'|': // boolean "or" ||
-                case L'~': // check against regex
-                // end of argument or statement
-                case L',':
-                // end of subexpression
-                case L')':
-                // end of statement
-                case L';':
-                // array value parsed
-                case L']':
-                // separator in range loop
-                case L':':
-                    // start of statement block
+                break;
+                default:
                     unreadChar();
                     return result;
-                    break;
-                default:
-                    throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(atomOp) + "'.");
-                    break;
             }
         }
         return result;
@@ -759,26 +737,9 @@ namespace Mefody {
                 case L'~': // check against regex
                     joinAtoms(result, L"~", evaluateBoolExpression());
                 break;
-                // Lower lever operators
-                case L'&': // boolean "and" &&
-                case L'|': // boolean "or" ||
-                // end of argument or statement
-                case L',':
-                // end of subexpression
-                case L')':
-                // end of statement
-                case L';':
-                // array value parsed
-                case L']':
-                // separator in range loop
-                case L':':
-                    unreadChar();
-                    // return result from recursive call
-                    return result;
-                    break;
                 default:
-                    throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(mathOp) + "'.");
-                    break;
+                    unreadChar();
+                    return result;
             }
         }
         return result;
@@ -811,21 +772,9 @@ namespace Mefody {
                         throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(booleanOp) + "' '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
                     }
                     break;
-                // end of argument
-                case L',':
-                // end of subexpression
-                case L')':
-                // end of statement
-                case L';':
-                // separator in range loop
-                case L':':
-                    unreadChar();
-                    // return result from recursive call
-                    return result;
-                    break;
                 default:
-                    throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(booleanOp) + "'.");
-                    break;
+                    unreadChar();
+                    return result;
             }
         }
         return result;
@@ -1431,8 +1380,8 @@ namespace Mefody {
                     evaluateStatement();
                     break;
                 default:
-                    throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(sep) + "'.");
-                    break;
+                    unreadChar();
+                    return;
             }
         }
     }
@@ -1453,6 +1402,7 @@ namespace Mefody {
                         evaluateStatements();
                         break;
                     default:
+                        // Token has not been processed by any of top level parsers
                         throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(separator) + "'.");
                     break;
                 }
