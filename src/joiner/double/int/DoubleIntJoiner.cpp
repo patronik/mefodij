@@ -19,7 +19,7 @@ namespace Mefody {
             left->setDouble(left->getDouble() * right->getInt());
         } else if (op == L"/") {
             if (right->getInt() == 0) {
-                    throw runtime_error("Division by zero");
+                    throw runtime_error("Division by zero.");
                 }
             left->setDouble(left->getDouble() / right->getInt());
         }  else if (op == L"%") {

@@ -7,12 +7,18 @@ namespace Mefody {
     void Engine::throwError(string message)
     {
         tuple<wstring, int, int> currLoc = getLastLocation();
+
+        string fileLoc = "";
+        if (get<0>(currLoc) != L"") {
+            fileLoc = " In file: '" 
+            + Tools::wideStrToStr(get<0>(currLoc)) 
+            +  "'";
+        }
+
         throw runtime_error(
             message 
-            + " In file: '" 
-            + Mefody::Tools::wideStrToStr(get<0>(currLoc)) 
-            +  "'" 
-            + " At " 
+            + fileLoc
+            + (fileLoc != "" ? " at ": " At ") 
             + to_string(get<1>(currLoc)) 
             + ":" 
             + to_string(get<2>(currLoc)) 
@@ -181,7 +187,7 @@ namespace Mefody {
                 // No intializer means required parameter is missing
                 if (get<1>(params.at(argumentIndex)) == nullptr) {
                     throw runtime_error("Function required parameter '"
-                        + Mefody::Tools::wideStrToStr(get<0>(params.at(argumentIndex)))
+                        + Tools::wideStrToStr(get<0>(params.at(argumentIndex)))
                         + "' is missing."
                     );
                 } else {
@@ -196,7 +202,7 @@ namespace Mefody {
         }
 
         if (symbol != L')') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         return functionStack;
@@ -228,7 +234,7 @@ namespace Mefody {
 
         // check if function exists
         if (!getContext()->hasFunction(varName)) {
-            throw runtime_error("'" + Mefody::Tools::wideStrToStr(varName) + "' is not a function.");
+            throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is not a function.");
         }
 
         pair<int, map<int, tuple<wstring, shared_ptr<Atom>, bool>>> & funcData = getContext()->getFunction(varName);
@@ -297,7 +303,7 @@ namespace Mefody {
     bool Engine::parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     {
         wstring number{};
-        if (Mefody::Tools::isNumber(symbol)) {
+        if (Tools::isNumber(symbol)) {
             number.push_back(symbol);
 
             // Check for other bases
@@ -315,12 +321,12 @@ namespace Mefody {
             // Decimal int or double
             bool hasDot = false;
             while (symbol = readChar(false, true)) {
-                if (Mefody::Tools::isNumber(symbol))  {
+                if (Tools::isNumber(symbol))  {
                     number.push_back(symbol);
                     continue;
                 } else if (symbol == L'.') {
                     if (hasDot) {
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
                     }
                     hasDot = true;
                     number.push_back(symbol);
@@ -344,13 +350,13 @@ namespace Mefody {
     void Engine::resolveStringAccess(shared_ptr<Atom> & atom)
     {
         shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-        if (!Mefody::Tools::inVector<wstring>({Keyword::typeInt}, keyAtom->getType())) {
+        if (!Tools::inVector<wstring>({Keyword::typeInt}, keyAtom->getType())) {
             throw runtime_error("Only integer keys are supported.");
         }
 
         wchar_t symbol;
         if ((symbol = readChar()) != L']') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         if (atom->getCharIndex() > -1) {
@@ -394,13 +400,13 @@ namespace Mefody {
             atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
-            if (!Mefody::Tools::inVector<wstring>({Keyword::typeString, Keyword::typeInt}, keyAtom->getType())) {
+            if (!Tools::inVector<wstring>({Keyword::typeString, Keyword::typeInt}, keyAtom->getType())) {
                 throw runtime_error("Only string and integer array keys are supported.");
             }
 
             wchar_t symbol;
             if ((symbol = readChar()) != L']') {
-                throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
             }
             arrayKey = keyAtom->toString();
         }
@@ -531,13 +537,13 @@ namespace Mefody {
 
                     symbol = readChar();
                 } else {
-                    throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                    throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
                 }
             }
         } while (symbol == L',');
 
         if (symbol != L']') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         atom->setArray(array);
@@ -556,8 +562,8 @@ namespace Mefody {
             }
 
             // check if sequence is reserved 
-            if (Mefody::Tools::inVector<wstring>(reservedKeywords, varName)) {
-                throw runtime_error("This name '" + Mefody::Tools::wideStrToStr(varName) + "' is reserved.");
+            if (Tools::inVector<wstring>(reservedKeywords, varName)) {
+                throw runtime_error("This name '" + Tools::wideStrToStr(varName) + "' is reserved.");
             }
 
             // try to process function call atom
@@ -568,7 +574,7 @@ namespace Mefody {
             // variable atom
             shared_ptr<Context> storage = getContext();
             if (!storage->hasVar(varName)) {
-                throw runtime_error("Variable '" + Mefody::Tools::wideStrToStr(varName) + "' is not defined.");
+                throw runtime_error("Variable '" + Tools::wideStrToStr(varName) + "' is not defined.");
             }
 
             // copy variable state to atom 
@@ -705,7 +711,7 @@ namespace Mefody {
                         return result;
                         break;
                     } else {
-                        throw runtime_error("Unexpected token '"+ Mefody::Tools::wideStrToStr(mathOp) + "' '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '"+ Tools::wideStrToStr(mathOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
                     }
                 break;
                 case L'!':
@@ -713,7 +719,7 @@ namespace Mefody {
                     if (symbol == L'=') {
                         joinAtoms(result, L"!=", evaluateMathExpression());
                     } else {
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(mathOp) + "' '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(mathOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
                     }
                 break;
                 case L'>':
@@ -761,7 +767,7 @@ namespace Mefody {
                     if (symbol == L'|') {
                         joinAtoms(result, L"||", evaluateBoolExpression());
                     } else {
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(booleanOp) + "' '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(booleanOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
                     }
                     break;
                 case L'&':
@@ -769,7 +775,7 @@ namespace Mefody {
                     if (symbol == L'&') {
                         joinAtoms(result, L"&&", evaluateBoolExpression());
                     } else {
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(booleanOp) + "' '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(booleanOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
                     }
                     break;
                 default:
@@ -851,7 +857,7 @@ namespace Mefody {
 
         wchar_t symbol;
         if ((symbol = readChar()) != L')') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         int loopBodyPos = -1;
@@ -903,7 +909,7 @@ namespace Mefody {
 
         wchar_t symbol;
         if ((symbol = readChar()) != L'(') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         int firstStmtPos = pos;
@@ -928,7 +934,7 @@ namespace Mefody {
         }
 
         if ((symbol = readChar()) != L';') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         // For loop
@@ -939,7 +945,7 @@ namespace Mefody {
         do {
             evaluateStatement();
             if ((symbol = readChar()) != L';') {
-                throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
             }
 
             if (!lastResult->toBool()) {
@@ -1003,7 +1009,7 @@ namespace Mefody {
             unreadChar();
             evaluateStatement();
             if ((symbol = readChar()) != L';') {
-                throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
             }
         } else {
             wchar_t statementOp;
@@ -1026,7 +1032,7 @@ namespace Mefody {
                         evaluateStatement();
                         break;
                     default:
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(statementOp) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(statementOp) + "'.");
                     break;
                 }
             }
@@ -1038,7 +1044,7 @@ namespace Mefody {
         shared_ptr<Atom> lastIfResult = make_shared<Atom>();
         wchar_t symbol;
         if ((symbol = readChar()) != L'(') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'." );
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'." );
         }
 
         parseParentheticalAtom(symbol, lastIfResult);
@@ -1086,13 +1092,13 @@ namespace Mefody {
                     // Evaluate else if
                     if (lastIfResult->toBool()) {
                         if ((symbol = readChar()) != L'(') {
-                            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
                         }
                         fastForward({L')'}, L'(');
                         skipBlockOrStatement();
                     } else {
                         if ((symbol = readChar()) != L'(') {
-                            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
                         }
                         parseParentheticalAtom(symbol, lastIfResult);
                         if (lastIfResult->toBool()) {
@@ -1130,11 +1136,11 @@ namespace Mefody {
         }
 
         if (getContext()->hasOwnVar(varName)) {
-            throw runtime_error("Variable '" + Mefody::Tools::wideStrToStr(varName) + "' already defined." );
+            throw runtime_error("Variable '" + Tools::wideStrToStr(varName) + "' already defined." );
         }
 
-        if (Mefody::Tools::inVector<wstring>(reservedKeywords,varName)) {
-            throw runtime_error("'" + Mefody::Tools::wideStrToStr(varName) + "' is reserved keyword." );
+        if (Tools::inVector<wstring>(reservedKeywords,varName)) {
+            throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword." );
         }
 
         auto newVariable = make_shared<Atom>();
@@ -1166,19 +1172,19 @@ namespace Mefody {
         }
 
         if (coreFuncResolver.hasFunction(functionName)) {
-            throw runtime_error("Function '" + Mefody::Tools::wideStrToStr(functionName) + "' is core function.");
+            throw runtime_error("Function '" + Tools::wideStrToStr(functionName) + "' is core function.");
         }
 
         if (getContext()->hasOwnFunction(functionName)) {
-            throw runtime_error("Function '" + Mefody::Tools::wideStrToStr(functionName) + "' already defined.");
+            throw runtime_error("Function '" + Tools::wideStrToStr(functionName) + "' already defined.");
         }
 
-        if (Mefody::Tools::inVector<wstring>(reservedKeywords,functionName)) {
-            throw runtime_error("'" + Mefody::Tools::wideStrToStr(functionName) + "' is reserved keyword.");
+        if (Tools::inVector<wstring>(reservedKeywords,functionName)) {
+            throw runtime_error("'" + Tools::wideStrToStr(functionName) + "' is reserved keyword.");
         }
 
         if ((symbol = readChar()) != L'(') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         map<int, tuple<wstring, shared_ptr<Atom>, bool>> parameters;
@@ -1198,13 +1204,13 @@ namespace Mefody {
 
             wstring argName;
             if (!parseCharacterSequence(symbol, argName)) {
-                throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
             }
 
             for (auto const & parameter : parameters) {
                 if (get<0>(parameter.second) == argName) {
                     throw runtime_error("Parameter with name '" 
-                    + Mefody::Tools::wideStrToStr(argName) 
+                    + Tools::wideStrToStr(argName) 
                     + "' already exists.");
                 }
             }
@@ -1230,7 +1236,7 @@ namespace Mefody {
         } while ((symbol = readChar()) == L',');
 
         if (symbol != L')') {
-            throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
 
         getContext()->setFunction(functionName, pos, parameters);
@@ -1254,7 +1260,7 @@ namespace Mefody {
                 evaluateStatement();
                 return;
             } else {
-                throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(symbol) + "'.");
+                throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
             }
         }
 
@@ -1403,7 +1409,7 @@ namespace Mefody {
                         break;
                     default:
                         // Token has not been processed by any of top level parsers
-                        throw runtime_error("Unexpected token '" + Mefody::Tools::wideStrToStr(separator) + "'.");
+                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(separator) + "'.");
                     break;
                 }
             }

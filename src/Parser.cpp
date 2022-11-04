@@ -118,7 +118,7 @@ namespace Mefody {
                 if (nestedMarker && symbol == nestedMarker) {
                     depth++;
                     readChar(false, true);
-                } else if (Mefody::Tools::inVector<wchar_t>(terminators, symbol)) {
+                } else if (Tools::inVector<wchar_t>(terminators, symbol)) {
                     if (depth == 0) {
                         break;
                     } else {
@@ -179,13 +179,19 @@ namespace Mefody {
         }
     }
 
-    void Parser::insertSource(wstring wfilename)
+    void Parser::insertSource(wstring wfilename, wstring code)
     {
-        if (!Mefody::Tools::fileExist(Mefody::Tools::wideStrToStr(wfilename).c_str())) {
-            throw runtime_error("File '" + Mefody::Tools::wideStrToStr(wfilename) + "' does not exist.");
+        wstring source;
+        if (wfilename != L"") {
+            if (!Tools::fileExist(Tools::wideStrToStr(wfilename).c_str())) {
+                throw runtime_error("File '" + Tools::wideStrToStr(wfilename) + "' does not exist.");
+            }
+            source = Tools::readWideFile(Tools::wideStrToStr(wfilename).c_str());
+        } else if (code != L"") {
+            source = code;
+        } else {
+            throw runtime_error("Source file or code should be provided.");
         }
-
-        wstring source = Mefody::Tools::readWideFile(Mefody::Tools::wideStrToStr(wfilename).c_str());
 
         src.insert(pos, source);
 

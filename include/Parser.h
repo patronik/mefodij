@@ -54,7 +54,7 @@ namespace Mefody {
         // Reserved keywords
         vector<wstring> reservedKeywords{};
 
-        void insertSource(wstring wfilename);
+        void insertSource(wstring wfilename = L"", wstring code = L"");
         tuple<wstring, int, int> getLastLocation();
         bool isSpace(wchar_t symbol);
         void skipSpaces();
