@@ -157,7 +157,7 @@ namespace Mefody {
       void evaluateBlockOrStatement(bool stopOnBreak = false);
       void evaluateStatement();
       void evaluateStatements();
-      void evaluate();
+      shared_ptr<Atom> evaluate();
 
       tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState();
       void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state);
@@ -165,10 +165,10 @@ namespace Mefody {
       void throwError(const string message);
   public:
     Engine();
-    void evaluateFile(string filename);
-    void evaluateFile(wstring wfilename);
-    void evaluateCode(string code);
-    void evaluateCode(wstring wcode);
+    shared_ptr<Atom> evaluateFile(string filename);
+    shared_ptr<Atom> evaluateFile(wstring wfilename);
+    shared_ptr<Atom> evaluateCode(string code);
+    shared_ptr<Atom> evaluateCode(wstring wcode);
   };
 
 }

@@ -1392,7 +1392,7 @@ namespace Mefody {
         }
     }
 
-    void Engine::evaluate()
+    shared_ptr<Atom> Engine::evaluate()
     {
         try {
             evaluateStatements();
@@ -1416,28 +1416,29 @@ namespace Mefody {
         } catch(const exception & e) {
             throwError(e.what());
         }
+        return lastResult;
     }
 
-    void Engine::evaluateFile(wstring wfilename)
+    shared_ptr<Atom> Engine::evaluateFile(wstring wfilename)
     {
         insertSource(wfilename);
-        evaluate();
+        return evaluate();
     }
 
-    void Engine::evaluateFile(string filename)
+    shared_ptr<Atom> Engine::evaluateFile(string filename)
     {
-        evaluateFile(Tools::strToWideStr(filename));
+        return evaluateFile(Tools::strToWideStr(filename));
     }
 
-    void Engine::evaluateCode(wstring wcode)
+    shared_ptr<Atom> Engine::evaluateCode(wstring wcode)
     {
         insertSource(L"", wcode);
-        evaluate();
+        return evaluate();
     }
     
-    void Engine::evaluateCode(string code)
+    shared_ptr<Atom> Engine::evaluateCode(string code)
     {
         insertSource(L"", Tools::strToWideStr(code));
-        evaluate();
+        return evaluate();
     }
 }
