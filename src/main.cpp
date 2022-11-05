@@ -9,14 +9,34 @@ void init() {
     setlocale(LC_ALL, "en_US.utf8");
 }
 
-int main(int argc, char** argv) {
+char * getCmdOption(char ** begin, char ** end, const string & option)
+{
+    char ** itr = find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const string& option)
+{
+    return find(begin, end, option) != end;
+}
+
+int main(int argc, char * argv[]) {
     try {
         init();
-        if (argc > 1) {
+        if(cmdOptionExists(argv, argv + argc, "-f")) {
             Mefody::Engine mefody{};
-            wcout << mefody.evaluateFile(argv[1]);
+            mefody.evaluateFile(getCmdOption(argv, argv + argc, "-f"));
+        } else if (cmdOptionExists(argv, argv + argc, "-r")) {
+            Mefody::Engine mefody{};
+            mefody.evaluateCode(getCmdOption(argv, argv + argc, "-r"));
         } else {
-            throw runtime_error("Input file is missing.");
+            throw runtime_error(
+                "Error: input is missing. Provide input file with \"-f\" or paste raw code with \"-r\"."
+            );
         }
     } catch(const exception & e) {
        cerr << "Error: " << e.what() << '\n';

@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <cstring>
 
 namespace Mefody {
     namespace Tools {
@@ -17,6 +18,8 @@ namespace Mefody {
         bool isNumber(const wchar_t src);
         string wideStrToStr(wstring src);
         string wideStrToStr(wchar_t src);
+        wstring strToWideStr(string src);
+        wstring strToWideStr(char src);
         template <class T>
         bool inVector(vector<T> storage, T key)
         {

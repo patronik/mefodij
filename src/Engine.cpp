@@ -1392,7 +1392,7 @@ namespace Mefody {
         }
     }
 
-    wstring Engine::evaluate()
+    void Engine::evaluate()
     {
         try {
             evaluateStatements();
@@ -1413,28 +1413,31 @@ namespace Mefody {
                     break;
                 }
             }
-
-            if (isReturn) {
-                return lastResult->toString();
-            }
-            
         } catch(const exception & e) {
             throwError(e.what());
         }
-
-        return L"";
     }
 
-    wstring Engine::evaluateFile(string filename)
-    {
-        wstring wfilename(filename.begin(), filename.end()); 
-        return evaluateFile(wfilename);
-    }
-
-    wstring Engine::evaluateFile(wstring wfilename)
+    void Engine::evaluateFile(wstring wfilename)
     {
         insertSource(wfilename);
-        return evaluate();
+        evaluate();
     }
 
+    void Engine::evaluateFile(string filename)
+    {
+        evaluateFile(Tools::strToWideStr(filename));
+    }
+
+    void Engine::evaluateCode(wstring wcode)
+    {
+        insertSource(L"", wcode);
+        evaluate();
+    }
+    
+    void Engine::evaluateCode(string code)
+    {
+        insertSource(L"", Tools::strToWideStr(code));
+        evaluate();
+    }
 }

@@ -29,6 +29,27 @@ namespace Mefody {
             return wideStrToStr(wstring{src});
         }
 
+        wstring strToWideStr(string src)
+        {
+            // reset the conversion state
+            mbtowc(nullptr, 0, 0); 
+
+            const char* ptr = src.c_str();
+            const char* end = ptr + strlen(ptr);
+
+            wstring result;
+            int ret;
+            for (wchar_t wc; (ret = std::mbtowc(&wc, ptr, end-ptr)) > 0; ptr+=ret) {
+                result.push_back(wc);
+            }
+            return result;
+        }
+
+        wstring strToWideStr(char src) 
+        {
+            return strToWideStr(string(1, src));
+        }
+
         wstring readWideFile(const char * filename)
         {
             wifstream wif(filename);
