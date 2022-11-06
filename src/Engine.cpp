@@ -1136,11 +1136,11 @@ namespace Mefodij {
         }
 
         if (getContext()->hasOwnVar(varName)) {
-            throw runtime_error("Variable '" + Tools::wideStrToStr(varName) + "' already defined." );
+            throw runtime_error("Variable '" + Tools::wideStrToStr(varName) + "' already defined.");
         }
 
         if (Tools::inVector<wstring>(reservedKeywords,varName)) {
-            throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword." );
+            throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword.");
         }
 
         auto newVariable = make_shared<Atom>();

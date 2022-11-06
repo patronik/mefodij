@@ -83,7 +83,6 @@ namespace Mefodij {
 
     void Atom::clearVal() 
     { 
-        options = 0;
         intVal = 0;  
         doubleVal = 0.0;
         stringVal.clear();
@@ -233,7 +232,11 @@ namespace Mefodij {
         }
 
         if (!arrayVal.count(key)) {
-            throw runtime_error("Element with key " + string(key.begin(), key.end()) + " does not exist");
+            throw runtime_error(
+                "Element with key '" 
+                + Tools::wideStrToStr(key) 
+                + "' does not exist"
+            );
         }
 
         return arrayVal.at(key);
@@ -250,58 +253,54 @@ namespace Mefodij {
 
     bool Atom::toBool()
     {
-        if (type == Keyword::typeInt) {
-            return intVal > 0;
-        }
-        if (type == Keyword::typeDouble ) {
-            return doubleVal > 0;
-        }
-        if (type == Keyword::typeString ) {
-            return !stringVal.empty();
-        }
-        if (type == Keyword::typeArray) {
-            return arrayVal.size() > 0;
-        }
         if (type == Keyword::typeBool) {
             return boolVal;
-        }
-        if (type == Keyword::typeNull) {
+        } else if (type == Keyword::typeInt) {
+            return intVal != 0;
+        } else if (type == Keyword::typeDouble ) {
+            return doubleVal != 0;
+        } else if (type == Keyword::typeString ) {
+            return !stringVal.empty();
+        } else if (type == Keyword::typeArray) {
+            return !arrayVal.empty();
+        } else if (type == Keyword::typeNull) {
             return false;
+        } else {
+            throw runtime_error(
+                "Cannot covert atom of type '" 
+                + Tools::wideStrToStr(type) 
+                + "' to bool."
+            );
         }
-        if (type == Keyword::typeCast ) {
-            return !castVal.empty();
-        }
-        throw runtime_error("Not supported atom type");
     }
 
     wstring Atom::toString() 
     {
-        if (type == Keyword::typeInt) {
-            return to_wstring(intVal);
-        }
-        if (type == Keyword::typeDouble ) {
-            return to_wstring(doubleVal);
-        }
-        if (type == Keyword::typeString ) {
+        if (type == Keyword::typeString) {
             return stringVal;
-        }
-        if (type == Keyword::typeArray) {
+        } else if (type == Keyword::typeInt) {
+            return to_wstring(intVal);
+        } else if (type == Keyword::typeDouble ) {
+            return to_wstring(doubleVal);
+        } else if (type == Keyword::typeArray) {
             wstring str;
             for (auto elem: arrayVal) {
                 str += elem.second->toString();
             }
             return str;
-        }
-        if (type == Keyword::typeBool) {
-            return boolVal ? Keyword::keywordTrue : Keyword::keywordFalse;
-        }
-        if (type == Keyword::typeCast) {
-            throw runtime_error("Cast to string conversion");
-        }
-        if (type == Keyword::typeNull) {
+        } else if (type == Keyword::typeBool) {
+            return boolVal 
+            ? Keyword::keywordTrue 
+            : Keyword::keywordFalse;
+        } else if (type == Keyword::typeNull) {
             return L"";
+        } else {
+            throw runtime_error(
+                "Cannot covert atom of type '" 
+                + Tools::wideStrToStr(type) 
+                + "' to string."
+            );
         }
-        throw runtime_error("Not supported atom type");
     }
 
     void Atom::preOperator(wstring op)
@@ -316,7 +315,11 @@ namespace Mefodij {
             } else if (type == Keyword::typeDouble) {
                 ++doubleVal;
             } else {
-                throw runtime_error("Pre increment is not supported by type " + string(type.begin(), type.end()));
+                throw runtime_error(
+                    "Pre increment is not supported by type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
             }
         } else if (op == L"--") {
             if (type == Keyword::typeInt) {
@@ -324,7 +327,11 @@ namespace Mefodij {
             } else if (type == Keyword::typeDouble) {
                 --doubleVal;
             } else {
-                throw runtime_error("Pre decrement is not supported by type " + string(type.begin(), type.end()));
+                throw runtime_error(
+                    "Pre decrement is not supported by type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
             }
         } else if (op == L"!") {
             if (type == Keyword::typeInt) {
@@ -334,10 +341,18 @@ namespace Mefodij {
             } else if (type == Keyword::typeBool) {
                 setBool(!(boolVal));
             } else {
-                throw runtime_error("Boolean inversion is not supported by type " + string(type.begin(), type.end()));
+                throw runtime_error(
+                    "Boolean inversion is not supported by type " 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
             }
         } else {
-            throw runtime_error("Not supported pre operator " + string(op.begin(), op.end()));
+            throw runtime_error(
+                "Not supported pre operator " 
+                + Tools::wideStrToStr(op) 
+                + "'."
+            );
         }
     }
 
@@ -353,7 +368,11 @@ namespace Mefodij {
             } else if (type == Keyword::typeDouble) {
                 doubleVal++;
             } else {
-                throw runtime_error("Post increment is not supported by type " + string(type.begin(), type.end()));
+                throw runtime_error(
+                    "Post increment is not supported by type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
             }
         } else if (op == L"--") {
             if (type == Keyword::typeInt) {
@@ -361,10 +380,18 @@ namespace Mefodij {
             } else if (type == Keyword::typeDouble) {
                 doubleVal--;
             } else {
-                throw runtime_error("Post decrement is not supported by type " + string(type.begin(), type.end()));
+                throw runtime_error(
+                    "Post decrement is not supported by type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
             }
         } else {
-            throw runtime_error("Not supported post operator " + string(op.begin(), op.end()));
+            throw runtime_error(
+                "Not supported post operator " 
+                + Tools::wideStrToStr(op) 
+                + "'."
+            );
         }
     }
 
