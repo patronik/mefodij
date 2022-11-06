@@ -41,6 +41,13 @@ TEST(BooleanTest, LogicalAndOperator)
     ASSERT_EQ(false, result->toBool());
 }
 
+TEST(BooleanTest, TestRegex)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"'привіт світ' ~ '.*сві.*';");
+    ASSERT_TRUE(result->toBool());
+}
+
 TEST(BooleanTest, LogicalOrAndAndOperator)
 {
     Mefodij::Engine mefodij{};
@@ -63,10 +70,37 @@ TEST(VariableTest, MathWithConst)
     Mefodij::Engine mefodij{};
     EXPECT_THROW(
       mefodij.evaluateCode(
-        LR"(конст змінна = 2; змінна = 3;)"
+        LR"(
+            конст змінна = 2; змінна = 3;
+        )"
       ), 
       runtime_error
     );
+}
+
+TEST(ArrayTest, ArrayLiteral)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем контейнер = ['a' => 2, 'b' => 3, 7];
+            вихід контейнер['a'] + контейнер['b'] + контейнер[0];
+        )"
+    );
+    ASSERT_EQ(L"12", result->toString());
+}
+
+
+TEST(ArrayTest, ArrayMembers)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем контейнер = ['a' => 2, 7, 'b' => 3];
+            вихід контейнер.перший + контейнер.другий;
+        )"
+    );
+    ASSERT_EQ(L"9", result->toString());
 }
 
 int main(int argc, char **argv) {
