@@ -2,7 +2,7 @@
 #include "../../include/Engine.h"
 #include "../../include/Atom/Keyword.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     unique_ptr<BoolBoolJoiner> Engine::boolBoolJoiner = make_unique<BoolBoolJoiner>();
     unique_ptr<BoolIntJoiner> Engine::boolIntJoiner = make_unique<BoolIntJoiner>();
@@ -117,9 +117,9 @@ namespace Mefody {
             Engine::nullNullJoiner->join(left, op, right);
         } else {
             throw runtime_error(
-                "Joiner for type " + Mefody::Tools::wideStrToStr(left->getType())
-                + " operator " + Mefody::Tools::wideStrToStr(op)
-                + " and type " + Mefody::Tools::wideStrToStr(right->getType())
+                "Joiner for type " + Mefodij::Tools::wideStrToStr(left->getType())
+                + " operator " + Mefodij::Tools::wideStrToStr(op)
+                + " and type " + Mefodij::Tools::wideStrToStr(right->getType())
                 + " does not exist."
             );   
         }    

@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/string/double/StringDoubleJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     StringDoubleJoiner::StringDoubleJoiner() : Joiner({L"+", L"="})
     {}

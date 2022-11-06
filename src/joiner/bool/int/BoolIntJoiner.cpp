@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/bool/int/BoolIntJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     BoolIntJoiner::BoolIntJoiner() : Joiner({L"==", L"||", L"&&", L"="})
     {}

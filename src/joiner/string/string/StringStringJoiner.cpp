@@ -2,7 +2,7 @@
 #include "../../../../include/joiner/string/string/StringStringJoiner.h"
 
 #include <regex>
-namespace Mefody {
+namespace Mefodij {
 
     StringStringJoiner::StringStringJoiner() : Joiner({L"+", L"=", L"~", L"==", L"!="})
     {}

@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/bool/string/BoolStringJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     BoolStringJoiner::BoolStringJoiner() : Joiner({L"=", L"+"})
     {}

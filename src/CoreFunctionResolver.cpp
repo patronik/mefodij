@@ -2,7 +2,7 @@
 #include "../include/CoreFunctionResolver.h"
 #include "../include/Atom/Keyword.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     CoreFunctionResolver::CoreFunctionResolver(): storage{}
     {
@@ -48,7 +48,7 @@ namespace Mefody {
         if (!storage.count(name)) {
             throw runtime_error(
                 "Core function '" 
-                + Mefody::Tools::wideStrToStr(name) 
+                + Mefodij::Tools::wideStrToStr(name) 
                 + "' does not exist."
             );
         }

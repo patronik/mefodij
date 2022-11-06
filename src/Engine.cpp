@@ -2,7 +2,7 @@
 #include "../include/Atom/Keyword.h"
 #include "../include/tools.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     void Engine::throwError(string message)
     {

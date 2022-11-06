@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/string/int/StringIntJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     StringIntJoiner::StringIntJoiner() : Joiner({L"+", L"="})
     {}

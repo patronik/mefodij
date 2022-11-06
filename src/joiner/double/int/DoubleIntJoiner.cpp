@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/double/int/DoubleIntJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     DoubleIntJoiner::DoubleIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"="})
     {

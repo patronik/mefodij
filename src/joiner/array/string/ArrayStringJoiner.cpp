@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/array/string/ArrayStringJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     ArrayStringJoiner::ArrayStringJoiner() : Joiner({L"="})
     {}

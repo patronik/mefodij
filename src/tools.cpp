@@ -1,6 +1,6 @@
 #include "../include/tools.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     namespace Tools {
         using namespace std;

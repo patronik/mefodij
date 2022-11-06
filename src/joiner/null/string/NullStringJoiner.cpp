@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/null/string/NullStringJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     NullStringJoiner::NullStringJoiner() : Joiner({L"=", L"+"})
     {}

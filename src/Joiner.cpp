@@ -1,6 +1,6 @@
 #include "../include/Joiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     Joiner::Joiner(vector<wstring> ops): operators(ops)
     {}

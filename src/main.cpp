@@ -28,11 +28,11 @@ int main(int argc, char * argv[]) {
     try {
         init();
         if(cmdOptionExists(argv, argv + argc, "-f")) {
-            Mefody::Engine mefody{};
-            mefody.evaluateFile(getCmdOption(argv, argv + argc, "-f"));
+            Mefodij::Engine mefodij{};
+            mefodij.evaluateFile(getCmdOption(argv, argv + argc, "-f"));
         } else if (cmdOptionExists(argv, argv + argc, "-r")) {
-            Mefody::Engine mefody{};
-            mefody.evaluateCode(getCmdOption(argv, argv + argc, "-r"));
+            Mefodij::Engine mefodij{};
+            mefodij.evaluateCode(getCmdOption(argv, argv + argc, "-r"));
         } else {
             throw runtime_error(
                 "Error: input is missing. Provide input file with \"-f\" or paste raw code with \"-r\"."

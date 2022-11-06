@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/bool/null/BoolNullJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     BoolNullJoiner::BoolNullJoiner() : Joiner({L"="})
     {}

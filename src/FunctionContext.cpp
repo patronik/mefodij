@@ -1,6 +1,6 @@
 #include "../include/FunctionContext.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     void FunctionContext::set(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
     {

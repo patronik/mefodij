@@ -4,7 +4,7 @@
 
 #include "../../../Joiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
 class NullNullJoiner: public Joiner 
 {

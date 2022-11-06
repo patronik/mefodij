@@ -10,7 +10,7 @@
 #include <fstream>
 #include <cstring>
 
-namespace Mefody {
+namespace Mefodij {
     namespace Tools {
         using namespace std;
 

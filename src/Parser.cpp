@@ -3,7 +3,7 @@
 #include "../include/Atom/Keyword.h"
 #include "../include/Atom.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     Parser::Parser()
     {

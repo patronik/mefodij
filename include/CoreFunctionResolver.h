@@ -4,7 +4,7 @@
 #include "Atom.h"
 #include "Context.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     using namespace std;
 

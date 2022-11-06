@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/int/int/IntIntJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     IntIntJoiner::IntIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"=", L"!="})
     {}

@@ -1,7 +1,7 @@
 #include "../include/Atom/Keyword.h"
 #include "../include/Atom.h"
 #include "../include/tools.h"
-namespace Mefody {
+namespace Mefodij {
 
     Atom::Atom()
     {
@@ -130,7 +130,7 @@ namespace Mefody {
             int topIndex = 0;
             for (auto elem: arrayVal) {
                 try {
-                    if (Mefody::Tools::isNumber(elem.first)) {
+                    if (Mefodij::Tools::isNumber(elem.first)) {
                         int i = stoi(elem.first);
                         if (i > topIndex) {
                             topIndex = i;
@@ -600,7 +600,7 @@ namespace Mefody {
         if (!members.count(type)) {
             throw runtime_error(
                 "Atom of type '" 
-                + Mefody::Tools::wideStrToStr(type) 
+                + Mefodij::Tools::wideStrToStr(type) 
                 + "' does not have members."
             );
         }
@@ -608,9 +608,9 @@ namespace Mefody {
         if (!members[type].count(name)) {
             throw runtime_error(
                 "Atom of type '" 
-                + Mefody::Tools::wideStrToStr(type) 
+                + Mefodij::Tools::wideStrToStr(type) 
                 + "' does not have a member '" 
-                + Mefody::Tools::wideStrToStr(name) 
+                + Mefodij::Tools::wideStrToStr(name) 
                 + "'."
             );
         }

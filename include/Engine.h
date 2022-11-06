@@ -1,5 +1,5 @@
-#ifndef MEFODY_H
-#define MEFODY_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 #include <iostream>
 #include <string>
@@ -49,7 +49,7 @@
 #include "joiner/string/double/StringDoubleJoiner.h"
 #include "joiner/string/string/StringStringJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
   using namespace std;
 

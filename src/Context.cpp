@@ -1,6 +1,6 @@
 #include "../include/Context.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     void Context::setVar(wstring key, shared_ptr<Atom> var) 
     {
@@ -34,7 +34,7 @@ namespace Mefody {
         if (parentContext) {
             return parentContext->getVar(key);
         }
-        throw runtime_error("Variable '" + Mefody::Tools::wideStrToStr(key) + "' does not exist.");
+        throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(key) + "' does not exist.");
     }
 
     void Context::setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
@@ -68,7 +68,7 @@ namespace Mefody {
         if (parentContext) {
             return parentContext->getFunction(key);
         }
-        throw runtime_error("Function '" + Mefody::Tools::wideStrToStr(key) + "' does not exist.");
+        throw runtime_error("Function '" + Mefodij::Tools::wideStrToStr(key) + "' does not exist.");
     }
 
     void Context::setParent(shared_ptr<Context> parent)

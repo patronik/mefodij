@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/bool/array/BoolArrayJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     BoolArrayJoiner::BoolArrayJoiner() : Joiner({L"="})
     {}

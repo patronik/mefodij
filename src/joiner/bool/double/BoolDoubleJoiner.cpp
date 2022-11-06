@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/bool/double/BoolDoubleJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     BoolDoubleJoiner::BoolDoubleJoiner() : Joiner({L"==", L"||", L"&&", L"="})
     {}

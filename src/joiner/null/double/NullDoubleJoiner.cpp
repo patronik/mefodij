@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/null/double/NullDoubleJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     NullDoubleJoiner::NullDoubleJoiner() : Joiner({L"="})
     {}

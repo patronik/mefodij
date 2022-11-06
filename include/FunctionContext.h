@@ -3,7 +3,7 @@
 
 #include "Atom.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     using namespace std;
 

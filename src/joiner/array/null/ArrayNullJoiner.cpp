@@ -1,7 +1,7 @@
 
 #include "../../../../include/joiner/array/null/ArrayNullJoiner.h"
 
-namespace Mefody {
+namespace Mefodij {
 
     ArrayNullJoiner::ArrayNullJoiner() : Joiner({L"="})
     {}

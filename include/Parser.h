@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 
-namespace Mefody {
+namespace Mefodij {
 
     using namespace std;
 
