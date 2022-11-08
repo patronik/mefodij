@@ -143,6 +143,7 @@ namespace Mefodij {
 
         if (!left->getIsAssigned()) {
             left->getVar()->setIsAssigned();
+            left->setIsAssigned();
         }
     }
 
