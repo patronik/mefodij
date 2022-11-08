@@ -6,12 +6,6 @@ void init() {
     setlocale(LC_ALL, "en_US.utf8");
 }
 
-TEST(MathTest, TwoPlushTwoShouldBeFour)
-{
-    Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(L"2 + 2;");
-    ASSERT_EQ(L"4", result->toString());
-}
 
 TEST(MathTest, FourMathOperators)
 {
@@ -27,18 +21,11 @@ TEST(MathTest, ExpressionInParentheses)
     ASSERT_EQ(L"7", result->toString());
 }
 
-TEST(BooleanTest, LogicalOrOperator)
+TEST(BooleanTest, LogicalOperators)
 {
     Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(L"0 || 1;");
+    auto result = mefodij.evaluateCode(L"(ні && 1) || (0 || так);");
     ASSERT_EQ(true, result->toBool());
-}
-
-TEST(BooleanTest, LogicalAndOperator)
-{
-    Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(L"0 && 1;");
-    ASSERT_EQ(false, result->toBool());
 }
 
 TEST(BooleanTest, TestRegex)
@@ -48,30 +35,25 @@ TEST(BooleanTest, TestRegex)
     ASSERT_TRUE(result->toBool());
 }
 
-TEST(BooleanTest, LogicalOrAndAndOperator)
+TEST(VariableTest, MathWithVar)
 {
     Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(L"(0 && 1) || так;");
-    ASSERT_EQ(true, result->toBool());
-}
-
-TEST(VariableTest, MathWithVariable)
-{
-    Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(LR"(
-      мем змінна = 2;
-      змінна + змінна * 3 - 50 / 10;
+    auto result = mefodij.evaluateCode(
+    LR"(
+      мем тест = 2;
+      тест + тест * 3 - 50 / 10;
     )");
     ASSERT_EQ(L"3", result->toString());
 }
 
-TEST(VariableTest, MathWithConst)
+TEST(VariableTest, MathWithConstVar)
 {
     Mefodij::Engine mefodij{};
     EXPECT_THROW(
       mefodij.evaluateCode(
         LR"(
-            конст змінна = 2; змінна = 3;
+            конст змінна = 2; 
+            змінна = 3;
         )"
       ), 
       runtime_error
@@ -83,8 +65,8 @@ TEST(ArrayTest, ArrayLiteral)
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(
         LR"(
-            мем контейнер = ['a' => 2, 'b' => 3, 7];
-            вихід контейнер['a'] + контейнер['b'] + контейнер[0];
+            мем мас = ['a' => 2, 'b' => 3, 7];
+            вихід мас['a'] + мас['b'] + мас[0];
         )"
     );
     ASSERT_EQ(L"12", result->toString());
@@ -96,11 +78,103 @@ TEST(ArrayTest, ArrayMembers)
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(
         LR"(
-            мем контейнер = ['a' => 2, 7, 'b' => 3];
-            вихід контейнер.перший + контейнер.другий;
+            мем мас = ['a' => 2, 7, 'b' => 3];
+            вихід мас.перший + мас.другий;
         )"
     );
     ASSERT_EQ(L"9", result->toString());
+}
+
+TEST(IfConditionTest, BasicIf)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            умова (1 == 1) {
+                вихід 2;
+            } 
+        )"
+    );
+    ASSERT_EQ(L"2", result->toString());
+}
+
+TEST(IfConditionTest, IfElse)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            умова (1 == 2) {
+                вихід 1;
+            } або {
+                вихід 3;
+            }
+        )"
+    );
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(IfConditionTest, IfElseIf)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            умова (1 == 2) {
+                вихід 1;
+            } або умова (1 == 1) {
+                вихід 2;
+            } або {
+                вихід 3;
+            }
+        )"
+    );
+    ASSERT_EQ(L"2", result->toString());
+}
+
+TEST(LoopTest, ForLoop)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем результат;
+            цикл (мем і = 0; і < 10; і++) {
+                результат = і;
+            }
+            вихід результат;
+        )"
+    );
+    ASSERT_EQ(L"9", result->toString());
+}
+
+TEST(LoopTest, WhileLoop)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем критерій = так;
+            цикл (критерій) {
+                умова (критерій) {
+                    критерій = ні;
+                }
+            }
+            вихід критерій;
+        )"
+    );
+    ASSERT_FALSE(result->toBool());
+}
+
+TEST(LoopTest, RangeLoop)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем результат;
+            цикл (мем елемент: [1,2,3,4,5]) {
+                результат = елемент.другий;
+            }
+            вихід результат;
+        )"
+    );
+    ASSERT_EQ(L"5", result->toString());
 }
 
 int main(int argc, char **argv) {
