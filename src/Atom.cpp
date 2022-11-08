@@ -290,8 +290,8 @@ namespace Mefodij {
             return str;
         } else if (type == Keyword::typeBool) {
             return boolVal 
-            ? Keyword::keywordTrue 
-            : Keyword::keywordFalse;
+            ? Keyword::True 
+            : Keyword::False;
         } else if (type == Keyword::typeNull) {
             return L"";
         } else {
@@ -475,9 +475,9 @@ namespace Mefodij {
                 setInt((int) getBool());
             } else if (typeTo == Keyword::castString) {
                 if (getBool()) {
-                    setString(Keyword::keywordTrue);
+                    setString(Keyword::True);
                 } else {
-                    setString(Keyword::keywordFalse);
+                    setString(Keyword::False);
                 }
             } else if (typeTo == Keyword::castDouble) {
                 setDouble((double) getBool());
@@ -559,14 +559,14 @@ namespace Mefodij {
         members = {
             {
                 L"string", {
-                    {Keyword::keywordLength, &Atom::resolveStringSize}
+                    {Keyword::Length, &Atom::resolveStringSize}
                 }
             },
             {
                 L"array", {
-                    {Keyword::keywordSize, &Atom::resolveArraySize},
-                    {Keyword::keywordFirst, &Atom::resolveArrayFirst},
-                    {Keyword::keywordSecond, &Atom::resolveArraySecond}
+                    {Keyword::Size, &Atom::resolveArraySize},
+                    {Keyword::First, &Atom::resolveArrayFirst},
+                    {Keyword::Second, &Atom::resolveArraySecond}
                 }
             }
         };

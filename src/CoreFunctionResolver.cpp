@@ -6,11 +6,11 @@ namespace Mefodij {
 
     CoreFunctionResolver::CoreFunctionResolver(): storage{}
     {
-        setFunction(Keyword::inArrayFunc,
+        setFunction(Keyword::Function::inArray,
             &CoreFunctionResolver::inArray,
             {
-                {0, {Keyword::elemParam, nullptr, false}},
-                {1, {Keyword::arrayParam, nullptr, false}}
+                {0, {Keyword::Function::Parameters::elem, nullptr, false}},
+                {1, {Keyword::Function::Parameters::array, nullptr, false}}
             }
         );
     }
@@ -59,8 +59,8 @@ namespace Mefodij {
 
     void CoreFunctionResolver::inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
     {
-        shared_ptr<Atom> element = stack->getVar(Keyword::elemParam);
-        shared_ptr<Atom> array = stack->getVar(Keyword::arrayParam);
+        shared_ptr<Atom> element = stack->getVar(Keyword::Function::Parameters::elem);
+        shared_ptr<Atom> array = stack->getVar(Keyword::Function::Parameters::array);
         bool found = false;
 
         for (const auto & kv : array->getArray()) {

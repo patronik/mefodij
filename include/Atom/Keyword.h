@@ -1,42 +1,43 @@
-#ifndef KEYWORD_H
-#define KEYWORD_H
+#ifndef MEFODIJ_KEYWORD_H
+#define MEFODIJ_KEYWORD_H
 
 #include <string>
 
 using namespace std;
+namespace Mefodij {
+  namespace Keyword
+  {
+     extern const wstring typeInt;
+     extern const wstring typeDouble;
+     extern const wstring typeString;
+     extern const wstring typeArray;
+     extern const wstring typeBool;
+     extern const wstring typeNull;
+     extern const wstring typeCast;
 
-class Keyword
-{
-  public:
-  const static wstring typeInt;
-  const static wstring typeDouble;
-  const static wstring typeString;
-  const static wstring typeArray;
-  const static wstring typeBool;
-  const static wstring typeNull;
-  const static wstring typeCast;
+     extern const wstring castInt;
+     extern const wstring castDouble;
+     extern const wstring castString;
+     extern const wstring castArray;
+     extern const wstring castBool;
 
-  const static wstring castInt;
-  const static wstring castDouble;
-  const static wstring castString;
-  const static wstring castArray;
-  const static wstring castBool;
+     extern const wstring True;
+     extern const wstring False;
+     extern const wstring Null;
 
-  const static wstring keywordTrue;
-  const static wstring keywordFalse;
-  const static wstring keywordNull;
+     extern const wstring Length;
+     extern const wstring Size;
+     extern const wstring First;
+     extern const wstring Second;
 
-  const static wstring keywordLength;
-  const static wstring keywordSize;
-  const static wstring keywordFirst;
-  const static wstring keywordSecond;
-
-  // internal functions
-  const static wstring inArrayFunc;
-
-  // function parameters
-  const static wstring elemParam;
-  const static wstring arrayParam;
-};
+    namespace Function {
+       extern const wstring inArray;  
+      namespace Parameters {
+         extern const wstring elem;
+         extern const wstring array;
+      }
+    }
+  }
+}
 
 #endif

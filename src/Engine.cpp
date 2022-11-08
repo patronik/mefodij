@@ -134,11 +134,11 @@ namespace Mefodij {
             || varName == Keyword::castString
             ) {
                 atom->setCast(varName);
-            } else if (varName == Keyword::keywordTrue) {
+            } else if (varName == Keyword::True) {
                 atom->setBool(true);
-            } else if (varName == Keyword::keywordFalse) {
+            } else if (varName == Keyword::False) {
                 atom->setBool(false);
-            }  else if (varName == Keyword::keywordNull) {
+            }  else if (varName == Keyword::Null) {
                 atom->setNull();
             } else {
                 return false;
