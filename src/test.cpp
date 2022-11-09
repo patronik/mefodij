@@ -6,6 +6,13 @@ void init() {
     setlocale(LC_ALL, "en_US.utf8");
 }
 
+TEST(MathTest, SimpleMath)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5 + 7 - 2 / 2 + 3 * 3");
+    ASSERT_EQ(L"20", result->toString());
+}
+
 
 TEST(MathTest, FourMathOperators)
 {

@@ -60,9 +60,10 @@ namespace Mefodij {
         }
 
         if (pos >= src.size()) {
-            // end of script
+            // end of file is achieved 
+            // which means end of programm
             return endOfFile;
-        }
+        } 
 
         wchar_t symbol = src.at(pos++);
         if (toLower) {
@@ -74,6 +75,14 @@ namespace Mefodij {
 
     void Parser::unreadChar(int numOfSteps, bool allChars)
     {
+        if (numOfSteps == 1 
+            && pos >= src.size()) 
+        {
+            // end of file is achieved 
+            // which means end of programm
+            return;
+        } 
+
         do {
             pos--;
             if (!allChars) {
