@@ -230,6 +230,49 @@ TEST(LoopTest, RangeLoop)
     ASSERT_EQ(L"5", result->toString());
 }
 
+
+TEST(FunctionTest, TwoParams)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          функція додати(а, б) {
+            вихід а + б;
+          }  
+          додати(2, 2);
+        )"
+    );
+    ASSERT_EQ(L"4", result->toString());
+}
+
+TEST(FunctionTest, OneDefaultParam)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          функція додати(а, б = 1) {
+            вихід а + б;
+          }  
+          додати(2);
+        )"
+    );
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(FunctionTest, TwoDefaultParams)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          функція додати(а = 1, б = 1) {
+            вихід а + б;
+          }  
+          додати();
+        )"
+    );
+    ASSERT_EQ(L"2", result->toString());
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

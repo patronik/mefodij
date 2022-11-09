@@ -150,11 +150,11 @@ namespace Mefodij {
     {
         shared_ptr<Context> functionStack = make_shared<Context>();
 
+        int argumentIndex = 0;
         wchar_t symbol = readChar();
         if (symbol != L')') {
             unreadChar();
             // parse arguments
-            int argumentIndex = 0;
             do {
                 if (params.count(argumentIndex)) {
                     auto funcVar = evaluateBoolStatement();
@@ -182,7 +182,25 @@ namespace Mefodij {
             } while (symbol == L',');
 
 
-            // Check required paramaters and set parameters with default values
+            // Check rest of paramaters and set parameters with default values
+            while(params.count(argumentIndex)) {
+                // No intializer means required parameter is missing
+                if (get<1>(params.at(argumentIndex)) == nullptr) {
+                    throw runtime_error("Function required parameter '"
+                        + Tools::wideStrToStr(get<0>(params.at(argumentIndex)))
+                        + "' is missing."
+                    );
+                } else {
+                    // Set default value
+                    functionStack->setVar(
+                        get<0>(params.at(argumentIndex)), 
+                        get<1>(params.at(argumentIndex))
+                    );
+                }
+                argumentIndex++;
+            }
+        } else {
+            // check and set default params
             while(params.count(argumentIndex)) {
                 // No intializer means required parameter is missing
                 if (get<1>(params.at(argumentIndex)) == nullptr) {
