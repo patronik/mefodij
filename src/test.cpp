@@ -72,6 +72,22 @@ TEST(BooleanTest, TestRegex)
     ASSERT_TRUE(result->toBool());
 }
 
+TEST(TypeCasting, DoubleToString)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"мем тест = (строка) 1.5;");
+    ASSERT_EQ(L"string", result->getType());
+    ASSERT_EQ(L"1.5", result->toString());
+}
+
+TEST(TypeCasting, IntToString)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"мем тест = (строка) 33;");
+    ASSERT_EQ(L"string", result->getType());
+    ASSERT_EQ(L"33", result->toString());
+}
+
 TEST(VariableTest, MathWithVar)
 {
     Mefodij::Engine mefodij{};

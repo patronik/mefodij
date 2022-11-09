@@ -20,6 +20,9 @@ namespace Mefodij {
         string wideStrToStr(wchar_t src);
         wstring strToWideStr(string src);
         wstring strToWideStr(char src);
+        wstring to_wstring(double src);
+        wstring to_wstring(long src);
+        wstring to_wstring(int src);
         template <class T>
         bool inVector(vector<T> storage, T key)
         {

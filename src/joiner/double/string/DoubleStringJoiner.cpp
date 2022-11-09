@@ -12,18 +12,18 @@ namespace Mefodij {
 
         if (op == L"+") {
             left->setString(
-                to_wstring(left->getDouble()) + right->getString()
+                Tools::to_wstring(left->getDouble()) + right->getString()
             );
         } else if (op == L"=") {
             left->getVar()->setString(right->getString());
             left->setString(right->getString());
         } else if (op == L"==") {
             left->setBool(
-                to_wstring(left->getDouble()) == right->getString()
+                Tools::to_wstring(left->getDouble()) == right->getString()
             );
         } else if (op == L"!=") {
             left->setBool(
-                to_wstring(left->getDouble()) != right->getString()
+                Tools::to_wstring(left->getDouble()) != right->getString()
             );
         } 
     }

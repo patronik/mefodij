@@ -129,7 +129,7 @@ namespace Mefodij {
             int topIndex = 0;
             for (auto elem: arrayVal) {
                 try {
-                    if (Mefodij::Tools::isNumber(elem.first)) {
+                    if (Tools::isNumber(elem.first)) {
                         int i = stoi(elem.first);
                         if (i > topIndex) {
                             topIndex = i;
@@ -279,9 +279,9 @@ namespace Mefodij {
         if (type == Keyword::typeString) {
             return stringVal;
         } else if (type == Keyword::typeInt) {
-            return to_wstring(intVal);
+            return Tools::to_wstring(intVal);
         } else if (type == Keyword::typeDouble ) {
-            return to_wstring(doubleVal);
+            return Tools::to_wstring(doubleVal);
         } else if (type == Keyword::typeArray) {
             wstring str;
             for (auto elem: arrayVal) {
@@ -445,7 +445,7 @@ namespace Mefodij {
                 map<wstring, shared_ptr<Atom>, Tools::arrayCmp> tmpArray; 
                 for (int i = 0; i < stringVal.size(); i++) {
                     tmpArray.insert(
-                        {to_wstring(i), make_shared<Atom>(wstring(1, stringVal.at(i)))}
+                        {Tools::to_wstring(i), make_shared<Atom>(wstring(1, stringVal.at(i)))}
                     ); 
                 }
                 setArray(tmpArray);
@@ -508,7 +508,7 @@ namespace Mefodij {
             if (typeTo == Keyword::castInt) {
                 return;
             } else if (typeTo == Keyword::castString) {
-                setString(to_wstring(getInt()));
+                setString(Tools::to_wstring(getInt()));
             } else if (typeTo == Keyword::castDouble) {
                 setDouble((double) getInt());
             } else if (typeTo == Keyword::castBool) {
@@ -530,7 +530,7 @@ namespace Mefodij {
             } else if (typeTo == Keyword::castInt) {
                 setInt((int) getDouble());
             } else if (typeTo == Keyword::castString) {
-                setString(to_wstring(getDouble()));
+                setString(Tools::to_wstring(getDouble()));
             } else if (typeTo == Keyword::castBool) {
                 setBool((bool) getDouble());
             } else {
@@ -667,7 +667,7 @@ namespace Mefodij {
         if (!members.count(type)) {
             throw runtime_error(
                 "Atom of type '" 
-                + Mefodij::Tools::wideStrToStr(type) 
+                + Tools::wideStrToStr(type) 
                 + "' does not have members."
             );
         }
@@ -675,9 +675,9 @@ namespace Mefodij {
         if (!members[type].count(name)) {
             throw runtime_error(
                 "Atom of type '" 
-                + Mefodij::Tools::wideStrToStr(type) 
+                + Tools::wideStrToStr(type) 
                 + "' does not have a member '" 
-                + Mefodij::Tools::wideStrToStr(name) 
+                + Tools::wideStrToStr(name) 
                 + "'."
             );
         }

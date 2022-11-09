@@ -45,6 +45,23 @@ namespace Mefodij {
             return result;
         }
 
+        wstring to_wstring(double src)
+        {
+            wstringstream wstrs;
+            wstrs << src;
+            return wstrs.str();
+        }
+
+        wstring to_wstring(long src)
+        {
+            return std::to_wstring(src);
+        }
+
+        wstring to_wstring(int src)
+        {
+            return std::to_wstring(src);
+        }
+
         wstring strToWideStr(char src) 
         {
             return strToWideStr(string(1, src));

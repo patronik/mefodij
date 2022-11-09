@@ -396,7 +396,7 @@ namespace Mefodij {
 
         wstring arrayKey;
         if (implicitKey) {
-            arrayKey = to_wstring(atom->getVar()->getArrayNextIndex());
+            arrayKey = Tools::to_wstring(atom->getVar()->getArrayNextIndex());
             atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
@@ -519,7 +519,7 @@ namespace Mefodij {
             shared_ptr<Atom> keyOrVal = evaluateBoolExpression();
             symbol = readChar();
             if (symbol == L',' || symbol == L']') {
-                array[to_wstring(implicitKey++)] = keyOrVal;
+                array[Tools::to_wstring(implicitKey++)] = keyOrVal;
             } else if (symbol == L'=') {
                 symbol = readChar();
                 if (symbol == L'>') {
@@ -530,7 +530,7 @@ namespace Mefodij {
                         if (keyOrVal->getInt() >= implicitKey) {
                             implicitKey = keyOrVal->getInt() + 1;
                         }
-                        array[to_wstring(keyOrVal->getInt())] = arrayVal;
+                        array[Tools::to_wstring(keyOrVal->getInt())] = arrayVal;
                     } else {
                         throw runtime_error("Only string and integer array keys are supported.");
                     }
