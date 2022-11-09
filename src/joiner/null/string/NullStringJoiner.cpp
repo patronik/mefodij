@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    NullStringJoiner::NullStringJoiner() : Joiner({L"=", L"+"})
+    NullStringJoiner::NullStringJoiner() : Joiner({L"=", L"+", L"==", L"!="})
     {}
 
     void NullStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -14,7 +14,11 @@ namespace Mefodij {
         } else if (op == L"=") { 
             left->getVar()->setString(right->getString());
             left->setString(right->getString());
-        }
+        } else if (op == L"==") {
+            left->setBool(false);
+        }  else if (op == L"!=") {
+            left->setBool(true);
+        } 
     }
 
 }

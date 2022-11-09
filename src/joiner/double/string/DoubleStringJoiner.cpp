@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    DoubleStringJoiner::DoubleStringJoiner(): Joiner({L"+", L"="})
+    DoubleStringJoiner::DoubleStringJoiner(): Joiner({L"+", L"=", L"==", L"!="})
     {}
 
     void DoubleStringJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -17,7 +17,15 @@ namespace Mefodij {
         } else if (op == L"=") {
             left->getVar()->setString(right->getString());
             left->setString(right->getString());
-        }
+        } else if (op == L"==") {
+            left->setBool(
+                to_wstring(left->getDouble()) == right->getString()
+            );
+        } else if (op == L"!=") {
+            left->setBool(
+                to_wstring(left->getDouble()) != right->getString()
+            );
+        } 
     }
 
 }

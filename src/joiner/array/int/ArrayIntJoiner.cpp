@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    ArrayIntJoiner::ArrayIntJoiner() : Joiner({L"="})
+    ArrayIntJoiner::ArrayIntJoiner() : Joiner({L"=", L"=="})
     {}
 
     void ArrayIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -12,7 +12,9 @@ namespace Mefodij {
         if (op == L"=") {
             left->getVar()->setInt(right->getInt());
             left->setInt(right->getInt());
-        } 
+        } else if (op == L"==") {
+            left->setBool(false);
+        }
     }
 
 }

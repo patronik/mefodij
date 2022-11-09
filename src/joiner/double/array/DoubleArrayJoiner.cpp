@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"="})
+    DoubleArrayJoiner::DoubleArrayJoiner() : Joiner({L"=", L"==", L"!="})
     {
     }
 
@@ -11,7 +11,11 @@ namespace Mefodij {
     {
         validate(op);
 
-        if (op == L"=") { 
+        if (op == L"==") { 
+            left->setBool(false);
+        } else if (op == L"!=") { 
+            left->setBool(true);
+        } else if (op == L"=") { 
             left->getVar()->setArray(right->getArray());
             left->setArray(right->getArray());
         }

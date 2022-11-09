@@ -3,18 +3,14 @@
 
 namespace Mefodij {
 
-    StringBoolJoiner::StringBoolJoiner() : Joiner({L"==", L"||", L"&&", L"="})
+    StringBoolJoiner::StringBoolJoiner() : Joiner({L"||", L"&&", L"=", L"==", L"!="})
     {}
 
     void StringBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {
         validate(op);
 
-        if (op == L"==") {
-            left->setBool(
-                (bool) (left->getString().size() > 0) == right->getBool()
-            );
-        } else if (op == L"||") {
+        if (op == L"||") {
             left->setBool(
                 (bool) (left->getString().size() > 0) || right->getBool()
             );
@@ -29,7 +25,15 @@ namespace Mefodij {
             
             left->getVar()->setBool(right->getBool());
             left->setBool(right->getBool());
-        }
+        } else if (op == L"==") {
+            left->setBool(
+                !left->getString().empty() == right->getBool()
+            );
+        } else if (op == L"!=") {
+            left->setBool(
+                !left->getString().empty() != right->getBool()
+            );
+        } 
     }
 
 }

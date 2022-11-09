@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    NullDoubleJoiner::NullDoubleJoiner() : Joiner({L"="})
+    NullDoubleJoiner::NullDoubleJoiner() : Joiner({L"=", L"==", L"!="})
     {}
 
     void NullDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -13,7 +13,11 @@ namespace Mefodij {
         if (op == L"=") { 
             left->getVar()->setDouble(right->getDouble());
             left->setDouble(right->getDouble());
-        }
+        } else if (op == L"==") {
+            left->setBool(false);
+        } else if (op == L"!=") {
+            left->setBool(true);
+        } 
     }
 
 }

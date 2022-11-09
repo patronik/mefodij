@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    DoubleIntJoiner::DoubleIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L">", L"<", L">=", L"<=", L"||", L"&&", L"="})
+    DoubleIntJoiner::DoubleIntJoiner(): Joiner({L"+", L"-", L"*", L"/", L"%", L"==", L"!=", L">", L"<", L">=", L"<=", L"||", L"&&", L"="})
     {
     }
 
@@ -29,6 +29,10 @@ namespace Mefodij {
         } else if (op == L"==") {
             left->setBool(
                 (bool) (left->getDouble() == right->getInt())
+            );
+        } else if (op == L"!=") {
+            left->setBool(
+                (bool) (left->getDouble() != right->getInt())
             );
         } else if (op == L">=") {
             left->setBool(

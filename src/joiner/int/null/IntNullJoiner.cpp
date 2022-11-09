@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    IntNullJoiner::IntNullJoiner() : Joiner({L"="})
+    IntNullJoiner::IntNullJoiner() : Joiner({L"=", L"==", L"!="})
     {}
 
     void IntNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -13,7 +13,11 @@ namespace Mefodij {
         if (op == L"=") {
             left->getVar()->setNull();
             left->setNull();
-        }
+        } else if (op == L"==") {
+            left->setBool(false);
+        } else if (op == L"!=") {
+            left->setBool(true);
+        } 
     }
 
 }

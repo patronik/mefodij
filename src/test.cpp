@@ -28,6 +28,36 @@ TEST(BooleanTest, LogicalOperators)
     ASSERT_EQ(true, result->toBool());
 }
 
+TEST(BooleanTest, OperandComparison)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем заглушка = нал;
+            мем тест = [
+                нал, 1, 0.5, "привіт", заглушка, 1, 0.5
+            ];
+            вихід (
+                тест[0] == заглушка
+                && тест[1] != тест[0]
+                && тест[1] != заглушка
+                && тест[2] != заглушка
+                && тест[2] != тест[1]
+                && тест[3] != тест[0]
+                && тест[3] != тест[2]
+                && тест[3] != заглушка
+                && тест[4] == заглушка
+                && тест[4] == тест[0]
+                && тест[5] != тест[0]
+                && тест[5] == тест[1]
+                && тест[6] != тест[0]
+                && тест[6] == тест[2]
+            );
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
 TEST(BooleanTest, TestRegex)
 {
     Mefodij::Engine mefodij{};

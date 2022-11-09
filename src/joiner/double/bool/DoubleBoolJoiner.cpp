@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    DoubleBoolJoiner::DoubleBoolJoiner() : Joiner({L"==", L"||", L"&&", L"="})
+    DoubleBoolJoiner::DoubleBoolJoiner() : Joiner({L"==", L"!=", L"||", L"&&", L"="})
     {
     }
 
@@ -14,6 +14,10 @@ namespace Mefodij {
         if (op == L"==") {
             left->setBool(
                 (bool) (left->getDouble()) == right->getBool()
+            );
+        } else if (op == L"!=") {
+            left->setBool(
+                (bool) (left->getDouble()) != right->getBool()
             );
         } else if (op == L"||") {
             left->setBool(

@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    IntBoolJoiner::IntBoolJoiner() : Joiner({L"==", L"||", L"&&", L"="})
+    IntBoolJoiner::IntBoolJoiner() : Joiner({L"==", L"!=", L"||", L"&&", L"="})
     {}
 
     void IntBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -13,6 +13,10 @@ namespace Mefodij {
         if (op == L"==") {
             left->setBool(
                 (bool) (left->getInt()) == right->getBool()
+            );
+        } else if (op == L"!=") {
+            left->setBool(
+                (bool) (left->getInt()) != right->getBool()
             );
         } else if (op == L"||") {
             left->setBool(

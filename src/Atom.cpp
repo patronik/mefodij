@@ -450,7 +450,13 @@ namespace Mefodij {
                 }
                 setArray(tmpArray);
             } else {
-                throw runtime_error("Cast failed.");
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
             }
         }
 
@@ -464,7 +470,13 @@ namespace Mefodij {
                 }
                 setString(stringVal);
             } else {
-                throw runtime_error("Cast failed.");
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
             }
         }
 
@@ -482,7 +494,13 @@ namespace Mefodij {
             } else if (typeTo == Keyword::castDouble) {
                 setDouble((double) getBool());
             } else {
-                throw runtime_error("Cast failed.");
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
             }
         }
 
@@ -496,7 +514,13 @@ namespace Mefodij {
             } else if (typeTo == Keyword::castBool) {
                 setBool((bool) getInt());
             } else {
-                throw runtime_error("Cast failed.");
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
             }
         }
 
@@ -510,12 +534,28 @@ namespace Mefodij {
             } else if (typeTo == Keyword::castBool) {
                 setBool((bool) getDouble());
             } else {
-                throw runtime_error("Cast failed.");
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
             }
         }
 
         if (type == Keyword::typeNull) {
-            throw runtime_error("Cannot cast null.");
+            if (typeTo == Keyword::castBool) {
+                setBool(false);
+            } else {
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
+            }
         }
     }
 

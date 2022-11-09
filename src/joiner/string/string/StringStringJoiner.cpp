@@ -16,17 +16,9 @@ namespace Mefodij {
                 left->getString() + right->getString()
             );
         } else if (op == L"==") {
-            if (left->getString() == right->getString()) {
-                left->setBool(true);
-            } else {
-                left->setBool(false);
-            }
+            left->setBool(left->getString() == right->getString());
         } else if (op == L"!=") {
-            if (left->getString() != right->getString()) {
-                left->setBool(true);
-            } else {
-                left->setBool(false);
-            }
+            left->setBool(left->getString() != right->getString());
         } else if (op == L"~") {
             if (regex_match(left->getString(), wregex(right->getString()))) {
                 left->setBool(true);

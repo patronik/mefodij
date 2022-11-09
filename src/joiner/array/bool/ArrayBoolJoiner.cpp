@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    ArrayBoolJoiner::ArrayBoolJoiner() : Joiner({L"="})
+    ArrayBoolJoiner::ArrayBoolJoiner() : Joiner({L"=", L"=="})
     {}
 
     void ArrayBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -12,6 +12,10 @@ namespace Mefodij {
         if (op == L"=") {
             left->getVar()->setBool(right->getBool());
             left->setBool(right->getBool());
+        } else if (op == L"==") {
+            left->setBool(
+                !left->getArray().empty() == right->getBool()
+            );
         } 
     }
 
