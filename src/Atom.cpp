@@ -561,37 +561,32 @@ namespace Mefodij {
 
     void Atom::setAtom(const Atom & src)
     {
-        *this = src;
-    }
+        arrayNextIndex = src.arrayNextIndex;
+        charIndex = src.charIndex;
 
-    bool Atom::getIsConst()
-    {
-        return options[0] == true;
-    }
-
-    bool Atom::getIsAssigned()
-    {
-        return options[1] == true;
+        if (src.type == Keyword::typeInt) {
+            setInt(src.intVal);
+        } else if (src.type == Keyword::typeDouble) {
+            setDouble(src.doubleVal);
+        } else if (src.type == Keyword::typeBool) {
+            setBool(src.boolVal);
+        } else if (src.type == Keyword::typeArray) {
+            setArray(src.arrayVal);
+        } else if (src.type == Keyword::typeString) {
+            setString(src.stringVal);
+        } else if (src.type == Keyword::typeNull) {
+            setNull();
+        }
     }
 
     bool Atom::getIsCalculated()
     {
-        return options[2] == true;
-    }
-
-    void Atom::setIsConst()
-    {
-        options[0] = true;
-    }
-
-    void Atom::setIsAssigned()
-    {
-        options[1] = true;
+        return opts[7] == true;
     }
 
     void Atom::setIsCalculated()
     {
-        options[2] = true;
+        opts[7] = true;
     }
 
     void Atom::initMembers()

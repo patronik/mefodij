@@ -621,6 +621,7 @@ namespace Mefodij {
             }
         }
 
+        // statement atom
         shared_ptr<Atom> atom = make_shared<Atom>();
 
         parseParentheticalAtom(atomChar, atom)
@@ -1143,13 +1144,13 @@ namespace Mefodij {
             throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword.");
         }
 
-        auto newVariable = make_shared<Atom>();
+        auto newVar = make_shared<Atom>();
         
         if (isConst) {
-            newVariable->setIsConst();
+            newVar->setIsConst();
         }
 
-        getContext()->setVar(varName, newVariable);
+        getContext()->setVar(varName, newVar);
 
         pos = prevPos;
 

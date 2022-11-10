@@ -135,15 +135,14 @@ namespace Mefodij {
             throw runtime_error("Assignment can only be done to variable.");                    
         } 
 
-        if (left->getIsConst() && left->getIsAssigned()) {
+        if (left->getVar()->getIsConst() && left->getVar()->getIsAssigned()) {
             throw runtime_error("Cannot change the value of const variable."); 
         }
 
         joinAtoms(left, L"=", right);
 
-        if (!left->getIsAssigned()) {
+        if (!left->getVar()->getIsAssigned()) {
             left->getVar()->setIsAssigned();
-            left->setIsAssigned();
         }
     }
 

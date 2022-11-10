@@ -8,48 +8,48 @@
 #include <memory>
 #include <map>
 
+#include "VarAtom.h"
 #include "tools.h"
 
 namespace Mefodij {
 
   using namespace std;
 
-  class Atom
+  class Atom : public VarAtom
   {
-      // atom state
-      bitset<sizeof(int)> options{0};
+      // Reference to variable
+      shared_ptr<Atom> varRef = nullptr;
 
       // atom type
       wstring type = L"null";
 
-      // supported values
-      long intVal = 0; // int
-
-      // float point number
-      double doubleVal = 0.00; 
-
-      // string
-      wstring stringVal = L"";
-      // postion of a character in string
-      int charIndex  = -1; 
-
-      // boolean value
-      bool boolVal = false; 
-
-      // next not used integer key in array
-      int arrayNextIndex = 0; 
-
-      // array of atoms (values)
-      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
-
-      // string representing catst type
-      wstring castVal = L""; 
-
-      // Reference to variable
-      shared_ptr<Atom> varRef = nullptr;
-
       // Members
       map<wstring, map<wstring, void (Atom::*)()>> members{};
+
+      // ATOM VALUE STATE START
+        // supported values
+        long intVal = 0; // int
+
+        // float point number
+        double doubleVal = 0.00; 
+
+        // string
+        wstring stringVal = L"";
+        // postion of a character in string
+        int charIndex  = -1; 
+
+        // boolean value
+        bool boolVal = false; 
+
+        // next not used integer key in array
+        int arrayNextIndex = 0; 
+
+        // array of atoms (values)
+        map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
+
+        // string representing catst type
+        wstring castVal = L""; 
+      // ATOM VALUE STATE END
 
       // Member resolvers
       void resolveStringSize();
@@ -79,8 +79,6 @@ namespace Mefodij {
     int getArrayNextIndex();
     shared_ptr<Atom> getVar();
     wstring getType();
-    bool getIsConst();
-    bool getIsAssigned();
     bool getIsCalculated();
 
     // Setters
@@ -96,8 +94,6 @@ namespace Mefodij {
     void setNull();
     void setCast(wstring val);
     void setAtom(const Atom & src);
-    void setIsConst();
-    void setIsAssigned();
     void setIsCalculated();
 
     // Array related
