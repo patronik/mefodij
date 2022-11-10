@@ -308,10 +308,10 @@ namespace Mefodij {
 
             // Check for other bases
             symbol = readChar(false, true);
-            if (number[0] == L'0' && (symbol == L'b' || symbol == L'B')) {
+            if (number[0] == L'0' && (symbol == L'д' || symbol == L'Д')) {
                 number.push_back(symbol);
                 return parseBinNumberLiteralAtom(atom);
-            } else if (number[0] == L'0' && (symbol == L'x' || symbol == L'X')) {
+            } else if (number[0] == L'0' && (symbol == L'ш' || symbol == L'Ш')) {
                 number.push_back(symbol);
                 return parseHexNumberLiteralAtom(atom);
             } else {
