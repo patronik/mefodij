@@ -1,7 +1,6 @@
 #ifndef ATOM_H
 #define ATOM_H
 
-#include <bitset>
 #include <algorithm>
 #include <vector>
 #include <string>
