@@ -15,6 +15,9 @@ namespace Mefodij {
      extern const wstring typeNull;
      extern const wstring typeCast;
 
+     extern const wstring storageVar;
+     extern const wstring storageTmp;
+
      extern const wstring castInt;
      extern const wstring castDouble;
      extern const wstring castString;

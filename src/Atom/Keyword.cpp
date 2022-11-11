@@ -10,6 +10,9 @@ namespace Mefodij {
     const wstring typeNull(L"null");
     const wstring typeCast(L"cast");
 
+    const wstring storageVar(L"variable");
+    const wstring storageTmp(L"temporary");
+
     const wstring castInt(L"ціле");
     const wstring castDouble(L"дійсне");
     const wstring castString(L"строка");

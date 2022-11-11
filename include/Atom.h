@@ -16,39 +16,39 @@ namespace Mefodij {
 
   class Atom : public VarAtom
   {
-      // Reference to variable
-      shared_ptr<Atom> varRef = nullptr;
-
+      // DYNAMIC ATOM STATE START
       // atom type
       wstring type = L"null";
 
+      // supported values
+      long intVal = 0; // int
+
+      // float point number
+      double doubleVal = 0.00; 
+
+      // string
+      wstring stringVal = L"";
+      // postion of a character in string
+      int charIndex  = -1; 
+
+      // boolean value
+      bool boolVal = false; 
+
+      // next not used integer key in array
+      int arrayNextIndex = 0; 
+
+      // array of atoms (values)
+      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
+
+      // string representing catst type
+      wstring castVal = L""; 
+
+      // Reference to variable
+      shared_ptr<Atom> varRef = nullptr;
+      // DYNAMIC ATOM STATE END
+
       // Members
       map<wstring, map<wstring, void (Atom::*)()>> members{};
-
-      // ATOM VALUE STATE START
-        // supported values
-        long intVal = 0; // int
-
-        // float point number
-        double doubleVal = 0.00; 
-
-        // string
-        wstring stringVal = L"";
-        // postion of a character in string
-        int charIndex  = -1; 
-
-        // boolean value
-        bool boolVal = false; 
-
-        // next not used integer key in array
-        int arrayNextIndex = 0; 
-
-        // array of atoms (values)
-        map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
-
-        // string representing catst type
-        wstring castVal = L""; 
-      // ATOM VALUE STATE END
 
       // Member resolvers
       void resolveStringSize();
@@ -60,12 +60,17 @@ namespace Mefodij {
       
       void clearVal();
   public:
-    Atom();
-    Atom(long val);
-    Atom(double val);
-    Atom(wstring val);
-    Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
-    Atom(bool val);
+    Atom(void * nullPtr, wstring sT = Keyword::storageVar);
+    Atom(long val, wstring sT = Keyword::storageVar);
+    Atom(double val, wstring sT = Keyword::storageVar);
+    Atom(wstring val, wstring sT = Keyword::storageVar);
+    Atom(
+      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val, 
+      wstring sT = Keyword::storageVar
+    );
+    Atom(bool val, 
+        wstring sT = Keyword::storageVar
+    );
 
     // Getters
     long getInt();

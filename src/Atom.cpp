@@ -3,45 +3,51 @@
 #include "../include/tools.h"
 namespace Mefodij {
 
-    Atom::Atom()
+    Atom::Atom(void * nullPtr, wstring storageT)
     {
         type = Keyword::typeNull;
+        storageType = storageT;
         initMembers();
     }
 
-    Atom::Atom(long val) 
+    Atom::Atom(long val, wstring sT) 
     {
         type = Keyword::typeInt;
+        storageType = sT;
         intVal = val;
         initMembers();
     }
 
 
-    Atom::Atom(double val) 
+    Atom::Atom(double val, wstring sT) 
     {
         type = Keyword::typeDouble;
+        storageType = sT;
         doubleVal = val;
         initMembers();
     }
 
-    Atom::Atom(wstring val) 
+    Atom::Atom(wstring val, wstring sT) 
     {
         type = Keyword::typeString;
+        storageType = sT;
         stringVal = val;
         initMembers();
     }
 
 
-    Atom::Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val) 
+    Atom::Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val, wstring sT) 
     {
         type = Keyword::typeArray;
+        storageType = sT;
         arrayVal = val;
         initMembers();
     }
 
-    Atom::Atom(bool val) 
+    Atom::Atom(bool val, wstring sT) 
     {
         type = Keyword::typeBool;
+        storageType = sT;
         boolVal = val;
         initMembers();
     }
@@ -561,9 +567,7 @@ namespace Mefodij {
 
     void Atom::setAtom(const Atom & src)
     {
-        arrayNextIndex = src.arrayNextIndex;
-        charIndex = src.charIndex;
-
+    
         if (src.type == Keyword::typeInt) {
             setInt(src.intVal);
         } else if (src.type == Keyword::typeDouble) {
@@ -577,6 +581,9 @@ namespace Mefodij {
         } else if (src.type == Keyword::typeNull) {
             setNull();
         }
+
+        arrayNextIndex = src.arrayNextIndex;
+        charIndex = src.charIndex;
     }
 
     bool Atom::getIsCalculated()

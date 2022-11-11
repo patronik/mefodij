@@ -412,7 +412,7 @@ namespace Mefodij {
         }
 
         if (!atom->getVar()->issetAt(arrayKey)) {
-            atom->getVar()->createAt(arrayKey, make_shared<Atom>());
+            atom->getVar()->createAt(arrayKey, make_shared<Atom>(nullptr, Keyword::storageVar));
         }
 
         // Backup pointer to variable
@@ -622,7 +622,7 @@ namespace Mefodij {
         }
 
         // statement atom
-        shared_ptr<Atom> atom = make_shared<Atom>();
+        shared_ptr<Atom> atom = make_shared<Atom>(nullptr);
 
         parseParentheticalAtom(atomChar, atom)
         || parseAlphabeticalAtom(atomChar, atom)
@@ -867,7 +867,7 @@ namespace Mefodij {
         for (auto elem: array) {
             // Set element per iteration
             elementVar->setArray({
-                {L"0", make_shared<Atom>(elem.first)}, {L"1", elem.second}
+                {L"0", make_shared<Atom>(elem.first, Keyword::storageVar)}, {L"1", elem.second}
             });
 
             shared_ptr<Context> iterationStack = make_shared<Context>();
@@ -1042,7 +1042,7 @@ namespace Mefodij {
 
     void Engine::evaluateIfStructure()
     {
-        shared_ptr<Atom> lastIfResult = make_shared<Atom>();
+        shared_ptr<Atom> lastIfResult = make_shared<Atom>(nullptr);
         wchar_t symbol;
         if ((symbol = readChar()) != L'(') {
             throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'." );
@@ -1144,7 +1144,8 @@ namespace Mefodij {
             throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword.");
         }
 
-        auto newVar = make_shared<Atom>();
+        auto newVar = make_shared<Atom>(nullptr, Keyword::storageVar);
+        newVar->setVarKey(varName);
         
         if (isConst) {
             newVar->setIsConst();
@@ -1268,7 +1269,7 @@ namespace Mefodij {
         // Empty statement
         if (symbol == L';') {
             // Last result is set to emtpy atom
-            lastResult->setAtom(Atom());
+            lastResult->setAtom(Atom(nullptr));
             // Skip to next statement
             unreadChar();
             return;
