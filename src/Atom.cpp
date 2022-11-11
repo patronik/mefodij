@@ -600,18 +600,76 @@ namespace Mefodij {
     {
         members = {
             {
-                L"string", {
-                    {Keyword::Length, &Atom::resolveStringSize}
+                Keyword::typeString, {
+                    {Keyword::Length, &Atom::resolveStringSize},
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
-                L"array", {
+                Keyword::typeArray, {
                     {Keyword::Size, &Atom::resolveArraySize},
                     {Keyword::First, &Atom::resolveArrayFirst},
-                    {Keyword::Second, &Atom::resolveArraySecond}
+                    {Keyword::Second, &Atom::resolveArraySecond},
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
+                }
+            },
+            {
+                Keyword::typeBool, {
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
+                }
+            },
+            {
+                Keyword::typeInt, {
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
+                }
+            },
+            {
+                Keyword::typeDouble, {
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
+                }
+            },
+            {
+                Keyword::typeNull, {
+                    {Keyword::Type, &Atom::resolveType},
+                    {Keyword::Address, &Atom::resolveAddress}
                 }
             }
         };
+    }
+
+    void Atom::resolveType()
+    {
+        if (type == Keyword::typeInt) {
+            setString(Keyword::castInt);
+        } else if (type == Keyword::typeDouble) {
+            setString(Keyword::castDouble);
+        } else if (type == Keyword::typeArray) {
+            setString(Keyword::castArray);
+        } else if (type == Keyword::typeString) {
+            setString(Keyword::castString);
+        } else if (type == Keyword::typeBool) {
+            setString(Keyword::castBool);
+        } else if (type == Keyword::typeNull) {
+            setString(Keyword::Null);
+        }
+        setVar(nullptr);
+        setIsCalculated();
+    }
+
+    void Atom::resolveAddress()
+    {
+        if (!getVar()) {
+            throw runtime_error("Only variables are stored at addresses.");
+        } else {
+            uintptr_t addr = reinterpret_cast<uintptr_t>(getVar().get());
+            setString(to_wstring(addr));
+        }
+        setIsCalculated();
     }
 
     void Atom::resolveStringSize()

@@ -127,22 +127,38 @@ namespace Mefodij {
 
     void Engine::assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {
-        if (left->getIsCalculated()) {
-            throw runtime_error("Cannot assign to dynamicaly calculated value."); 
-        }
+        if (right->getIsReference()) {
+            // perform aliasing
+            if (!left->getVar() || !right->getVar()) {
+                throw runtime_error("Aliasing can be done from variable to variable.");                    
+            } 
 
-        if (!left->getVar()) {
-            throw runtime_error("Assignment can only be done to variable.");                    
-        } 
+            shared_ptr<Context> storage = getContext();
+            storage->setAlias(right->getVar()->getKey(), left->getVar()->getKey());
 
-        if (left->getVar()->getIsConst() && left->getVar()->getIsAssigned()) {
-            throw runtime_error("Cannot change the value of const variable."); 
-        }
+            // update atom value
+            left->setAtom(*storage->getVar(left->getVar()->getKey()));
+            // update reference to variable 
+            left->setVar(storage->getVar(left->getVar()->getKey()));
+        } else {
+            // perform assignment
+            if (left->getIsCalculated()) {
+                throw runtime_error("Cannot assign to dynamicaly calculated value."); 
+            }
 
-        joinAtoms(left, L"=", right);
+            if (!left->getVar()) {
+                throw runtime_error("Assignment can only be done to variable.");                    
+            } 
 
-        if (!left->getVar()->getIsAssigned()) {
-            left->getVar()->setIsAssigned();
+            if (left->getVar()->getIsConst() && left->getVar()->getIsAssigned()) {
+                throw runtime_error("Cannot change the value of const variable."); 
+            }
+
+            joinAtoms(left, L"=", right);
+
+            if (!left->getVar()->getIsAssigned()) {
+                left->getVar()->setIsAssigned();
+            }
         }
     }
 

@@ -34,13 +34,35 @@ namespace Mefodij {
         opts[1] = true;
     }
 
-    wstring VarAtom::getVarKey()
+    void VarAtom::setIsReference()
     {
-        return varKey;
+        if (storageType != Keyword::storageVar) {
+            throw runtime_error("An attempt to make reference to variable on non variable.");
+        }
+        opts[2] = true;
     }
 
-    void VarAtom::setVarKey(wstring key)
+    bool VarAtom::getIsReference()
     {
-        varKey = key;
+        if (storageType != Keyword::storageVar) {
+            throw runtime_error("An attempt to get variable option on non variable.");
+        }
+        return opts[2] == true;
+    }
+
+    wstring VarAtom::getKey()
+    {
+        if (storageType != Keyword::storageVar) {
+            throw runtime_error("An attempt to get variable key on non variable.");
+        }
+        return key;
+    }
+
+    void VarAtom::setKey(wstring val)
+    {
+        if (storageType != Keyword::storageVar) {
+            throw runtime_error("An attempt to set variable key on non variable.");
+        }
+        key = val;
     }
 }

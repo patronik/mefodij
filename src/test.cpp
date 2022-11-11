@@ -72,6 +72,34 @@ TEST(BooleanTest, TestRegex)
     ASSERT_TRUE(result->toBool());
 }
 
+TEST(MemberAccess, LengthMember)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"'привіт'.довжина;");
+    ASSERT_EQ(L"6", result->toString());
+}
+
+TEST(MemberAccess, SizeMember)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"[1,2,3].розмір;");
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(MemberAccess, TypeMember)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"'привіт'.тип;");
+    ASSERT_EQ(L"строка", result->toString());
+}
+
+TEST(MemberAccess, AddressMember)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"мем тест = 123; тест.адрес;");
+    ASSERT_LT(0, result->toString().size());
+}
+
 TEST(TypeCasting, DoubleToString)
 {
     Mefodij::Engine mefodij{};
@@ -86,6 +114,73 @@ TEST(TypeCasting, IntToString)
     auto result = mefodij.evaluateCode(L"мем тест = (строка) 33;");
     ASSERT_EQ(L"string", result->getType());
     ASSERT_EQ(L"33", result->toString());
+}
+
+TEST(VariableTest, SimpleAssignment)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем змінна = 2; 
+        )"
+      );
+    ASSERT_EQ(L"2", result->toString());
+}
+
+TEST(VariableTest, AssignmentToNonVar)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+      mefodij.evaluateCode(
+        LR"(
+            5 = 2; 
+        )"
+      ), 
+      runtime_error
+    );
+}
+
+TEST(VariableTest, AliasingInTheSameScope)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем змінна = 2; 
+            мем тест = 4;
+            змінна = &тест;
+        )"
+      );
+    ASSERT_EQ(L"4", result->toString());
+}
+
+TEST(VariableTest, AliasingFromOuterScope)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем змінна = 2; 
+            функція тест() {
+                мем тест = 4;
+                тест = &змінна;
+                вихід тест;
+            }
+            тест();
+        )"
+      );
+    ASSERT_EQ(L"2", result->toString());
+}
+
+TEST(VariableTest, ReferencingOfNonVar)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+      mefodij.evaluateCode(
+        LR"(
+            мем змінна = &2; 
+        )"
+      ), 
+      runtime_error
+    );
 }
 
 TEST(VariableTest, MathWithVar)

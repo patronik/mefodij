@@ -32,6 +32,8 @@ namespace Mefodij {
      extern const wstring Size;
      extern const wstring First;
      extern const wstring Second;
+     extern const wstring Type;
+     extern const wstring Address;
 
     namespace Function {
        extern const wstring inArray;  

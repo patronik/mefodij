@@ -21,6 +21,10 @@ namespace Mefodij {
         bool hasVar(wstring key);
         bool hasOwnVar(wstring key);
         shared_ptr<Atom> getVar(wstring key);
+
+        Context * getVarContext(wstring key);
+        void setAlias(wstring keyFrom, wstring keyTo);
+
         // Functions
         void setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params); 
         bool hasFunction(wstring key);

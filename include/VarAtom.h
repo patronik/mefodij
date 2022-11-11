@@ -18,18 +18,20 @@ namespace Mefodij {
     wstring storageType = Keyword::storageTmp;
 
     // Variable storage key
-    wstring varKey;
+    wstring key = L"";
 
     public:
     // Getters
     bool getIsConst();
     bool getIsAssigned();
-    wstring getVarKey();
+    bool getIsReference();
+    wstring getKey();
 
     // Setters
     void setIsConst();
     void setIsAssigned();
-    void setVarKey(wstring key);
+    void setIsReference();
+    void setKey(wstring key);
   };
 
 }

@@ -28,6 +28,9 @@ namespace Mefodij {
     const wstring First(L"перший");
     const wstring Second(L"другий");
 
+    const wstring Type(L"тип");
+    const wstring Address(L"адрес");
+
     namespace Function {
       const wstring inArray(L"вМасиві");;  
       namespace Parameters {

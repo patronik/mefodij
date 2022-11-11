@@ -51,6 +51,8 @@ namespace Mefodij {
       map<wstring, map<wstring, void (Atom::*)()>> members{};
 
       // Member resolvers
+      void resolveType();
+      void resolveAddress();
       void resolveStringSize();
       void resolveArraySize();
       void resolveArrayFirst();

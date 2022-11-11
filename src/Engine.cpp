@@ -588,10 +588,17 @@ namespace Mefodij {
 
     shared_ptr<Atom> Engine::parseAtom()
     {
+        bool isReference = false;
         bool boolInversion = false;
         wstring preOperator{};
 
         wchar_t atomChar = readChar();
+
+        // check for reference "&"
+        if (atomChar == L'&') {
+            isReference = true;
+            atomChar = readChar();
+        }
 
         // check for boolean inversion
         if (atomChar == L'!') {
@@ -640,6 +647,10 @@ namespace Mefodij {
 
         if (boolInversion) {
             atom->preOperator(L"!");
+        }
+
+        if (isReference) {
+            atom->setIsReference();
         }
 
         return atom;
@@ -1145,7 +1156,7 @@ namespace Mefodij {
         }
 
         auto newVar = make_shared<Atom>(nullptr, Keyword::storageVar);
-        newVar->setVarKey(varName);
+        newVar->setKey(varName);
         
         if (isConst) {
             newVar->setIsConst();

@@ -6,7 +6,7 @@ namespace Mefodij {
     {
         // remove reference to source variable
         var->setVar(nullptr);
-        storage.insert({key, var});
+        storage[key] = var;
     }
 
     bool Context::hasOwnVar(wstring key) 
@@ -35,6 +35,33 @@ namespace Mefodij {
             return parentContext->getVar(key);
         }
         throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(key) + "' does not exist.");
+    }
+
+    Context * Context::getVarContext(wstring key) 
+    {
+        bool hasOwn = storage.count(key) != 0;
+        if (hasOwn) {
+            return this;
+        }
+        if (parentContext) {
+            return parentContext->getVarContext(key);
+        }
+        return nullptr;
+    }
+
+    void Context::setAlias(wstring keyFrom, wstring keyTo)
+    {
+        auto sourceContext = getVarContext(keyFrom);
+        if (sourceContext == nullptr) {
+            throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(keyFrom) + "' does not exist.");
+        }
+
+        auto targetContext = getVarContext(keyTo);
+        if (targetContext == nullptr) {
+            throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(keyTo) + "' does not exist.");
+        }
+
+        targetContext->setVar(keyTo, sourceContext->getVar(keyFrom));
     }
 
     void Context::setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) 
