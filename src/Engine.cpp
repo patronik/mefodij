@@ -4,6 +4,11 @@
 
 namespace Mefodij {
 
+    Engine::Engine() : Parser(), lastResult(nullptr), stack(), coreFuncResolver()
+    {
+        context = make_shared<Context>();
+    }
+
     void Engine::throwError(string message)
     {
         tuple<wstring, int, int> currLoc = getLastLocation();
@@ -26,24 +31,26 @@ namespace Mefodij {
         );
     }
 
-    Engine::Engine() : Parser(), lastResult(nullptr), stack(), coreFuncResolver()
-    {
-        context = make_shared<Context>();
-    }
-
     tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> Engine::getState()
     {
-        return tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>>{pos, src, dynamicSrc, isReturn, isBreak, lastResult};
+        return tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>>{
+            pos, 
+            src, 
+            dynamicSrc, 
+            isReturn, 
+            isBreak, 
+            lastResult
+        };
     }
 
     void Engine::setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state)
     {
-        lastResult = get<5>(state);
-        isBreak = get<4>(state);
-        isReturn = get<3>(state);
-        dynamicSrc = get<2>(state);
-        src = get<1>(state);
         pos = get<0>(state);
+        src = get<1>(state);
+        dynamicSrc = get<2>(state);
+        isReturn = get<3>(state);
+        isBreak = get<4>(state);
+        lastResult = get<5>(state);
     }
 
     shared_ptr<Context> Engine::getContext()
@@ -804,7 +811,10 @@ namespace Mefodij {
                     if (symbol == L'|') {
                         joinAtoms(result, L"||", evaluateBoolExpression());
                     } else {
-                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(booleanOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" 
+                            + Tools::wideStrToStr(booleanOp) + "' '" 
+                            + Tools::wideStrToStr(symbol) + "'."
+                        );
                     }
                     break;
                 case L'&':
@@ -812,7 +822,10 @@ namespace Mefodij {
                     if (symbol == L'&') {
                         joinAtoms(result, L"&&", evaluateBoolExpression());
                     } else {
-                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(booleanOp) + "' '" + Tools::wideStrToStr(symbol) + "'.");
+                        throw runtime_error("Unexpected token '" 
+                            + Tools::wideStrToStr(booleanOp) + "' '" 
+                            + Tools::wideStrToStr(symbol) + "'."
+                        );
                     }
                     break;
                 default:
@@ -903,7 +916,10 @@ namespace Mefodij {
         for (auto elem: array) {
             // Set element per iteration
             elementVar->setArray({
-                {L"0", make_shared<Atom>(elem.first, Keyword::storageVar)}, {L"1", elem.second}
+                {L"0", make_shared<Atom>(
+                    elem.first, Keyword::storageVar
+                )}, 
+                {L"1", elem.second}
             });
 
             shared_ptr<Context> iterationStack = make_shared<Context>();
@@ -1388,7 +1404,7 @@ namespace Mefodij {
             }
             // END OF IF STATEMENT
 
-            // FOR STATEMENT
+            // LOOP 
             if (keyWord == statementFor) {
                 evaluateForLoop();
                 if (!isReturn) {
@@ -1396,7 +1412,7 @@ namespace Mefodij {
                 }
                 return;
             }
-            // END OF FOR STATEMENT
+            // END OF LOOP 
 
             // unread keyword
             unreadChar(keyWord.size());
@@ -1447,7 +1463,11 @@ namespace Mefodij {
                         break;
                     default:
                         // Token has not been processed by any of top level parsers
-                        throw runtime_error("Unexpected token '" + Tools::wideStrToStr(separator) + "'.");
+                        throw runtime_error(
+                            "Unexpected token '" 
+                            + Tools::wideStrToStr(separator) 
+                            + "'."
+                        );
                     break;
                 }
             }

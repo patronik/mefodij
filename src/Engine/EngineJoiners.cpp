@@ -130,7 +130,7 @@ namespace Mefodij {
         if (right->getIsReference()) {
             // perform aliasing
             if (!left->getVar() || !right->getVar()) {
-                throw runtime_error("Aliasing can be done from variable to variable.");                    
+                throw runtime_error("Only variables can be copied by reference.");                    
             } 
 
             shared_ptr<Context> storage = getContext();
