@@ -119,6 +119,8 @@ namespace Mefodij {
     // Convert atom from one type to another
     void cast(wstring typeTo);
 
+    // Member names
+    static vector<wstring> getMemberNames();
     // Member resolver
     void resolveMember(wstring name);
   };

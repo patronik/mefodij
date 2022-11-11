@@ -86,11 +86,18 @@ TEST(MemberAccess, SizeMember)
     ASSERT_EQ(L"3", result->toString());
 }
 
-TEST(MemberAccess, TypeMember)
+TEST(MemberAccess, TypeMemberWithString)
 {
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(L"'привіт'.тип;");
     ASSERT_EQ(L"строка", result->toString());
+}
+
+TEST(MemberAccess, TypeMemberWithNumber)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"123.тип;");
+    ASSERT_EQ(L"ціле", result->toString());
 }
 
 TEST(MemberAccess, AddressMember)

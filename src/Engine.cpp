@@ -325,6 +325,31 @@ namespace Mefodij {
                     number.push_back(symbol);
                     continue;
                 } else if (symbol == L'.') {
+                    
+                    // Check if member access
+                    int posBk = pos;
+                    wstring memberName{};
+                    if (parseCharacterSequence(readChar(), memberName)) {
+                        if (Tools::inVector<wstring>(Atom::getMemberNames(), memberName)) {
+                            // member access on number
+                            pos = posBk;
+                            unreadChar(1, true);
+
+                            if (hasDot) {
+                                atom->setDouble(wcstod(number.c_str(), nullptr));
+                            } else {
+                                atom->setInt(wcstol(number.c_str(), nullptr, 10));
+                            }
+
+                            return true;
+                        } else {
+                            pos = posBk;
+                        }
+
+                    } else {
+                        pos = posBk;
+                    }
+
                     if (hasDot) {
                         throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
                     }

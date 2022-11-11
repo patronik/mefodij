@@ -596,6 +596,18 @@ namespace Mefodij {
         opts[7] = true;
     }
 
+    vector<wstring> Atom::getMemberNames()
+    {
+        return {
+            Keyword::Length,
+            Keyword::Size,
+            Keyword::Type,
+            Keyword::Address,
+            Keyword::First,
+            Keyword::Second,
+        };
+    }
+
     void Atom::initMembers()
     {
         members = {
