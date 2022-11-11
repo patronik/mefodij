@@ -25,12 +25,14 @@ namespace Mefodij {
     bool getIsConst();
     bool getIsAssigned();
     bool getIsReference();
+    bool getIsCalculated();
     wstring getKey();
 
     // Setters
     void setIsConst();
     void setIsAssigned();
     void setIsReference();
+    void setIsCalculated();
     void setKey(wstring key);
   };
 

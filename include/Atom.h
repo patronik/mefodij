@@ -85,7 +85,6 @@ namespace Mefodij {
     int getArrayNextIndex();
     shared_ptr<Atom> getVar();
     wstring getType();
-    bool getIsCalculated();
 
     // Setters
     void setVar(shared_ptr<Atom> atom);
@@ -100,7 +99,6 @@ namespace Mefodij {
     void setNull();
     void setCast(wstring val);
     void setAtom(const Atom & src);
-    void setIsCalculated();
 
     // Array related
     bool issetAt(wstring key);

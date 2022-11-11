@@ -586,16 +586,6 @@ namespace Mefodij {
         charIndex = src.charIndex;
     }
 
-    bool Atom::getIsCalculated()
-    {
-        return opts[7] == true;
-    }
-
-    void Atom::setIsCalculated()
-    {
-        opts[7] = true;
-    }
-
     vector<wstring> Atom::getMemberNames()
     {
         return {

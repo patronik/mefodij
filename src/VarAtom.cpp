@@ -50,6 +50,16 @@ namespace Mefodij {
         return opts[2] == true;
     }
 
+    bool VarAtom::getIsCalculated()
+    {
+        return opts[7] == true;
+    }
+
+    void VarAtom::setIsCalculated()
+    {
+        opts[7] = true;
+    }
+
     wstring VarAtom::getKey()
     {
         if (storageType != Keyword::storageVar) {
