@@ -15,7 +15,7 @@ namespace Mefodij {
         } else if (op == L"==") {
             left->setBool(left->getBool() == !right->getString().empty());
         } else if (op == L"=") {
-            left->getVar()->setBool(right->getString() != L"");
+            left->getVarRef()->setBool(right->getString() != L"");
             left->setBool(right->getString() != L"");
         } 
     }

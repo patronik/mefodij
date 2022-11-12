@@ -19,7 +19,7 @@ namespace Mefodij {
                 throw new runtime_error("Cannot assign non string value to string character");
             }
             
-            left->getVar()->setString(Tools::to_wstring(right->getDouble()));
+            left->getVarRef()->setString(Tools::to_wstring(right->getDouble()));
             left->setString(Tools::to_wstring(right->getDouble()));
         } else if (op == L"==") {
             left->setBool(

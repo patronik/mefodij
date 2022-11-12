@@ -27,7 +27,7 @@ namespace Mefodij {
                 left->getInt() && ((int) right->getDouble())
             );
         } else if (op == L"=") {
-            left->getVar()->setInt((int)right->getDouble());
+            left->getVarRef()->setInt((int)right->getDouble());
             left->setInt((int)right->getDouble());
         }
     }

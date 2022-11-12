@@ -27,7 +27,7 @@ namespace Mefodij {
                 left->getBool() && ((bool) right->getInt())
             );
         } else if (op == L"=") {
-            left->getVar()->setBool((bool) right->getInt());
+            left->getVarRef()->setBool((bool) right->getInt());
             left->setBool((bool) right->getInt());
         }
     }

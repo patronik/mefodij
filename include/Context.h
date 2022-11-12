@@ -18,6 +18,7 @@ namespace Mefodij {
     public:
         // Variables
         void setVar(wstring key, shared_ptr<Atom> var);
+        void setConst(wstring key, shared_ptr<Atom> var);
         bool hasVar(wstring key);
         bool hasOwnVar(wstring key);
         shared_ptr<Atom> getVar(wstring key);

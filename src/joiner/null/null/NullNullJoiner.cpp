@@ -14,6 +14,9 @@ namespace Mefodij {
             left->setBool(true);
         } else if (op == L"!=") {
             left->setBool(false);
+        } else if (op == L"=") {
+            left->getVarRef()->setNull();
+            left->setNull();
         } 
     }
 

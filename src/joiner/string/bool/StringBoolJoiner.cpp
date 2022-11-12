@@ -23,7 +23,7 @@ namespace Mefodij {
                 throw new runtime_error("Cannot assign non string value to string character");
             }
             
-            left->getVar()->setBool(right->getBool());
+            left->getVarRef()->setBool(right->getBool());
             left->setBool(right->getBool());
         } else if (op == L"==") {
             left->setBool(

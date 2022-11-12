@@ -58,7 +58,7 @@ namespace Mefodij {
                 (bool) (left->getInt() && right->getInt())
             );
         } else if (op == L"=") { 
-            left->getVar()->setInt(right->getInt());
+            left->getVarRef()->setInt(right->getInt());
             left->setInt(right->getInt());
         } 
     }

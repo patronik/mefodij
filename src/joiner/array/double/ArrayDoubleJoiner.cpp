@@ -10,7 +10,7 @@ namespace Mefodij {
     {
         validate(op);
         if (op == L"=") {
-            left->getVar()->setDouble(right->getDouble());
+            left->getVarRef()->setDouble(right->getDouble());
             left->setDouble(right->getDouble());
         } else if (op == L"==") {
             left->setBool(false);

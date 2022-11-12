@@ -129,35 +129,35 @@ namespace Mefodij {
     {
         if (right->getIsReference()) {
             // perform aliasing
-            if (!left->getVar() || !right->getVar()) {
+            if (!left->getVarRef() || !right->getVarRef()) {
                 throw runtime_error("Only variables can be copied by reference.");                    
             } 
 
             shared_ptr<Context> storage = getContext();
-            storage->setAlias(right->getVar()->getKey(), left->getVar()->getKey());
+            storage->setAlias(right->getVarRef()->getKey(), left->getVarRef()->getKey());
 
             // update atom value
-            left->setAtom(*storage->getVar(left->getVar()->getKey()));
+            left->setAtom(*storage->getVar(left->getVarRef()->getKey()));
             // update reference to variable 
-            left->setVar(storage->getVar(left->getVar()->getKey()));
+            left->setVarRef(storage->getVar(left->getVarRef()->getKey()));
         } else {
             // perform assignment
             if (left->getIsCalculated()) {
                 throw runtime_error("Cannot assign to dynamicaly calculated value."); 
             }
 
-            if (!left->getVar()) {
+            if (!left->getVarRef()) {
                 throw runtime_error("Assignment can only be done to variable.");                    
             } 
 
-            if (left->getVar()->getIsConst() && left->getVar()->getIsAssigned()) {
+            if (left->getVarRef()->getIsConst() && left->getVarRef()->getIsAssigned()) {
                 throw runtime_error("Cannot change the value of const variable."); 
             }
 
             joinAtoms(left, L"=", right);
 
-            if (!left->getVar()->getIsAssigned()) {
-                left->getVar()->setIsAssigned();
+            if (!left->getVarRef()->getIsAssigned()) {
+                left->getVarRef()->setIsAssigned();
             }
         }
     }

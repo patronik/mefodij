@@ -12,7 +12,7 @@ namespace Mefodij {
         if (op == L"+") {
             left->setString(right->getString());
         } else if (op == L"=") { 
-            left->getVar()->setString(right->getString());
+            left->getVarRef()->setString(right->getString());
             left->setString(right->getString());
         } else if (op == L"==") {
             left->setBool(false);

@@ -3,10 +3,10 @@
 #include "../include/tools.h"
 namespace Mefodij {
 
-    Atom::Atom(void * nullPtr, wstring storageT)
+    Atom::Atom(void * nullPtr, wstring sT)
     {
         type = Keyword::typeNull;
-        storageType = storageT;
+        storageType = sT;
         initMembers();
     }
 
@@ -72,14 +72,24 @@ namespace Mefodij {
         charIndex = index;
     }
 
-    void Atom::setVar(shared_ptr<Atom> atom)
+    void Atom::setVarRef(shared_ptr<Atom> atom)
     {
         varRef = atom;
     }
 
-    shared_ptr<Atom> Atom::getVar()
+    void Atom::setArrayRef(shared_ptr<Atom> atom)
+    {
+        arrayRef = atom;
+    }
+
+    shared_ptr<Atom> Atom::getVarRef()
     {
         return varRef;
+    }
+
+    shared_ptr<Atom> Atom::getArrayRef()
+    {
+        return arrayRef;
     }
 
     wstring Atom::getType()
@@ -222,7 +232,7 @@ namespace Mefodij {
     bool Atom::issetAt(wstring key)
     {
         if (type != Keyword::typeArray) {
-            throw runtime_error("Method is not supported by non array atom");
+            throw runtime_error("Method is not supported by non array.");
         }
 
         if (arrayVal.count(key)) {
@@ -234,27 +244,28 @@ namespace Mefodij {
     shared_ptr<Atom> Atom::elementAt(wstring key)
     {
         if (type != Keyword::typeArray) {
-            throw runtime_error("Method is not supported by non array atom");
+            throw runtime_error("Method is not supported by non array.");
         }
 
         if (!arrayVal.count(key)) {
             throw runtime_error(
-                "Element with key '" 
-                + Tools::wideStrToStr(key) 
-                + "' does not exist"
+                "Element with key '" + Tools::wideStrToStr(key) + "' does not exist"
             );
         }
 
         return arrayVal.at(key);
     }
 
-    void Atom::createAt(wstring key, shared_ptr<Atom> val) 
+    void Atom::setElementAt(wstring key, shared_ptr<Atom> val, shared_ptr<Atom> arrayRef) 
     {
         if (type != Keyword::typeArray) {
-            throw runtime_error("Method is not supported by non array atom");
+            throw runtime_error("Method is not supported by non array.");
         }
 
-        arrayVal.insert(pair<wstring, shared_ptr<Atom>>{key, val});
+        val->setKey(key);
+        val->setArrayRef(arrayRef);
+
+        arrayVal[key] = val;
     }
 
     bool Atom::toBool()
@@ -659,16 +670,16 @@ namespace Mefodij {
         } else if (type == Keyword::typeNull) {
             setString(Keyword::Null);
         }
-        setVar(nullptr);
+        setVarRef(nullptr);
         setIsCalculated();
     }
 
     void Atom::resolveAddress()
     {
-        if (!getVar()) {
+        if (!getVarRef()) {
             throw runtime_error("Only variables are stored at addresses.");
         } else {
-            uintptr_t addr = reinterpret_cast<uintptr_t>(getVar().get());
+            uintptr_t addr = reinterpret_cast<uintptr_t>(getVarRef().get());
             setString(to_wstring(addr));
         }
         setIsCalculated();
@@ -677,50 +688,50 @@ namespace Mefodij {
     void Atom::resolveStringSize()
     {
         setInt(stringVal.size());
-        setVar(nullptr);
+        setVarRef(nullptr);
         setIsCalculated();
     }
 
     void Atom::resolveArraySize()
     {
         setInt(arrayVal.size());
-        setVar(nullptr);
+        setVarRef(nullptr);
         setIsCalculated();
     }
 
     void Atom::resolveArrayFirst()
     {
-        if (getVar() != nullptr) {
-            auto varRef = getVar();
+        if (getVarRef() != nullptr) {
+            auto varRef = getVarRef();
             if (varRef->getArray().size() < 1) {
                 throw runtime_error("First element of array does not exist.");
             }
             setAtom(*(varRef->getArray().begin()->second));
-            setVar(varRef->getArray().begin()->second);
+            setVarRef(varRef->getArray().begin()->second);
         } else {
             if (arrayVal.size() < 1) {
                 throw runtime_error("First element of array does not exist.");
             }
             setAtom(*(arrayVal.begin()->second));
-            setVar(nullptr);
+            setVarRef(nullptr);
         }
     }
 
     void Atom::resolveArraySecond()
     {
-        if (getVar() != nullptr) {
-            auto varRef = getVar();
+        if (getVarRef() != nullptr) {
+            auto varRef = getVarRef();
             if (varRef->getArray().size() < 2) {
                 throw runtime_error("Second element of array does not exist.");
             }
             setAtom(*((++(varRef->getArray().begin()))->second));
-            setVar((++(varRef->getArray().begin()))->second);
+            setVarRef((++(varRef->getArray().begin()))->second);
         } else {
             if (arrayVal.size() < 2) {
                 throw runtime_error("Second element of array does not exist.");
             }
             setAtom(*((++(arrayVal.begin()))->second));
-            setVar(nullptr);
+            setVarRef(nullptr);
         }
     }
 

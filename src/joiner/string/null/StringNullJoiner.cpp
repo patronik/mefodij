@@ -16,7 +16,7 @@ namespace Mefodij {
                 throw new runtime_error("Cannot assign non string value to string character");
             }
 
-            left->getVar()->setNull();
+            left->getVarRef()->setNull();
             left->setNull();
         } else if (op == L"==") {
             left->setBool(false);

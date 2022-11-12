@@ -59,7 +59,7 @@ namespace Mefodij {
                 (bool) (left->getDouble() && right->getDouble())
             );
         } else if (op == L"=") { 
-            left->getVar()->setDouble(right->getDouble());
+            left->getVarRef()->setDouble(right->getDouble());
             left->setDouble(right->getDouble());
         } 
     }

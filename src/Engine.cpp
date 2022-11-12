@@ -169,10 +169,10 @@ namespace Mefodij {
                     
                     if (get<2>(params.at(argumentIndex))) {
                         // pass by reference
-                        if (funcVar->getVar() == nullptr) {
+                        if (funcVar->getVarRef() == nullptr) {
                             throw runtime_error("Only variables can be passed by reference.");
                         }
-                        funcVar = funcVar->getVar();
+                        funcVar = funcVar->getVarRef();
                     }  
                 
                     functionStack->setVar(
@@ -422,14 +422,14 @@ namespace Mefodij {
             unreadChar();
         }
 
-        if (atom->getVar()->getType() != Keyword::typeArray) {
-            atom->getVar()->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
+        if (atom->getVarRef()->getType() != Keyword::typeArray) {
+            atom->getVarRef()->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
         }
 
         wstring arrayKey;
         if (implicitKey) {
-            arrayKey = Tools::to_wstring(atom->getVar()->getArrayNextIndex());
-            atom->getVar()->setArrayNextIndex(atom->getVar()->getArrayNextIndex() + 1);
+            arrayKey = Tools::to_wstring(atom->getVarRef()->getArrayNextIndex());
+            atom->getVarRef()->setArrayNextIndex(atom->getVarRef()->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
             if (!Tools::inVector<wstring>({Keyword::typeString, Keyword::typeInt}, keyAtom->getType())) {
@@ -443,18 +443,22 @@ namespace Mefodij {
             arrayKey = keyAtom->toString();
         }
 
-        if (!atom->getVar()->issetAt(arrayKey)) {
-            atom->getVar()->createAt(arrayKey, make_shared<Atom>(nullptr, Keyword::storageVar));
+        if (!atom->getVarRef()->issetAt(arrayKey)) {
+            atom->getVarRef()->setElementAt(
+                arrayKey, 
+                make_shared<Atom>(nullptr, Keyword::storageVar),
+                atom->getVarRef()
+            );
         }
 
         // Backup pointer to variable
-        auto varPtr = atom->getVar();
+        auto varPtr = atom->getVarRef();
 
         // Copy element state to atom
         atom->setAtom(*varPtr->elementAt(arrayKey));
 
         // Update pointer to variable
-        atom->setVar(varPtr->elementAt(arrayKey));
+        atom->setVarRef(varPtr->elementAt(arrayKey));
     }
 
     void Engine::resolveMemberAccess(shared_ptr<Atom> & atom)
@@ -612,7 +616,7 @@ namespace Mefodij {
             // copy variable state to atom 
             atom->setAtom(*storage->getVar(varName));
             // store reference to variable into atom
-            atom->setVar(storage->getVar(varName));
+            atom->setVarRef(storage->getVar(varName));
             return true;
         }
         return false;
@@ -893,7 +897,7 @@ namespace Mefodij {
 
     void Engine::evaluateRangeLoop(int firstStmtPos)
     {
-        auto elementVar = lastResult->getVar();
+        auto elementVar = lastResult->getVarRef();
         if (elementVar == nullptr) {
             throw runtime_error("Initial statement should resolve to variable.");
         }
@@ -1197,13 +1201,12 @@ namespace Mefodij {
         }
 
         auto newVar = make_shared<Atom>(nullptr, Keyword::storageVar);
-        newVar->setKey(varName);
         
         if (isConst) {
-            newVar->setIsConst();
+            getContext()->setConst(varName, newVar);
+        } else {
+            getContext()->setVar(varName, newVar);
         }
-
-        getContext()->setVar(varName, newVar);
 
         pos = prevPos;
 

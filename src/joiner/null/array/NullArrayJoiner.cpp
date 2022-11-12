@@ -11,7 +11,7 @@ namespace Mefodij {
         validate(op);
 
         if (op == L"=") {
-            left->getVar()->setArray(right->getArray());
+            left->getVarRef()->setArray(right->getArray());
             left->setArray(right->getArray());
         } else if (op == L"==") {
             left->setBool(false);
