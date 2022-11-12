@@ -50,6 +50,16 @@ namespace Mefodij {
         return opts[2] == true;
     }
 
+    void VarAtom::setIsArrayElem()
+    {
+        opts[3] = true;
+    }
+
+    bool VarAtom::getIsArrayElem()
+    {
+        return opts[3] == true;
+    }
+
     bool VarAtom::getIsCalculated()
     {
         return opts[7] == true;

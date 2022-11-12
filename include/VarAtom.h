@@ -26,6 +26,7 @@ namespace Mefodij {
     bool getIsAssigned();
     bool getIsReference();
     bool getIsCalculated();
+    bool getIsArrayElem();
     wstring getKey();
 
     // Setters
@@ -33,6 +34,7 @@ namespace Mefodij {
     void setIsAssigned();
     void setIsReference();
     void setIsCalculated();
+    void setIsArrayElem();
     void setKey(wstring key);
   };
 

@@ -134,12 +134,18 @@ namespace Mefodij {
             } 
 
             shared_ptr<Context> storage = getContext();
-            storage->setAlias(right->getVarRef()->getKey(), left->getVarRef()->getKey());
+            if (!right->getVarRef()->getIsArrayElem() && !left->getVarRef()->getIsArrayElem()) {
+                
+                storage->setVarToVarAlias(right->getVarRef()->getKey(), left->getVarRef()->getKey());
 
-            // update atom value
-            left->setAtom(*storage->getVar(left->getVarRef()->getKey()));
-            // update reference to variable 
-            left->setVarRef(storage->getVar(left->getVarRef()->getKey()));
+                // update atom value
+                left->setAtom(*storage->getVar(left->getVarRef()->getKey()));
+                // update reference to variable 
+                left->setVarRef(storage->getVar(left->getVarRef()->getKey()));
+
+            } else {
+                throw runtime_error("Array elements cannot store references and cannot be copied by reference."); 
+            }
         } else {
             // perform assignment
             if (left->getIsCalculated()) {

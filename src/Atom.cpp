@@ -77,19 +77,9 @@ namespace Mefodij {
         varRef = atom;
     }
 
-    void Atom::setArrayRef(shared_ptr<Atom> atom)
-    {
-        arrayRef = atom;
-    }
-
     shared_ptr<Atom> Atom::getVarRef()
     {
         return varRef;
-    }
-
-    shared_ptr<Atom> Atom::getArrayRef()
-    {
-        return arrayRef;
     }
 
     wstring Atom::getType()
@@ -256,14 +246,14 @@ namespace Mefodij {
         return arrayVal.at(key);
     }
 
-    void Atom::setElementAt(wstring key, shared_ptr<Atom> val, shared_ptr<Atom> arrayRef) 
+    void Atom::setElementAt(wstring key, shared_ptr<Atom> val) 
     {
         if (type != Keyword::typeArray) {
             throw runtime_error("Method is not supported by non array.");
         }
 
         val->setKey(key);
-        val->setArrayRef(arrayRef);
+        val->setIsArrayElem();
 
         arrayVal[key] = val;
     }

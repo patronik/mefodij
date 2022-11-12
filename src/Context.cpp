@@ -59,16 +59,16 @@ namespace Mefodij {
         return nullptr;
     }
 
-    void Context::setAlias(wstring keyFrom, wstring keyTo)
+    void Context::setVarToVarAlias(wstring keyFrom, wstring keyTo)
     {
         auto sourceContext = getVarContext(keyFrom);
         if (sourceContext == nullptr) {
-            throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(keyFrom) + "' does not exist.");
+            throw runtime_error("Variable '" + Tools::wideStrToStr(keyFrom) + "' does not exist.");
         }
 
         auto targetContext = getVarContext(keyTo);
         if (targetContext == nullptr) {
-            throw runtime_error("Variable '" + Mefodij::Tools::wideStrToStr(keyTo) + "' does not exist.");
+            throw runtime_error("Variable '" + Tools::wideStrToStr(keyTo) + "' does not exist.");
         }
 
         targetContext->setVar(keyTo, sourceContext->getVar(keyFrom));

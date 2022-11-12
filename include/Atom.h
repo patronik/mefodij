@@ -87,12 +87,10 @@ namespace Mefodij {
     int getCharIndex();
     int getArrayNextIndex();
     shared_ptr<Atom> getVarRef();
-    shared_ptr<Atom> getArrayRef();
     wstring getType();
 
     // Setters
     void setVarRef(shared_ptr<Atom> atom);
-    void setArrayRef(shared_ptr<Atom> atom);
     void setArrayNextIndex(const int index);
     void setCharIndex(const int index);
     void setInt(long val);
@@ -108,7 +106,7 @@ namespace Mefodij {
     // Array related
     bool issetAt(wstring key);
     shared_ptr<Atom> elementAt(wstring key);
-    void setElementAt(wstring key, shared_ptr<Atom> val, shared_ptr<Atom> arrayRef);
+    void setElementAt(wstring key, shared_ptr<Atom> val);
 
     // Convertors
     bool toBool();

@@ -154,10 +154,35 @@ TEST(VariableTest, AliasingInTheSameScope)
         LR"(
             мем змінна = 2; 
             мем тест = 4;
+
             змінна = &тест;
+
+            змінна == тест 
+            && змінна == 4
+            && змінна.адрес == тест.адрес;
         )"
       );
-    ASSERT_EQ(L"4", result->toString());
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(VariableTest, ReferenceToArrayElem)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+      mefodij.evaluateCode(
+        LR"(
+            мем змінна = [1,2,3]; 
+            мем тест = [5,6,7]; 
+
+            змінна[0] = &тест[0];
+
+            змінна[0] == тест[0] 
+            && змінна[0] == 5
+            && змінна[0].адрес == тест[0].адрес;
+        )"
+      ), 
+      runtime_error
+    );
 }
 
 TEST(VariableTest, AliasingFromOuterScope)

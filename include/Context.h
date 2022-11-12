@@ -24,7 +24,9 @@ namespace Mefodij {
         shared_ptr<Atom> getVar(wstring key);
 
         Context * getVarContext(wstring key);
-        void setAlias(wstring keyFrom, wstring keyTo);
+        
+        // Var to Var alias
+        void setVarToVarAlias(wstring keyFrom, wstring keyTo);
 
         // Functions
         void setFunction(wstring key, int pos, map<int, tuple<wstring, shared_ptr<Atom>, bool>> params); 

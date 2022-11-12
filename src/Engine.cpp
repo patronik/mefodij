@@ -445,9 +445,7 @@ namespace Mefodij {
 
         if (!atom->getVarRef()->issetAt(arrayKey)) {
             atom->getVarRef()->setElementAt(
-                arrayKey, 
-                make_shared<Atom>(nullptr, Keyword::storageVar),
-                atom->getVarRef()
+                arrayKey, make_shared<Atom>(nullptr, Keyword::storageVar)
             );
         }
 
@@ -539,12 +537,11 @@ namespace Mefodij {
             return false;
         }
 
-        map<wstring, shared_ptr<Atom>, Tools::arrayCmp> array{};
+        atom->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
 
         // handle empty array
         symbol = readChar();
         if (symbol == L']') {
-            atom->setArray(array);
             return true;
         } else {
             unreadChar();
@@ -555,18 +552,30 @@ namespace Mefodij {
             shared_ptr<Atom> keyOrVal = evaluateBoolExpression();
             symbol = readChar();
             if (symbol == L',' || symbol == L']') {
-                array[Tools::to_wstring(implicitKey++)] = keyOrVal;
+
+                // Implicit integer key
+                keyOrVal->setKey(Tools::to_wstring(implicitKey++));
+                atom->setElementAt(keyOrVal->getKey(), keyOrVal);
+                
             } else if (symbol == L'=') {
                 symbol = readChar();
                 if (symbol == L'>') {
                     shared_ptr<Atom> arrayVal = evaluateBoolExpression();
                     if (keyOrVal->getType() == Keyword::typeString) {
-                        array[keyOrVal->getString()] = arrayVal;
+                        
+                        // String key
+                        arrayVal->setKey(keyOrVal->getString());
+                        atom->setElementAt(arrayVal->getKey(), arrayVal);
+
                     } else if (keyOrVal->getType() == Keyword::typeInt) {
                         if (keyOrVal->getInt() >= implicitKey) {
                             implicitKey = keyOrVal->getInt() + 1;
                         }
-                        array[Tools::to_wstring(keyOrVal->getInt())] = arrayVal;
+
+                        // Integer key
+                        arrayVal->setKey(Tools::to_wstring(keyOrVal->getInt()));
+                        atom->setElementAt(arrayVal->getKey(), arrayVal);
+
                     } else {
                         throw runtime_error("Only string and integer array keys are supported.");
                     }
@@ -581,8 +590,6 @@ namespace Mefodij {
         if (symbol != L']') {
             throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
         }
-
-        atom->setArray(array);
 
         return true;
     }
