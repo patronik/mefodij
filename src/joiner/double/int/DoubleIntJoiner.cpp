@@ -28,35 +28,35 @@ namespace Mefodij {
             );
         } else if (op == L"==") {
             left->setBool(
-                (bool) (left->getDouble() == right->getInt())
+                left->getDouble() == right->getInt()
             );
         } else if (op == L"!=") {
             left->setBool(
-                (bool) (left->getDouble() != right->getInt())
+                left->getDouble() != right->getInt()
             );
         } else if (op == L">=") {
             left->setBool(
-                (bool) (left->getDouble() >= right->getInt())
+                left->getDouble() >= right->getInt()
             );
         } else if (op == L">") {
             left->setBool(
-                (bool) (left->getDouble() > right->getInt())
+                left->getDouble() > right->getInt()
             );
         } else if (op == L"<") {
             left->setBool(
-                (bool) (left->getDouble() < right->getInt())
+                left->getDouble() < right->getInt()
             );
         } else if (op == L"<=") {
             left->setBool(
-                (bool) (left->getDouble() <= right->getInt())
+                left->getDouble() <= right->getInt()
             );
         } else if (op == L"||") {
             left->setBool(
-                (bool) (left->getDouble() || right->getInt())
+                left->getDouble() || right->getInt()
             );
         } else if (op == L"&&") {
             left->setBool(
-                (bool) (left->getDouble() && right->getInt())
+                left->getDouble() && right->getInt()
             );
         } else if (op == L"=") { 
             left->getVarRef()->setDouble((double) right->getInt());

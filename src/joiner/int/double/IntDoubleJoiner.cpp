@@ -3,28 +3,53 @@
 
 namespace Mefodij {
 
-    IntDoubleJoiner::IntDoubleJoiner(): Joiner({L"==", L"!=", L"||", L"&&", L"="})
+    IntDoubleJoiner::IntDoubleJoiner(): Joiner({L"==", L"!=", L">=", L"<=", L"||", L"&&", L"=", L">", L"<", L"%", L"*", L"/", L"+", L"-"})
     {}
 
     void IntDoubleJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {
         validate(op);
-        
-        if (op == L"==") {
+        if (op == L"+") {
+            left->setInt(left->getInt() + right->getDouble());
+        } else if (op == L"-") {
+           left->setInt(left->getInt() - right->getDouble());
+        } else if (op == L"/") {
+            left->setInt(left->getInt() / right->getDouble());
+        } else if (op == L"*") {
+            left->setInt(left->getInt() * right->getDouble());
+        } else if (op == L"%") {
+            left->setInt(left->getInt() % (int) right->getDouble());
+        } else if (op == L"==") {
             left->setBool(
-                left->getInt() == ((int) right->getDouble())
+                left->getInt() == right->getDouble()
             );
         } else if (op == L"!=") {
             left->setBool(
-                left->getInt() != ((int) right->getDouble())
+                left->getInt() != right->getDouble()
+            );
+        } else if (op == L">=") {
+            left->setBool(
+                left->getInt() >= right->getDouble()
+            );
+        } else if (op == L"<=") {
+            left->setBool(
+                left->getInt() <= right->getDouble()
+            );
+        } else if (op == L"<") {
+            left->setBool(
+                left->getInt() < right->getDouble()
+            );
+        } else if (op == L">") {
+            left->setBool(
+                left->getInt() > right->getDouble()
             );
         } else if (op == L"||") {
             left->setBool(
-                left->getInt() || ((int) right->getDouble())
+                left->getInt() || right->getDouble()
             );
         } else if (op == L"&&") {
             left->setBool(
-                left->getInt() && ((int) right->getDouble())
+                left->getInt() && right->getDouble()
             );
         } else if (op == L"=") {
             left->getVarRef()->setInt((int)right->getDouble());

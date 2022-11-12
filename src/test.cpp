@@ -35,6 +35,13 @@ TEST(BooleanTest, LogicalOperators)
     ASSERT_EQ(true, result->toBool());
 }
 
+TEST(BooleanTest, LogicalWithMathOperators)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"1 < 1.15 && 2 >= 0.5 && 0.4 > 0.1 && 1.7 < 2.0");
+    ASSERT_EQ(true, result->toBool());
+}
+
 TEST(BooleanTest, OperandComparison)
 {
     Mefodij::Engine mefodij{};
