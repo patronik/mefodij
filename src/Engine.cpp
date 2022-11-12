@@ -905,6 +905,8 @@ namespace Mefodij {
     void Engine::evaluateRangeLoop(int firstStmtPos)
     {
         auto elementVar = lastResult->getVarRef();
+        elementVar->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
+
         if (elementVar == nullptr) {
             throw runtime_error("Initial statement should resolve to variable.");
         }
@@ -926,12 +928,8 @@ namespace Mefodij {
         auto array = lastResult->getArray();
         for (auto elem: array) {
             // Set element per iteration
-            elementVar->setArray({
-                {L"0", make_shared<Atom>(
-                    elem.first, Keyword::storageVar
-                )}, 
-                {L"1", elem.second}
-            });
+            elementVar->setElementAt(L"0", make_shared<Atom>(elem.first, Keyword::storageVar));
+            elementVar->setElementAt(L"1", elem.second);
 
             shared_ptr<Context> iterationStack = make_shared<Context>();
             iterationStack->setParent(getContext());

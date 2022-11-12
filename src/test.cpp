@@ -107,13 +107,6 @@ TEST(MemberAccess, TypeMemberWithNumber)
     ASSERT_EQ(L"ціле", result->toString());
 }
 
-TEST(MemberAccess, AddressMember)
-{
-    Mefodij::Engine mefodij{};
-    auto result = mefodij.evaluateCode(L"мем тест = 123; тест.адрес;");
-    ASSERT_LT(0, result->toString().size());
-}
-
 TEST(TypeCasting, DoubleToString)
 {
     Mefodij::Engine mefodij{};
@@ -165,8 +158,7 @@ TEST(VariableTest, AliasingInTheSameScope)
             змінна = &тест;
 
             змінна == тест 
-            && змінна == 4
-            && змінна.адрес == тест.адрес;
+            && змінна == 4;
         )"
       );
     ASSERT_TRUE(result->toBool());
@@ -184,8 +176,7 @@ TEST(VariableTest, ReferenceToArrayElem)
             змінна[0] = &тест[0];
 
             змінна[0] == тест[0] 
-            && змінна[0] == 5
-            && змінна[0].адрес == тест[0].адрес;
+            && змінна[0] == 5;
         )"
       ), 
       runtime_error

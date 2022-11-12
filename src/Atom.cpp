@@ -606,7 +606,6 @@ namespace Mefodij {
                 Keyword::typeString, {
                     {Keyword::Length, &Atom::resolveStringSize},
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
@@ -615,31 +614,26 @@ namespace Mefodij {
                     {Keyword::First, &Atom::resolveArrayFirst},
                     {Keyword::Second, &Atom::resolveArraySecond},
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
                 Keyword::typeBool, {
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
                 Keyword::typeInt, {
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
                 Keyword::typeDouble, {
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             },
             {
                 Keyword::typeNull, {
                     {Keyword::Type, &Atom::resolveType},
-                    {Keyword::Address, &Atom::resolveAddress}
                 }
             }
         };
@@ -661,17 +655,6 @@ namespace Mefodij {
             setString(Keyword::Null);
         }
         setVarRef(nullptr);
-        setIsCalculated();
-    }
-
-    void Atom::resolveAddress()
-    {
-        if (!getVarRef()) {
-            throw runtime_error("Only variables are stored at addresses.");
-        } else {
-            uintptr_t addr = reinterpret_cast<uintptr_t>(getVarRef().get());
-            setString(to_wstring(addr));
-        }
         setIsCalculated();
     }
 
