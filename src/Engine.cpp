@@ -134,23 +134,28 @@ namespace Mefodij {
 
     bool Engine::parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom)
     {
-        if (varName == Keyword::castInt
-            || varName == Keyword::castDouble
-            || varName == Keyword::castBool
-            || varName == Keyword::castArray
-            || varName == Keyword::castString
-            ) {
-                atom->setCast(varName);
-            } else if (varName == Keyword::True) {
-                atom->setBool(true);
-            } else if (varName == Keyword::False) {
-                atom->setBool(false);
-            }  else if (varName == Keyword::Null) {
-                atom->setNull();
-            } else {
-                return false;
-            }
-            return true;
+        if (varName == Keyword::True) {
+            atom->setBool(true);
+        } else if (varName == Keyword::False) {
+            atom->setBool(false);
+        }  else if (varName == Keyword::Null) {
+            atom->setNull();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    bool Engine::isType(wstring str)
+    {
+        return (
+            str == Keyword::typeInt
+            || str == Keyword::typeDouble
+            || str == Keyword::typeBool
+            || str == Keyword::typeArray
+            || str == Keyword::typeString
+            || str == Keyword::typeNull
+        );
     }
 
     shared_ptr<Context> Engine::prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params)
@@ -850,18 +855,36 @@ namespace Mefodij {
     bool Engine::parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     {
         if (symbol == L'(') {
+
+            // Check for type casting
+            int posBk = pos;
+            wstring cast;
+            if (parseCharacterSequence(readChar(), cast)) {
+                if (isType(cast)) {
+                    if (readChar() == L')') {
+                        // Type casting
+                        atom = parseAtom();
+                        atom->cast(cast);
+                        return true;
+                    } else {
+                        pos = posBk;
+                    }
+                } else {
+                    pos = posBk;
+                }
+            } else {
+                pos = posBk;
+            }
+
             shared_ptr<Atom> subExpr = evaluateBoolStatement();
+
             if (readChar() != L')') {
                 throw runtime_error("Syntax error. Wrong number of parentheses.");
             }
-            if (subExpr->getType() == Keyword::typeCast) {
-                // Type casting
-                atom = parseAtom();
-                atom->cast(subExpr->getCast());
-            } else {
-                // atom is a result of subexpression
-                atom = subExpr;
-            }
+
+            // atom is a result of subexpression
+            atom = subExpr;
+
             return true;
         }
         return false;

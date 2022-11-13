@@ -14,11 +14,11 @@ namespace Mefodij {
         binChars = L"01";
 
         reservedKeywords = {
-            Keyword::castInt, 
-            Keyword::castDouble, 
-            Keyword::castString, 
-            Keyword::castArray, 
-            Keyword::castBool, 
+            Keyword::typeInt, 
+            Keyword::typeDouble, 
+            Keyword::typeString, 
+            Keyword::typeArray, 
+            Keyword::typeBool, 
             Keyword::True,
             Keyword::False,
             Keyword::Null,

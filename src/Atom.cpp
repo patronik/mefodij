@@ -164,13 +164,6 @@ namespace Mefodij {
         type = Keyword::typeNull;        
     }
 
-    void Atom::setCast(wstring val) 
-    {
-        clearVal();
-        castVal = val;
-        type = Keyword::typeCast;        
-    }
-
     long Atom::getInt() 
     {
         if (type != Keyword::typeInt) {
@@ -210,14 +203,6 @@ namespace Mefodij {
         }
         return boolVal;
     }
-
-    wstring Atom::getCast() 
-    {
-        if (type != Keyword::typeCast) {
-            throw runtime_error("Wrong atom type");
-        }
-        return castVal;
-    } 
 
     bool Atom::issetAt(wstring key)
     {
@@ -440,15 +425,15 @@ namespace Mefodij {
     void Atom::cast(wstring typeTo)
     {
         if (type == Keyword::typeString) {
-            if (typeTo == Keyword::castString) {
+            if (typeTo == Keyword::typeString) {
                 return;
-            } else if (typeTo == Keyword::castInt) {
+            } else if (typeTo == Keyword::typeInt) {
                 setInt(wcstol(getString().c_str(), nullptr, 10));
-            } else if (typeTo == Keyword::castDouble) {
+            } else if (typeTo == Keyword::typeDouble) {
                 setDouble(wcstod(getString().c_str(), nullptr));
-            } else if (typeTo == Keyword::castBool) {
+            } else if (typeTo == Keyword::typeBool) {
                 setBool(getString() != L"");
-            } else if (typeTo == Keyword::castArray) {
+            } else if (typeTo == Keyword::typeArray) {
                 map<wstring, shared_ptr<Atom>, Tools::arrayCmp> tmpArray; 
                 for (int i = 0; i < stringVal.size(); i++) {
                     tmpArray.insert(
@@ -456,6 +441,8 @@ namespace Mefodij {
                     ); 
                 }
                 setArray(tmpArray);
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
             } else {
                 throw runtime_error(
                     "Cannot cast type '" 
@@ -468,14 +455,16 @@ namespace Mefodij {
         }
 
         if (type == Keyword::typeArray) {
-            if (typeTo == Keyword::castArray) {
+            if (typeTo == Keyword::typeArray) {
                 return;
-            } else if (typeTo == Keyword::castString) {
+            } else if (typeTo == Keyword::typeString) {
                 wstring stringVal;
                 for (auto elem: arrayVal) {
                     stringVal += elem.second->toString();
                 }
                 setString(stringVal);
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
             } else {
                 throw runtime_error(
                     "Cannot cast type '" 
@@ -488,18 +477,20 @@ namespace Mefodij {
         }
 
         if (type == Keyword::typeBool) {
-            if (typeTo == Keyword::castBool) {
+            if (typeTo == Keyword::typeBool) {
                 return;
-            } else if (typeTo == Keyword::castInt) {
+            } else if (typeTo == Keyword::typeInt) {
                 setInt((int) getBool());
-            } else if (typeTo == Keyword::castString) {
+            } else if (typeTo == Keyword::typeString) {
                 if (getBool()) {
                     setString(Keyword::True);
                 } else {
                     setString(Keyword::False);
                 }
-            } else if (typeTo == Keyword::castDouble) {
+            } else if (typeTo == Keyword::typeDouble) {
                 setDouble((double) getBool());
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
             } else {
                 throw runtime_error(
                     "Cannot cast type '" 
@@ -512,14 +503,16 @@ namespace Mefodij {
         }
 
         if (type == Keyword::typeInt) {
-            if (typeTo == Keyword::castInt) {
+            if (typeTo == Keyword::typeInt) {
                 return;
-            } else if (typeTo == Keyword::castString) {
+            } else if (typeTo == Keyword::typeString) {
                 setString(Tools::to_wstring(getInt()));
-            } else if (typeTo == Keyword::castDouble) {
+            } else if (typeTo == Keyword::typeDouble) {
                 setDouble((double) getInt());
-            } else if (typeTo == Keyword::castBool) {
+            } else if (typeTo == Keyword::typeBool) {
                 setBool((bool) getInt());
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
             } else {
                 throw runtime_error(
                     "Cannot cast type '" 
@@ -532,14 +525,16 @@ namespace Mefodij {
         }
 
         if (type == Keyword::typeDouble) {
-            if (typeTo == Keyword::castDouble) {
+            if (typeTo == Keyword::typeDouble) {
                 return;
-            } else if (typeTo == Keyword::castInt) {
+            } else if (typeTo == Keyword::typeInt) {
                 setInt((int) getDouble());
-            } else if (typeTo == Keyword::castString) {
+            } else if (typeTo == Keyword::typeString) {
                 setString(Tools::to_wstring(getDouble()));
-            } else if (typeTo == Keyword::castBool) {
+            } else if (typeTo == Keyword::typeBool) {
                 setBool((bool) getDouble());
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
             } else {
                 throw runtime_error(
                     "Cannot cast type '" 
@@ -552,7 +547,9 @@ namespace Mefodij {
         }
 
         if (type == Keyword::typeNull) {
-            if (typeTo == Keyword::castBool) {
+            if (typeTo == Keyword::typeNull) {
+                return;
+            } else if (typeTo == Keyword::typeBool) {
                 setBool(false);
             } else {
                 throw runtime_error(
@@ -642,15 +639,15 @@ namespace Mefodij {
     void Atom::resolveType()
     {
         if (type == Keyword::typeInt) {
-            setString(Keyword::castInt);
+            setString(Keyword::typeInt);
         } else if (type == Keyword::typeDouble) {
-            setString(Keyword::castDouble);
+            setString(Keyword::typeDouble);
         } else if (type == Keyword::typeArray) {
-            setString(Keyword::castArray);
+            setString(Keyword::typeArray);
         } else if (type == Keyword::typeString) {
-            setString(Keyword::castString);
+            setString(Keyword::typeString);
         } else if (type == Keyword::typeBool) {
-            setString(Keyword::castBool);
+            setString(Keyword::typeBool);
         } else if (type == Keyword::typeNull) {
             setString(Keyword::Null);
         }

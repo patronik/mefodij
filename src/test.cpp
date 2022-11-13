@@ -97,21 +97,21 @@ TEST(MemberAccess, TypeMemberWithString)
 {
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(L"'привіт'.тип;");
-    ASSERT_EQ(L"строка", result->toString());
+    ASSERT_EQ(Mefodij::Keyword::typeString, result->toString());
 }
 
 TEST(MemberAccess, TypeMemberWithNumber)
 {
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(L"123.тип;");
-    ASSERT_EQ(L"ціле", result->toString());
+    ASSERT_EQ(Mefodij::Keyword::typeInt, result->toString());
 }
 
 TEST(TypeCasting, DoubleToString)
 {
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(L"мем тест = (строка) 1.5;");
-    ASSERT_EQ(L"string", result->getType());
+    ASSERT_EQ(Mefodij::Keyword::typeString, result->getType());
     ASSERT_EQ(L"1.5", result->toString());
 }
 
@@ -119,9 +119,18 @@ TEST(TypeCasting, IntToString)
 {
     Mefodij::Engine mefodij{};
     auto result = mefodij.evaluateCode(L"мем тест = (строка) 33;");
-    ASSERT_EQ(L"string", result->getType());
+    ASSERT_EQ(Mefodij::Keyword::typeString, result->getType());
     ASSERT_EQ(L"33", result->toString());
 }
+
+TEST(TypeCasting, ArrayToNull)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"мем тест = (нал) [1,2,3];");
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+    ASSERT_EQ(L"", result->toString());
+}
+
 
 TEST(VariableTest, SimpleAssignment)
 {
@@ -399,6 +408,7 @@ TEST(FunctionTest, TwoDefaultParams)
 }
 
 int main(int argc, char **argv) {
+  init();
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

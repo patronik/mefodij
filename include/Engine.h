@@ -124,6 +124,7 @@ namespace Mefodij {
       shared_ptr<Atom> evaluateBoolStatement(); 
 
       // helper functions
+      bool isType(wstring str);
       shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params);
 
       // Atoms parsers
