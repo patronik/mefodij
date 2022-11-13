@@ -90,13 +90,16 @@ namespace Mefodij {
     void Atom::clearVal() 
     { 
         intVal = 0;  
+        
         doubleVal = 0.0;
+        
         stringVal.clear();
-        arrayVal.clear();
-        boolVal = false;
-        castVal.clear();
-        arrayNextIndex = 0;
         charIndex = -1;
+
+        arrayVal.clear();
+        arrayNextIndex = 0;
+
+        boolVal = false;
     }
 
     void Atom::setInt(long val) 
@@ -580,8 +583,10 @@ namespace Mefodij {
             setNull();
         }
 
-        arrayNextIndex = src.arrayNextIndex;
+        // String related
         charIndex = src.charIndex;
+        // Array related
+        arrayNextIndex = src.arrayNextIndex;
     }
 
     vector<wstring> Atom::getMemberNames()

@@ -17,7 +17,7 @@ namespace Mefodij {
         methodPtr getPointer(wstring name);
 
         // core functions
-        void inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
+        void functionInArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
 
         public:
         CoreFunctionResolver();

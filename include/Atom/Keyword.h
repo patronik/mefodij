@@ -35,10 +35,12 @@ namespace Mefodij {
      extern const wstring Address;
 
     namespace Function {
-       extern const wstring inArray;  
+      extern const wstring inArray;
+      extern const wstring sort;  
       namespace Parameters {
          extern const wstring elem;
          extern const wstring array;
+         extern const wstring direction;
       }
     }
   }

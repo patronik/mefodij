@@ -25,10 +25,12 @@ namespace Mefodij {
     const wstring Address(L"адрес");
 
     namespace Function {
-      const wstring inArray(L"вМасиві");;  
+      const wstring inArray(L"вМасиві");
+      const wstring sort(L"сортувати");  
       namespace Parameters {
-        const wstring elem(L"елемент");;
-        const wstring array(L"масив");;
+        const wstring elem(L"елемент");
+        const wstring array(L"масив");
+        const wstring direction(L"порядок");
       }
     }
   }

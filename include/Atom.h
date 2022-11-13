@@ -45,9 +45,6 @@ namespace Mefodij {
 
       // Reference to variable
       shared_ptr<Atom> varRef = nullptr;
-
-      // Reference to array
-      shared_ptr<Atom> arrayRef = nullptr;
       // DYNAMIC ATOM STATE END
 
       // Members
@@ -83,7 +80,6 @@ namespace Mefodij {
     wstring getString();
     map<wstring, shared_ptr<Atom>, Tools::arrayCmp> getArray();
     bool getBool();
-    wstring getCast();
     int getCharIndex();
     int getArrayNextIndex();
     shared_ptr<Atom> getVarRef();
@@ -100,7 +96,6 @@ namespace Mefodij {
     void setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
     void setBool(bool val);
     void setNull();
-    void setCast(wstring val);
     void setAtom(const Atom & src);
 
     // Array related

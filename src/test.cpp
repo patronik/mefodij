@@ -272,6 +272,31 @@ TEST(ArrayTest, ArrayMembers)
     ASSERT_EQ(L"9", result->toString());
 }
 
+TEST(ArrayTest, InArrayCoreFuncSuccess)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ['a' => 2, 7, 'b' => 3];
+            вМасиві(7, мас);
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+
+TEST(ArrayTest, InArrayCoreFuncFail)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ['a' => 2, 7, 'b' => 3];
+            вМасиві(72, мас);
+        )"
+    );
+    ASSERT_FALSE(result->toBool());
+}
+
 TEST(IfConditionTest, BasicIf)
 {
     Mefodij::Engine mefodij{};
