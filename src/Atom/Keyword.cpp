@@ -26,7 +26,7 @@ namespace Mefodij {
 
     namespace Function {
       const wstring inArray(L"вМасиві");
-      const wstring sort(L"сортувати");  
+      const wstring sortArray(L"сортувати");  
       namespace Parameters {
         const wstring elem(L"елемент");
         const wstring array(L"масив");

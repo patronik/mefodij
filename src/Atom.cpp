@@ -342,6 +342,30 @@ namespace Mefodij {
                     + "'."
                 );
             }
+        } else if (op == L"-") {
+            if (type == Keyword::typeInt) {
+                setInt(-intVal);
+            } else if (type == Keyword::typeDouble) {
+                setDouble(-doubleVal);
+            } else {
+                throw runtime_error(
+                    "Negation is not supported by type " 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
+            }
+        } else if (op == L"+") {
+            if (type == Keyword::typeInt) {
+                setInt(+intVal);
+            } else if (type == Keyword::typeDouble) {
+                setDouble(+doubleVal);
+            } else {
+                throw runtime_error(
+                    "Plusification is not supported by type " 
+                    + Tools::wideStrToStr(type) 
+                    + "'."
+                );
+            }
         } else {
             throw runtime_error(
                 "Not supported pre operator " 

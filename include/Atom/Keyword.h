@@ -36,7 +36,7 @@ namespace Mefodij {
 
     namespace Function {
       extern const wstring inArray;
-      extern const wstring sort;  
+      extern const wstring sortArray;  
       namespace Parameters {
          extern const wstring elem;
          extern const wstring array;

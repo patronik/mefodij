@@ -297,6 +297,84 @@ TEST(ArrayTest, InArrayCoreFuncFail)
     ASSERT_FALSE(result->toBool());
 }
 
+TEST(ArrayTest, SortNumArrayAsc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = [3,2,1];
+            сортувати(мас, 1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"1", result->toString());
+}
+
+TEST(ArrayTest, SortNumArrayDesc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = [1,2,3];
+            сортувати(мас, -1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(ArrayTest, SortStringArrayAsc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ["ав", "аб", "аа"];
+            сортувати(мас, 1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"аа", result->toString());
+}
+
+TEST(ArrayTest, SortStringArrayDesc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ["привіт", "світ"];
+            сортувати(мас, -1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"світ", result->toString());
+}
+
+TEST(ArrayTest, SortMixedArrayAsc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ["ав", "аб", 5, "аа"];
+            сортувати(мас, 1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"5", result->toString());
+}
+
+TEST(ArrayTest, SortMixedArrayDesc)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем мас = ["ав", "аб", 5, "аа", "ю"];
+            сортувати(мас, -1);
+            вихід мас[0];
+        )"
+    );
+    ASSERT_EQ(L"ю", result->toString());
+}
+
 TEST(IfConditionTest, BasicIf)
 {
     Mefodij::Engine mefodij{};

@@ -16,8 +16,29 @@ namespace Mefodij {
 
         methodPtr getPointer(wstring name);
 
+        struct ArrayGTCmp
+        {
+            inline bool operator() (
+                pair<wstring, shared_ptr<Atom>> const & a1, 
+                pair<wstring, shared_ptr<Atom>> const & a2)
+            {
+                return a1.second->toString() < a2.second->toString();
+            }
+        };
+
+        struct ArrayLTCmp
+        {
+            inline bool operator() (
+                pair<wstring, shared_ptr<Atom>> const & a1, 
+                pair<wstring, shared_ptr<Atom>> const & a2)
+            {
+                return a1.second->toString() > a2.second->toString();
+            }
+        };
+
         // core functions
-        void functionInArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
+        void inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
+        void sortArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
 
         public:
         CoreFunctionResolver();
