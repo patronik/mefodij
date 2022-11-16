@@ -7,10 +7,9 @@
 #include <map>
 #include <wchar.h>
 
-#include "Parser.h"
 #include "Atom.h"
+#include "AtomParser.h"
 #include "Context.h"
-#include "CoreFunctionResolver.h"
 
 #include "joiner/bool/bool/BoolBoolJoiner.h"
 #include "joiner/bool/int/BoolIntJoiner.h"
@@ -53,24 +52,10 @@ namespace Mefodij {
 
   using namespace std;
 
-  class Engine : public Parser
+  class Engine : public AtomParser
   {
-      // Return flag
-      bool isReturn = false;
-
-      // Breaks loop execution
-      bool isBreak = false;
-
-      // Result of last executed statement
-      shared_ptr<Atom> lastResult{};
-
       // Global context
       shared_ptr<Context> context = nullptr;
-
-      // Stack
-      vector<shared_ptr<Context>> stack{};
-
-      CoreFunctionResolver coreFuncResolver;
 
       static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
       static unique_ptr<BoolIntJoiner> boolIntJoiner;
@@ -112,59 +97,46 @@ namespace Mefodij {
       void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
       void assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
 
-      shared_ptr<Context> getContext();
+      virtual shared_ptr<Context> getContext() override;
 
-      // one atom
-      shared_ptr<Atom> parseAtom();
       // one or more atoms connected with high priority math operator 
       shared_ptr<Atom> evaluateMathExpression(); 
       // one ore more math expression connected with low level priority operator 
-      shared_ptr<Atom> evaluateBoolExpression(); 
+      virtual shared_ptr<Atom> evaluateBoolExpression() override; 
       // one or more bool expressions conntected with bool operator
-      shared_ptr<Atom> evaluateBoolStatement(); 
+      virtual shared_ptr<Atom> evaluateBoolStatement() override; 
 
       // helper functions
-      shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params);
+      virtual shared_ptr<Context> prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params) override;
 
-      // Atoms parsers
-      bool parseParentheticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseBinNumberLiteralAtom(shared_ptr<Atom> & atom);
-      bool parseHexNumberLiteralAtom(shared_ptr<Atom> & atom);
-      bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);
-      bool parseCharacterConstAtom(wstring varName, shared_ptr<Atom> & atom);
-      bool parseFunctionCallAtom(wstring varName, shared_ptr<Atom> & atom);
+      // Atom resolvers
+      void resolveStringAccess(shared_ptr<Atom> & atom);
+      void resolveArrayAccess(shared_ptr<Atom> & atom);
+      void resolveMemberAccess(shared_ptr<Atom> & atom);
+      virtual void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom) override;
+      virtual void resolveAtomAssignment(shared_ptr<Atom> & atom) override;
+      virtual void resolveAtomAccess(shared_ptr<Atom> & atom) override;
 
       // Parsers for function and variable declaration
       void parseVariable(bool isConst = false);
       void parseFunction();
       
-      // Atom resolving
-      void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom);
-      void resolveStringAccess(shared_ptr<Atom> & atom);
-      void resolveArrayAccess(shared_ptr<Atom> & atom);
-      void resolveMemberAccess(shared_ptr<Atom> & atom);
-      void resolveAtomAssignment(shared_ptr<Atom> & atom);
-      void resolveAtomAccess(shared_ptr<Atom> & atom);
-      
       void evaluateWhileLoop(int firstStmtPos);
       void evaluateRangeLoop(int firstStmtPos);
       void evaluateForLoop();
       void evaluateIfStructure();
-      void evaluateBlockOrStatement(bool stopOnBreak = false);
+      virtual void evaluateBlockOrStatement(bool stopOnBreak = false) override;
       void evaluateStatement();
       void evaluateStatements();
       shared_ptr<Atom> evaluate();
 
-      tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState();
-      void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state);
+      tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> getState() override;
+      virtual void setState(const tuple<int, wstring, wstring, bool, bool, shared_ptr<Atom>> & state) override;
 
       void throwError(const string message);
   public:
     Engine();
+    virtual ~Engine() {}
     shared_ptr<Atom> evaluateFile(string filename);
     shared_ptr<Atom> evaluateFile(wstring wfilename);
     shared_ptr<Atom> evaluateCode(string code);

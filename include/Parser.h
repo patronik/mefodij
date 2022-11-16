@@ -66,6 +66,7 @@ namespace Mefodij {
 
         public:
         Parser();
+        virtual ~Parser() {}
     };
 
 }
