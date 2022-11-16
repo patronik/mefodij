@@ -8,9 +8,9 @@ namespace Mefodij {
 
     using namespace std;
 
-    class CoreFunctionResolver {
+    class CoreResolver {
         typedef map<int, tuple<wstring, shared_ptr<Atom>, bool>> methodParams;
-        typedef void (CoreFunctionResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
+        typedef void (CoreResolver::* methodPtr)(shared_ptr<Context> &, shared_ptr<Atom> &);
 
         map<wstring, pair<methodPtr, methodParams>> storage;
 
@@ -41,7 +41,7 @@ namespace Mefodij {
         void sortArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result);
 
         public:
-        CoreFunctionResolver();
+        CoreResolver();
         methodParams & getParams(wstring name);
 
         bool hasFunction(wstring name);

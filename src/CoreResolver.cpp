@@ -1,13 +1,13 @@
 
-#include "../include/CoreFunctionResolver.h"
+#include "../include/CoreResolver.h"
 #include "../include/Keyword.h"
 
 namespace Mefodij {
 
-    CoreFunctionResolver::CoreFunctionResolver(): storage{}
+    CoreResolver::CoreResolver(): storage{}
     {
         setFunction(Keyword::Function::inArray,
-            &CoreFunctionResolver::inArray,
+            &CoreResolver::inArray,
             {
                 {0, {Keyword::Function::Parameters::elem, nullptr, false}},
                 {1, {Keyword::Function::Parameters::array, nullptr, false}}
@@ -15,7 +15,7 @@ namespace Mefodij {
         );
 
         setFunction(Keyword::Function::sortArray,
-            &CoreFunctionResolver::sortArray,
+            &CoreResolver::sortArray,
             {
                 {0, {Keyword::Function::Parameters::array, nullptr, true}},
                 {1, {Keyword::Function::Parameters::direction, nullptr, false}}
@@ -23,31 +23,31 @@ namespace Mefodij {
         );
     }
 
-    bool CoreFunctionResolver::hasFunction(wstring name)
+    bool CoreResolver::hasFunction(wstring name)
     {
         return storage.count(name) != 0;
     }
 
-    CoreFunctionResolver::methodParams & CoreFunctionResolver::getParams(wstring name)
+    CoreResolver::methodParams & CoreResolver::getParams(wstring name)
     {
         return storage.at(name).second;
     }
 
-    CoreFunctionResolver::methodPtr CoreFunctionResolver::getPointer(wstring name)
+    CoreResolver::methodPtr CoreResolver::getPointer(wstring name)
     {
         return storage.at(name).first;
     }
 
-    void CoreFunctionResolver::setFunction(
+    void CoreResolver::setFunction(
         wstring name, 
-        CoreFunctionResolver::methodPtr method,
-        CoreFunctionResolver::methodParams params
+        CoreResolver::methodPtr method,
+        CoreResolver::methodParams params
     )
     {
         storage.insert({name, {method, params}});
     }
 
-    void CoreFunctionResolver::resolveCall(
+    void CoreResolver::resolveCall(
         wstring name, 
         shared_ptr<Context> & stack, 
         shared_ptr<Atom> & result
@@ -65,7 +65,7 @@ namespace Mefodij {
         (this->*ptr)(stack, result);
     }
 
-    void CoreFunctionResolver::sortArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
+    void CoreResolver::sortArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
     {
         shared_ptr<Atom> arrayParam = stack->getVar(Keyword::Function::Parameters::array);
         shared_ptr<Atom> direction = stack->getVar(Keyword::Function::Parameters::direction);
@@ -112,7 +112,7 @@ namespace Mefodij {
         result->setNull();
     }
 
-    void CoreFunctionResolver::inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
+    void CoreResolver::inArray(shared_ptr<Context> & stack, shared_ptr<Atom> & result)
     {
         shared_ptr<Atom> element = stack->getVar(Keyword::Function::Parameters::elem);
         shared_ptr<Atom> array = stack->getVar(Keyword::Function::Parameters::array);

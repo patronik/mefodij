@@ -1,7 +1,7 @@
 #ifndef ATOM_PARSER_H
 #define ATOM_PARSER_H
 
-#include "CoreFunctionResolver.h"
+#include "CoreResolver.h"
 #include "Atom.h"
 #include "Parser.h"
 
@@ -22,7 +22,7 @@ namespace Mefodij {
         // Stack
         vector<shared_ptr<Context>> stack{};
 
-        CoreFunctionResolver coreResolver;
+        CoreResolver coreResolver;
 
         /** VIRTUAL PART START */
         // helper functions
