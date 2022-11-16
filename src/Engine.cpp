@@ -1,5 +1,5 @@
 #include "../include/Engine.h"
-#include "../include/Atom/Keyword.h"
+#include "../include/Keyword.h"
 #include "../include/tools.h"
 
 namespace Mefodij {
@@ -144,18 +144,6 @@ namespace Mefodij {
             return false;
         }
         return true;
-    }
-
-    bool Engine::isType(wstring str)
-    {
-        return (
-            str == Keyword::typeInt
-            || str == Keyword::typeDouble
-            || str == Keyword::typeBool
-            || str == Keyword::typeArray
-            || str == Keyword::typeString
-            || str == Keyword::typeNull
-        );
     }
 
     shared_ptr<Context> Engine::prepareCallStack(map<int, tuple<wstring, shared_ptr<Atom>, bool>> params)
@@ -860,7 +848,7 @@ namespace Mefodij {
             int posBk = pos;
             wstring cast;
             if (parseCharacterSequence(readChar(), cast)) {
-                if (isType(cast)) {
+                if (Tools::inVector<wstring>(Keyword::getTypes(), cast)) {
                     if (readChar() == L')') {
                         // Type casting
                         atom = parseAtom();

@@ -7,7 +7,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Atom/Keyword.h"
+#include "Keyword.h"
 #include "Engine.h"
 #include "tools.h"
 

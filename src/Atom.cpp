@@ -1,4 +1,4 @@
-#include "../include/Atom/Keyword.h"
+#include "../include/Keyword.h"
 #include "../include/Atom.h"
 #include "../include/tools.h"
 namespace Mefodij {

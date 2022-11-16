@@ -1,5 +1,5 @@
 #include "../include/VarAtom.h"
-#include "../include/Atom/Keyword.h"
+#include "../include/Keyword.h"
 namespace Mefodij {
 
     bool VarAtom::getIsConst()

@@ -1,6 +1,6 @@
 #include "../include/Parser.h"
 #include "../include/tools.h"
-#include "../include/Atom/Keyword.h"
+#include "../include/Keyword.h"
 #include "../include/Atom.h"
 
 namespace Mefodij {

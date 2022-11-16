@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 #include <bitset>
-#include "./Atom/Keyword.h"
+#include "./Keyword.h"
 namespace Mefodij {
 
   using namespace std;
