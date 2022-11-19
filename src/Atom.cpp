@@ -3,51 +3,45 @@
 #include "../include/tools.h"
 namespace Mefodij {
 
-    Atom::Atom(void * nullPtr, wstring sT)
+    Atom::Atom(void * nullPtr)
     {
         type = Keyword::typeNull;
-        storageType = sT;
         initMembers();
     }
 
-    Atom::Atom(long val, wstring sT) 
+    Atom::Atom(long val) 
     {
         type = Keyword::typeInt;
-        storageType = sT;
         intVal = val;
         initMembers();
     }
 
 
-    Atom::Atom(double val, wstring sT) 
+    Atom::Atom(double val) 
     {
         type = Keyword::typeDouble;
-        storageType = sT;
         doubleVal = val;
         initMembers();
     }
 
-    Atom::Atom(wstring val, wstring sT) 
+    Atom::Atom(wstring val) 
     {
         type = Keyword::typeString;
-        storageType = sT;
         stringVal = val;
         initMembers();
     }
 
 
-    Atom::Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val, wstring sT) 
+    Atom::Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val) 
     {
         type = Keyword::typeArray;
-        storageType = sT;
         arrayVal = val;
         initMembers();
     }
 
-    Atom::Atom(bool val, wstring sT) 
+    Atom::Atom(bool val) 
     {
         type = Keyword::typeBool;
-        storageType = sT;
         boolVal = val;
         initMembers();
     }
@@ -239,7 +233,8 @@ namespace Mefodij {
         if (type != Keyword::typeArray) {
             throw runtime_error("Method is not supported by non array.");
         }
-
+        
+        val->setStorageType(Keyword::storageVar);
         val->setKey(key);
         val->setIsArrayElem();
 
@@ -681,21 +676,21 @@ namespace Mefodij {
             setString(Keyword::Null);
         }
         setVarRef(nullptr);
-        setIsCalculated();
+        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveStringSize()
     {
         setInt(stringVal.size());
         setVarRef(nullptr);
-        setIsCalculated();
+        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveArraySize()
     {
         setInt(arrayVal.size());
         setVarRef(nullptr);
-        setIsCalculated();
+        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveArrayFirst()

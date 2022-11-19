@@ -5,8 +5,7 @@ namespace Mefodij {
     void Context::setVar(wstring key, shared_ptr<Atom> var) 
     {
         var->setKey(key);
-
-        // remove reference to source variable
+        var->setStorageType(Keyword::storageVar);
         var->setVarRef(nullptr);
 
         storage[key] = var;

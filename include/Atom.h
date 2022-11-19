@@ -62,17 +62,12 @@ namespace Mefodij {
       
       void clearVal();
   public:
-    Atom(void * nullPtr, wstring sT = Keyword::storageVar);
-    Atom(long val, wstring sT = Keyword::storageVar);
-    Atom(double val, wstring sT = Keyword::storageVar);
-    Atom(wstring val, wstring sT = Keyword::storageVar);
-    Atom(
-      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val, 
-      wstring sT = Keyword::storageVar
-    );
-    Atom(bool val, 
-        wstring sT = Keyword::storageVar
-    );
+    Atom(void * nullPtr);
+    Atom(long val);
+    Atom(double val);
+    Atom(wstring val);
+    Atom(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
+    Atom(bool val);
 
     // Getters
     long getInt();

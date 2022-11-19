@@ -148,10 +148,6 @@ namespace Mefodij {
             }
         } else {
             // perform assignment
-            if (left->getIsCalculated()) {
-                throw runtime_error("Cannot assign to dynamicaly calculated value."); 
-            }
-
             if (!left->getVarRef()) {
                 throw runtime_error("Assignment can only be done to variable.");                    
             } 

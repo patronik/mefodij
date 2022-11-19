@@ -198,7 +198,7 @@ namespace Mefodij {
 
         if (!atom->getVarRef()->issetAt(arrayKey)) {
             atom->getVarRef()->setElementAt(
-                arrayKey, make_shared<Atom>(nullptr, Keyword::storageVar)
+                arrayKey, make_shared<Atom>(nullptr)
             );
         }
 
@@ -495,7 +495,7 @@ namespace Mefodij {
         auto array = lastResult->getArray();
         for (auto elem: array) {
             // Set element per iteration
-            elementVar->setElementAt(L"0", make_shared<Atom>(elem.first, Keyword::storageVar));
+            elementVar->setElementAt(L"0", make_shared<Atom>(elem.first));
             elementVar->setElementAt(L"1", elem.second);
 
             shared_ptr<Context> iterationStack = make_shared<Context>();
@@ -772,7 +772,7 @@ namespace Mefodij {
             throw runtime_error("'" + Tools::wideStrToStr(varName) + "' is reserved keyword.");
         }
 
-        auto newVar = make_shared<Atom>(nullptr, Keyword::storageVar);
+        auto newVar = make_shared<Atom>(nullptr);
         
         if (isConst) {
             getContext()->setConst(varName, newVar);

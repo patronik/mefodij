@@ -107,6 +107,15 @@ TEST(MemberAccess, TypeMemberWithNumber)
     ASSERT_EQ(Mefodij::Keyword::typeInt, result->toString());
 }
 
+TEST(MemberAccess, AssignToTmpMember)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+      mefodij.evaluateCode(L"123.тип = '123';"), 
+      runtime_error
+    );
+}
+
 TEST(TypeCasting, DoubleToString)
 {
     Mefodij::Engine mefodij{};

@@ -25,16 +25,16 @@ namespace Mefodij {
     bool getIsConst();
     bool getIsAssigned();
     bool getIsReference();
-    bool getIsCalculated();
     bool getIsArrayElem();
+    wstring getStorageType();
     wstring getKey();
 
     // Setters
     void setIsConst();
     void setIsAssigned();
     void setIsReference();
-    void setIsCalculated();
     void setIsArrayElem();
+    void setStorageType(wstring sT);
     void setKey(wstring key);
   };
 
