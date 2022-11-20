@@ -234,7 +234,6 @@ namespace Mefodij {
             throw runtime_error("Method is not supported by non array.");
         }
         
-        val->setStorageType(Keyword::storageVar);
         val->setKey(key);
         val->setIsArrayElem();
 
@@ -676,21 +675,18 @@ namespace Mefodij {
             setString(Keyword::Null);
         }
         setVarRef(nullptr);
-        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveStringSize()
     {
         setInt(stringVal.size());
         setVarRef(nullptr);
-        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveArraySize()
     {
         setInt(arrayVal.size());
         setVarRef(nullptr);
-        setStorageType(Keyword::storageTmp);
     }
 
     void Atom::resolveArrayFirst()

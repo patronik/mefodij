@@ -10,15 +10,15 @@ namespace Mefodij {
     {
         validate(op);
         if (op == L"+") {
-            left->setInt(left->getInt() + right->getDouble());
+            left->setDouble((double) left->getInt() + right->getDouble());
         } else if (op == L"-") {
-           left->setInt(left->getInt() - right->getDouble());
+           left->setDouble((double) left->getInt() - right->getDouble());
         } else if (op == L"/") {
-            left->setInt(left->getInt() / right->getDouble());
+            left->setDouble((double) left->getInt() / right->getDouble());
         } else if (op == L"*") {
-            left->setInt(left->getInt() * right->getDouble());
+            left->setDouble((double) left->getInt() * right->getDouble());
         } else if (op == L"%") {
-            left->setInt(left->getInt() % (int) right->getDouble());
+            left->setDouble(left->getInt() % (int) right->getDouble());
         } else if (op == L"==") {
             left->setBool(
                 left->getInt() == right->getDouble()

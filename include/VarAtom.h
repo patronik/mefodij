@@ -14,9 +14,6 @@ namespace Mefodij {
     // variable state
     bitset<8> opts{0};
 
-    // Value type
-    wstring storageType = Keyword::storageTmp;
-
     // Variable storage key
     wstring key = L"";
 
@@ -26,7 +23,6 @@ namespace Mefodij {
     bool getIsAssigned();
     bool getIsReference();
     bool getIsArrayElem();
-    wstring getStorageType();
     wstring getKey();
 
     // Setters
@@ -34,7 +30,6 @@ namespace Mefodij {
     void setIsAssigned();
     void setIsReference();
     void setIsArrayElem();
-    void setStorageType(wstring sT);
     void setKey(wstring key);
   };
 

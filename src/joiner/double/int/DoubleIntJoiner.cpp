@@ -12,16 +12,16 @@ namespace Mefodij {
         validate(op);
 
         if (op == L"+") {
-            left->setDouble(left->getDouble() + right->getInt());
+            left->setDouble((double) left->getDouble() + right->getInt());
         } else if (op == L"-") {
-            left->setDouble(left->getDouble() - right->getInt());
+            left->setDouble((double) left->getDouble() - right->getInt());
         } else if (op == L"*") {
-            left->setDouble(left->getDouble() * right->getInt());
+            left->setDouble((double) left->getDouble() * right->getInt());
         } else if (op == L"/") {
             if (right->getInt() == 0) {
                     throw runtime_error("Division by zero.");
                 }
-            left->setDouble(left->getDouble() / right->getInt());
+            left->setDouble((double) left->getDouble() / right->getInt());
         }  else if (op == L"%") {
             left->setDouble(
                 (double) ((int)left->getDouble() % right->getInt())

@@ -476,6 +476,21 @@ TEST(LoopTest, RangeLoop)
     ASSERT_EQ(L"5", result->toString());
 }
 
+TEST(FunctionTest, ReferenceVarInUpperScope)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем пі = 3.14;
+          функція радіус(довжина) {
+            вихід довжина / (2 * пі);
+          }  
+          радіус(6);
+        )"
+    );
+    ASSERT_NEAR(0.95, result->getDouble(), 0.01);
+}
+
 
 TEST(FunctionTest, TwoParams)
 {

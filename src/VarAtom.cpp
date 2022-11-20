@@ -42,18 +42,6 @@ namespace Mefodij {
         return opts[3] == true;
     }
 
-    wstring VarAtom::getStorageType()
-    {
-        
-        return storageType;
-    }
-
-    void VarAtom::setStorageType(wstring sT)
-    {
-        
-        storageType = sT;
-    }
-
     wstring VarAtom::getKey()
     {
         return key;
