@@ -127,39 +127,42 @@ namespace Mefodij {
 
     void Engine::assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {
+        auto leftAtomVar = left->getVarRef();
+        auto rightAtomVar = right->getVarRef();
+
         if (right->getIsReference()) {
             // perform aliasing
-            if (!left->getVarRef() || !right->getVarRef()) {
+            if (!leftAtomVar || !rightAtomVar) {
                 throw runtime_error("Only variables can be copied by reference.");                    
             } 
 
             shared_ptr<Context> storage = getContext();
-            if (!right->getVarRef()->getIsArrayElem() && !left->getVarRef()->getIsArrayElem()) {
+            if (!rightAtomVar->getIsArrayElem() && !leftAtomVar->getIsArrayElem()) {
                 
-                storage->setVarToVarAlias(right->getVarRef()->getKey(), left->getVarRef()->getKey());
+                storage->setVarToVarAlias(rightAtomVar->getKey(), leftAtomVar->getKey());
 
                 // update atom value
-                left->setAtom(*storage->getVar(left->getVarRef()->getKey()));
+                left->setAtom(*storage->getVar(leftAtomVar->getKey()));
                 // update reference to variable 
-                left->setVarRef(storage->getVar(left->getVarRef()->getKey()));
+                left->setVarRef(storage->getVar(leftAtomVar->getKey()));
 
             } else {
                 throw runtime_error("Array elements cannot store references and cannot be copied by reference."); 
             }
         } else {
             // perform assignment
-            if (!left->getVarRef()) {
+            if (!leftAtomVar) {
                 throw runtime_error("Assignment can only be done to variable.");                    
             } 
 
-            if (left->getVarRef()->getIsConst() && left->getVarRef()->getIsAssigned()) {
+            if (leftAtomVar->getIsConst() && leftAtomVar->getIsAssigned()) {
                 throw runtime_error("Cannot change the value of const variable."); 
             }
 
             joinAtoms(left, L"=", right);
 
-            if (!left->getVarRef()->getIsAssigned()) {
-                left->getVarRef()->setIsAssigned();
+            if (!leftAtomVar->getIsAssigned()) {
+                leftAtomVar->setIsAssigned();
             }
         }
     }

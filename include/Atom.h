@@ -18,7 +18,7 @@ namespace Mefodij {
   {
       // DYNAMIC ATOM STATE START
       // atom type
-      wstring type = L"null";
+      wstring type = Keyword::typeNull;
 
       // supported values
       long intVal = 0; // int
@@ -28,6 +28,7 @@ namespace Mefodij {
 
       // string
       wstring stringVal = L"";
+
       // postion of a character in string
       int charIndex  = -1; 
 
@@ -39,9 +40,6 @@ namespace Mefodij {
 
       // array of atoms (values)
       map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
-
-      // string representing catst type
-      wstring castVal = L""; 
 
       // Reference to variable
       shared_ptr<Atom> varRef = nullptr;
