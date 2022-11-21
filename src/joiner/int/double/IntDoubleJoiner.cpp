@@ -18,7 +18,7 @@ namespace Mefodij {
         } else if (op == L"*") {
             left->setDouble((double) left->getInt() * right->getDouble());
         } else if (op == L"%") {
-            left->setDouble(left->getInt() % (int) right->getDouble());
+            left->setInt(left->getInt() % (int) right->getDouble());
         } else if (op == L"==") {
             left->setBool(
                 left->getInt() == right->getDouble()

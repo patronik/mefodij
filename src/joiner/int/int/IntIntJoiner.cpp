@@ -22,9 +22,7 @@ namespace Mefodij {
                 }
             left->setInt(left->getInt() / right->getInt());
         }  else if (op == L"%") {
-            left->setDouble(
-                (double) (left->getInt() % right->getInt())
-            );
+            left->setInt(left->getInt() % right->getInt());
         } else if (op == L"==") {
             left->setBool(
                 (bool) (left->getInt() == right->getInt())

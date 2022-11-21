@@ -18,14 +18,12 @@ namespace Mefodij {
         } else if (op == L"*") {
             left->setDouble(left->getDouble() * right->getDouble());
         } else if (op == L"/") {
-            if (right->getDouble() == 0) {
+            if (right->getDouble() == 0.0) {
                     throw runtime_error("Division by zero.");
                 }
             left->setDouble(left->getDouble() / right->getDouble());
         }  else if (op == L"%") {
-            left->setDouble(
-                (double) ((int)left->getDouble() % (int)right->getDouble())
-            );
+            left->setInt((int) left->getDouble() % (int) right->getDouble());
         } else if (op == L"==") {
             left->setBool(
                 (bool) (left->getDouble() == right->getDouble())
