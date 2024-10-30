@@ -1,6 +1,38 @@
+# Methodius
+
+Methodius is an interpreted and dynamically typed programming language based on Ukrainian vocabulary. The language includes such data types as integers, real numbers, boolean values, strings, arrays, and a special null type. For program flow control, a conditional operator is used, and for repeating code execution, loops are used, as well as user-defined functions. There is also a built-in function **вМасиві** (currently only one), which checks for the presence of an element in an array.
+
+### Code Example
+```
+функція substring(data, start, length) {
+    конст end = (start + length);
+    умова (end > data.довжина) {
+        друк "Error: substring goes beyond string boundaries\n";
+        вихід;
+    }
+    мем result;
+    цикл (мем index = start; index < end; index++) {
+        result += data[index];
+    }
+    вихід result;
+}
+мем test = substring("hello world", 0, 5);
+друк test + "\n"; // outputs "hello"
+```
+
+### Features
+
+The program consists of expressions separated by the operator ';'.
+
+Variables are defined using the keyword "мем".
+
+Functions are defined using the keyword "функція".
+
+Loops are executed using the "цикл" keyword.
+
+Print to the console is done using the "друк" keyword.
 
 # Мефодій 
-![Мефодій](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuNYYPUCqBqEUpaVuNUNOnW7FzhU7hPAqcWMpgYYaTWE943RMFMm6QxVE9v6LnMy_6I_8&usqp=CAU)
 
 Мефодій - це інтерпритована і динамічно типізована мова програмування основана на українській лексиці. Мова влкючає такі типи даних як цілі числа, дійсні числа, булеві значення, строки, масиви і спеціальний тип нал. Для управління ходом програми використовується умовний оператор, для повторення виконання коду використовуються цикл, а також користувацькі функції. Також є вбудована функція "**вМасиві**" (поки що одна), яка перевіряє наявність елемента в масиві.
 
@@ -185,6 +217,15 @@
 ## Підготовка до установки
 1. С++ компілятор g++ версії 8.4.0+ або сумісний.
 2. Для тестів треба встановити фреймворк Google Test. [Інструкція на GitHub](https://github.com/google/googletest/blob/main/googletest/README.md)
+
+## Інструкція для побудови бібліотеки **googletest** на *nix системі
+1. `git clone https://github.com/google/googletest.git`
+2. `cd googletest`
+3. `mkdir build`
+4. `cd build`
+5. `cmake ..`
+6. `make`
+7. `sudo make install # Інсталяція in /usr/local/ за замовчуванням`
 
 ## Установка
 1. Клонуйте репозиторій із сирцевим кодом:
