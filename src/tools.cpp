@@ -19,9 +19,27 @@ namespace Mefodij {
 
         string wideStrToStr(wstring src)
         {
-            using convert_type = codecvt_utf8<wchar_t>;
-            wstring_convert<convert_type, wchar_t> converter;
-            return converter.to_bytes(src);
+            string result;
+            result.reserve(src.size());
+            for (wchar_t wc : src) {
+                unsigned int cp = static_cast<unsigned int>(wc);
+                if (cp <= 0x7F) {
+                    result.push_back(static_cast<char>(cp));
+                } else if (cp <= 0x7FF) {
+                    result.push_back(static_cast<char>(0xC0 | (cp >> 6)));
+                    result.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+                } else if (cp <= 0xFFFF) {
+                    result.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+                    result.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+                    result.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+                } else {
+                    result.push_back(static_cast<char>(0xF0 | ((cp >> 18) & 0x07)));
+                    result.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+                    result.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+                    result.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+                }
+            }
+            return result;
         }
 
         string wideStrToStr(wchar_t src)

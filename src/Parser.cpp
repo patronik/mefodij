@@ -59,9 +59,10 @@ namespace Mefodij {
             skipSpaces();
         }
 
-        if (pos >= src.size()) {
-            // end of file is achieved 
-            // which means end of programm
+        if (pos >= (int) src.size()) {
+            // Consume a virtual EOF slot so unreadChar can tell
+            // "looked at EOF" apart from "consumed the last character".
+            pos = (int) src.size() + 1;
             return endOfFile;
         } 
 
@@ -77,7 +78,7 @@ namespace Mefodij {
     {
         while (numOfSteps > 0 && pos > 0) {
             pos--;
-            if (!allChars) {
+            if (!allChars && pos < (int) src.size()) {
                 while (pos > 0 && isSpace(src.at(pos))) {
                     pos--;
                 }
@@ -171,13 +172,17 @@ namespace Mefodij {
 
     tuple<wstring, int, int> Parser::getLastLocation()
     {
-        try {
-            auto curEntry = sourceEntries.at(pos - 1);
-            return {get<0>(curEntry), get<1>(curEntry), get<2>(curEntry)};   
+        if (sourceEntries.empty()) {
+            return {L"", 1, 1};
         }
-        catch (const out_of_range & oor) {
-            throw runtime_error("Element at index '" + to_string(pos - 1) + "' does not exist.");
+
+        int index = pos > 0 ? pos - 1 : 0;
+        if (index >= (int) sourceEntries.size()) {
+            index = (int) sourceEntries.size() - 1;
         }
+
+        auto curEntry = sourceEntries.at(index);
+        return {get<0>(curEntry), get<1>(curEntry), get<2>(curEntry)};   
     }
 
     void Parser::insertSource(wstring wfilename, wstring code)
@@ -192,6 +197,10 @@ namespace Mefodij {
             source = code;
         } else {
             throw runtime_error("Source file or code should be provided.");
+        }
+
+        if (pos > (int) src.size()) {
+            pos = (int) src.size();
         }
 
         src.insert(pos, source);
