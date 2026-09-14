@@ -22,6 +22,9 @@ namespace Mefodij {
                 }
             left->setInt(left->getInt() / right->getInt());
         }  else if (op == L"%") {
+            if (right->getInt() == 0) {
+                throw runtime_error("Division by zero.");
+            }
             left->setInt(left->getInt() % right->getInt());
         } else if (op == L"==") {
             left->setBool(

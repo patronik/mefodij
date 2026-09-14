@@ -75,23 +75,15 @@ namespace Mefodij {
 
     void Parser::unreadChar(int numOfSteps, bool allChars)
     {
-        if (numOfSteps == 1 
-            && pos >= src.size()) 
-        {
-            // end of file is achieved 
-            // which means end of programm
-            return;
-        } 
-
-        do {
+        while (numOfSteps > 0 && pos > 0) {
             pos--;
             if (!allChars) {
-                while (isSpace(src.at(pos))) {
-                    pos -= 1;
+                while (pos > 0 && isSpace(src.at(pos))) {
+                    pos--;
                 }
             }
             numOfSteps--;
-        } while (numOfSteps > 0);
+        }
     }
 
     void Parser::fastForward(vector<wchar_t> terminators, wchar_t nestedMarker)

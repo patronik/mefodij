@@ -372,7 +372,10 @@ namespace Mefodij {
     void Atom::postOperator(wstring op)
     {
         if (varRef != nullptr) {
+            // Increment the backing variable only. The expression Atom keeps
+            // the value from before the increment.
             varRef->postOperator(op);
+            return;
         }
 
         if (op == L"++") {

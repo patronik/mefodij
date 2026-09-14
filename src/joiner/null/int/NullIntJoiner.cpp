@@ -3,7 +3,7 @@
 
 namespace Mefodij {
 
-    NullIntJoiner::NullIntJoiner() : Joiner({L"=", L"==", L"!=", L"+", L"-"})
+    NullIntJoiner::NullIntJoiner() : Joiner({L"=", L"==", L"!=", L"+", L"-", L"*", L"/", L"%"})
     {}
 
     void NullIntJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
@@ -12,8 +12,20 @@ namespace Mefodij {
 
         if (op == L"+") {
             left->setInt(0 + right->getInt());
-        } if (op == L"-") {
+        } else if (op == L"-") {
             left->setInt(0 - right->getInt());
+        } else if (op == L"*") {
+            left->setInt(0);
+        } else if (op == L"/") {
+            if (right->getInt() == 0) {
+                throw runtime_error("Division by zero.");
+            }
+            left->setInt(0);
+        } else if (op == L"%") {
+            if (right->getInt() == 0) {
+                throw runtime_error("Division by zero.");
+            }
+            left->setInt(0);
         } else if (op == L"=") {
             left->getVarRef()->setInt(right->getInt());
             left->setInt(right->getInt());

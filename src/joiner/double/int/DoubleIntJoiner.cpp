@@ -1,5 +1,6 @@
 
 #include "../../../../include/joiner/double/int/DoubleIntJoiner.h"
+#include <cmath>
 
 namespace Mefodij {
 
@@ -23,7 +24,10 @@ namespace Mefodij {
                 }
             left->setDouble(left->getDouble() / (double) right->getInt());
         }  else if (op == L"%") {
-            left->setInt((int) left->getDouble() % right->getInt());
+            if (right->getInt() == 0) {
+                throw runtime_error("Division by zero.");
+            }
+            left->setDouble(std::fmod(left->getDouble(), (double) right->getInt()));
         } else if (op == L"==") {
             left->setBool(
                 left->getDouble() == right->getInt()

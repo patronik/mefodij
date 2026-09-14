@@ -534,6 +534,352 @@ TEST(FunctionTest, TwoDefaultParams)
     ASSERT_EQ(L"2", result->toString());
 }
 
+TEST(RuntimeTest, CommentOnlyProgramDoesNotCrash)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"// лише коментар\n");
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+}
+
+TEST(RuntimeTest, WhitespaceOnlyProgramDoesNotCrash)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"   \n\t  ");
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+}
+
+TEST(RuntimeTest, ExitAsFirstStatement)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"вихід;");
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+}
+
+TEST(RuntimeTest, ExitWithoutValueAtEof)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"вихід");
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+}
+
+TEST(FunctionTest, ExitWithoutValueDoesNotCrash)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          функція порожня() {
+            вихід;
+          }
+          порожня();
+        )"
+    );
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(Mefodij::Keyword::typeNull, result->getType());
+}
+
+TEST(FunctionTest, EmptyStatementInBodyDoesNotCrash)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          функція порожня() {
+            ;
+          }
+          порожня();
+        )"
+    );
+    ASSERT_NE(nullptr, result);
+}
+
+TEST(OperatorTest, PostIncrementKeepsOldValue)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем і = 5;
+          мем було = і++;
+          вихід було == 5 && і == 6;
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(OperatorTest, PostDecrementKeepsOldValue)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем і = 5;
+          мем було = і--;
+          вихід було == 5 && і == 4;
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(OperatorTest, PreIncrementReturnsNewValue)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем і = 5;
+          мем стало = ++і;
+          вихід стало == 6 && і == 6;
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(OperatorTest, ModuloByZeroThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5 % 0;"), runtime_error);
+}
+
+TEST(OperatorTest, IntModuloDoubleZeroThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5 % 0.0;"), runtime_error);
+}
+
+TEST(OperatorTest, DoubleModuloIntZeroThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5.0 % 0;"), runtime_error);
+}
+
+TEST(OperatorTest, DoubleModuloDoubleZeroThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5.0 % 0.0;"), runtime_error);
+}
+
+TEST(ArrayTest, IndexLiteralArray)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"[10, 20, 30][1];");
+    ASSERT_EQ(L"20", result->toString());
+}
+
+TEST(ArrayTest, IndexNonArrayLiteralThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5[0];"), runtime_error);
+}
+
+TEST(ArrayTest, AppendOnLiteralThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"[1,2][] = 3;"), runtime_error);
+}
+
+TEST(LoopTest, RangeLoopRequiresVariable)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+      mefodij.evaluateCode(
+        LR"(
+          цикл (1: [1, 2, 3]) {
+            стоп;
+          }
+        )"
+      ),
+      runtime_error
+    );
+}
+
+TEST(MemberAccess, StringIndexAtLengthThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"'абв'[3];"), runtime_error);
+}
+
+TEST(MemberAccess, StringLastValidIndex)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"'абв'[2];");
+    ASSERT_EQ(L"в", result->toString());
+}
+
+TEST(MixedTypeMath, IntPlusDoublePromotes)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5 + 1.5;");
+    ASSERT_EQ(Mefodij::Keyword::typeDouble, result->getType());
+    ASSERT_NEAR(6.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, DoublePlusIntPromotes)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"1.5 + 5;");
+    ASSERT_EQ(Mefodij::Keyword::typeDouble, result->getType());
+    ASSERT_NEAR(6.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, IntDividedByDouble)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5 / 2.0;");
+    ASSERT_NEAR(2.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, IntDividedByZeroDoubleThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5 / 0.0;"), runtime_error);
+}
+
+TEST(MixedTypeMath, IntModuloFractionalDouble)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5 % 2.5;");
+    ASSERT_EQ(Mefodij::Keyword::typeDouble, result->getType());
+    ASSERT_NEAR(0.0, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, DoubleModuloIntKeepsFraction)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5.5 % 2;");
+    ASSERT_NEAR(1.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, DoubleModuloDouble)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5.5 % 2.5;");
+    ASSERT_NEAR(0.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, IntModuloHalfDoesNotThrow)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"5 % 0.5;");
+    ASSERT_NEAR(0.0, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, AssignMixedSumKeepsDouble)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем x = 5;
+          x = x + 1.5;
+          вихід x;
+        )"
+    );
+    ASSERT_EQ(Mefodij::Keyword::typeDouble, result->getType());
+    ASSERT_NEAR(6.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, NullPlusIntIsSymmetric)
+{
+    Mefodij::Engine mefodij{};
+    auto leftNull = mefodij.evaluateCode(L"нал + 5;");
+    ASSERT_EQ(L"5", leftNull->toString());
+
+    Mefodij::Engine other{};
+    auto rightNull = other.evaluateCode(L"5 + нал;");
+    ASSERT_EQ(L"5", rightNull->toString());
+}
+
+TEST(MixedTypeMath, NullMinusIntIsSymmetric)
+{
+    Mefodij::Engine mefodij{};
+    auto leftNull = mefodij.evaluateCode(L"нал - 5;");
+    ASSERT_EQ(L"-5", leftNull->toString());
+
+    Mefodij::Engine other{};
+    auto rightNull = other.evaluateCode(L"5 - нал;");
+    ASSERT_EQ(L"5", rightNull->toString());
+}
+
+TEST(MixedTypeMath, NullPlusDoubleIsSymmetric)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"1.5 + нал;");
+    ASSERT_NEAR(1.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, DivideByNullThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5 / нал;"), runtime_error);
+}
+
+TEST(MixedTypeMath, UninitializedAccumulator)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем acc;
+          acc += 3;
+          вихід acc;
+        )"
+    );
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(MixedTypeMath, UninitializedUkrainianAccumulator)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+          мем результат;
+          результат += 3;
+          вихід результат;
+        )"
+    );
+    ASSERT_EQ(L"3", result->toString());
+}
+
+TEST(MixedTypeMath, BoolPlusInt)
+{
+    Mefodij::Engine mefodij{};
+    auto left = mefodij.evaluateCode(L"так + 1;");
+    ASSERT_EQ(L"2", left->toString());
+
+    Mefodij::Engine other{};
+    auto right = other.evaluateCode(L"1 + так;");
+    ASSERT_EQ(L"2", right->toString());
+}
+
+TEST(MixedTypeMath, BoolPlusDouble)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"так + 1.5;");
+    ASSERT_NEAR(2.5, result->getDouble(), 1e-9);
+}
+
+TEST(MixedTypeMath, DivideByFalseThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(mefodij.evaluateCode(L"5 / ні;"), runtime_error);
+}
+
+TEST(RuntimeTest, ExitVariableAtEndOfProgram)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(L"мем n = 7; вихід n;");
+    ASSERT_EQ(L"7", result->toString());
+}
+
+TEST(MixedTypeMath, StringPlusBoolIsSymmetric)
+{
+    Mefodij::Engine mefodij{};
+    auto left = mefodij.evaluateCode(L"\"a\" + так;");
+    ASSERT_EQ(wstring(L"a") + L"так", left->toString());
+
+    Mefodij::Engine other{};
+    auto right = other.evaluateCode(L"так + \"a\";");
+    ASSERT_EQ(wstring(L"так") + L"a", right->toString());
+}
+
 int main(int argc, char **argv) {
   init();
   ::testing::InitGoogleTest(&argc, argv);

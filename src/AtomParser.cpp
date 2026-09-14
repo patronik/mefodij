@@ -2,7 +2,7 @@
 
 namespace Mefodij {
 
-    AtomParser::AtomParser() : Parser(), lastResult(nullptr), stack(), coreResolver()
+    AtomParser::AtomParser() : Parser(), lastResult(make_shared<Atom>(nullptr)), stack(), coreResolver()
     {
     }
 
@@ -38,11 +38,11 @@ namespace Mefodij {
         auto prevState = getState();
 
         // point parser to function body
-        setState({funcData.first, src, L"", false, false, nullptr});
+        setState({funcData.first, src, L"", false, false, make_shared<Atom>(nullptr)});
 
         // execute function body
         evaluateBlockOrStatement();
-        if (isReturn) {
+        if (isReturn && lastResult) {
             // atom is a result of function call
             atom->setAtom(*lastResult);
         }

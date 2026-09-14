@@ -28,18 +28,31 @@ int main(int argc, char * argv[]) {
     try {
         init();
         if(cmdOptionExists(argv, argv + argc, "-f")) {
+            char * filename = getCmdOption(argv, argv + argc, "-f");
+            if (!filename) {
+                throw runtime_error(
+                    "\"-f\" requires a file path."
+                );
+            }
             Mefodij::Engine mefodij{};
-            mefodij.evaluateFile(getCmdOption(argv, argv + argc, "-f"));
+            mefodij.evaluateFile(filename);
         } else if (cmdOptionExists(argv, argv + argc, "-r")) {
+            char * code = getCmdOption(argv, argv + argc, "-r");
+            if (!code) {
+                throw runtime_error(
+                    "\"-r\" requires source code."
+                );
+            }
             Mefodij::Engine mefodij{};
-            mefodij.evaluateCode(getCmdOption(argv, argv + argc, "-r"));
+            mefodij.evaluateCode(code);
         } else {
             throw runtime_error(
-                "Error: input is missing. Provide input file with \"-f\" or paste raw code with \"-r\"."
+                "Input is missing. Provide input file with \"-f\" or paste raw code with \"-r\"."
             );
         }
     } catch(const exception & e) {
        cerr << "Error: " << e.what() << '\n';
+       return 1;
     }
     return 0;
 }

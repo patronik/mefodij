@@ -51,6 +51,9 @@ namespace Mefodij {
         isReturn = get<3>(state);
         isBreak = get<4>(state);
         lastResult = get<5>(state);
+        if (!lastResult) {
+            lastResult = make_shared<Atom>(nullptr);
+        }
     }
 
     shared_ptr<Context> Engine::getContext()
@@ -156,7 +159,7 @@ namespace Mefodij {
             throw runtime_error("Negative indexes are not supported.");
         }
 
-        if (atom->getString().size() < keyAtom->getInt()) {
+        if (keyAtom->getInt() >= static_cast<long>(atom->getString().size())) {
             throw runtime_error("Character at index '" +  to_string(keyAtom->getInt()) + "' does not exist.");
         }
 
@@ -167,7 +170,7 @@ namespace Mefodij {
 
     void Engine::resolveArrayAccess(shared_ptr<Atom> & atom) 
     {
-        int implicitKey = false;
+        bool implicitKey = false;
         wchar_t symbol;
         if ((symbol = readChar()) == L']') {
             implicitKey = true;
@@ -175,14 +178,23 @@ namespace Mefodij {
             unreadChar();
         }
 
-        if (atom->getVarRef()->getType() != Keyword::typeArray) {
-            atom->getVarRef()->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
+        shared_ptr<Atom> container = atom->getVarRef();
+        if (container == nullptr) {
+            if (implicitKey) {
+                throw runtime_error("Append access requires a variable.");
+            }
+            if (atom->getType() != Keyword::typeArray) {
+                throw runtime_error("Array access requires an array or a variable.");
+            }
+            container = atom;
+        } else if (container->getType() != Keyword::typeArray) {
+            container->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
         }
 
         wstring arrayKey;
         if (implicitKey) {
-            arrayKey = Tools::to_wstring(atom->getVarRef()->getArrayNextIndex());
-            atom->getVarRef()->setArrayNextIndex(atom->getVarRef()->getArrayNextIndex() + 1);
+            arrayKey = Tools::to_wstring(container->getArrayNextIndex());
+            container->setArrayNextIndex(container->getArrayNextIndex() + 1);
         } else {
             shared_ptr<Atom> keyAtom = evaluateBoolExpression();
             if (!Tools::inVector<wstring>({Keyword::typeString, Keyword::typeInt}, keyAtom->getType())) {
@@ -196,20 +208,19 @@ namespace Mefodij {
             arrayKey = keyAtom->toString();
         }
 
-        if (!atom->getVarRef()->issetAt(arrayKey)) {
-            atom->getVarRef()->setElementAt(
+        if (!container->issetAt(arrayKey)) {
+            container->setElementAt(
                 arrayKey, make_shared<Atom>(nullptr)
             );
         }
 
-        // Backup pointer to variable
-        auto varPtr = atom->getVarRef();
+        auto element = container->elementAt(arrayKey);
 
         // Copy element state to atom
-        atom->setAtom(*varPtr->elementAt(arrayKey));
+        atom->setAtom(*element);
 
         // Update pointer to variable
-        atom->setVarRef(varPtr->elementAt(arrayKey));
+        atom->setVarRef(element);
     }
 
     void Engine::resolveMemberAccess(shared_ptr<Atom> & atom)
@@ -472,11 +483,11 @@ namespace Mefodij {
     void Engine::evaluateRangeLoop(int firstStmtPos)
     {
         auto elementVar = lastResult->getVarRef();
-        elementVar->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
-
         if (elementVar == nullptr) {
             throw runtime_error("Initial statement should resolve to variable.");
         }
+
+        elementVar->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
 
         // Container statement
         evaluateStatement();

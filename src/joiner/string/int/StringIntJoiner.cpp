@@ -16,7 +16,7 @@ namespace Mefodij {
             );
         } else if (op == L"=") {
             if (left->getCharIndex() > -1) {
-                throw new runtime_error("Cannot assign non string value to string character");
+                throw runtime_error("Cannot assign non string value to string character");
             }
             
             left->getVarRef()->setString(Tools::to_wstring(right->getInt()));

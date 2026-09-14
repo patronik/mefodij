@@ -12,7 +12,7 @@ namespace Mefodij {
 
         if (op == L"+") {
             left->setNull();
-        } if (op == L"-") {
+        } else if (op == L"-") {
             left->setNull();
         } else if (op == L"==") {
             left->setBool(true);

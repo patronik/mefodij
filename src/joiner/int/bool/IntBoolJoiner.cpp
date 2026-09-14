@@ -3,14 +3,32 @@
 
 namespace Mefodij {
 
-    IntBoolJoiner::IntBoolJoiner() : Joiner({L"==", L"!=", L"||", L"&&", L"="})
+    IntBoolJoiner::IntBoolJoiner() : Joiner({L"==", L"!=", L"||", L"&&", L"=", L"+", L"-", L"*", L"/", L"%"})
     {}
 
     void IntBoolJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {
         validate(op);
 
-        if (op == L"==") {
+        long rightInt = right->getBool() ? 1 : 0;
+
+        if (op == L"+") {
+            left->setInt(left->getInt() + rightInt);
+        } else if (op == L"-") {
+            left->setInt(left->getInt() - rightInt);
+        } else if (op == L"*") {
+            left->setInt(left->getInt() * rightInt);
+        } else if (op == L"/") {
+            if (rightInt == 0) {
+                throw runtime_error("Division by zero.");
+            }
+            left->setInt(left->getInt() / rightInt);
+        } else if (op == L"%") {
+            if (rightInt == 0) {
+                throw runtime_error("Division by zero.");
+            }
+            left->setInt(left->getInt() % rightInt);
+        } else if (op == L"==") {
             left->setBool(
                 (bool) (left->getInt()) == right->getBool()
             );
