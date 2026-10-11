@@ -1,5 +1,7 @@
 #include "../include/tools.h"
 
+#include <stdexcept>
+
 namespace Mefodij {
 
     namespace Tools {
@@ -49,16 +51,62 @@ namespace Mefodij {
 
         wstring strToWideStr(string src)
         {
-            // reset the conversion state
-            mbtowc(nullptr, 0, 0); 
+            // Decode UTF-8 directly. The browser runtime has no en_US.UTF-8
+            // locale, so mbtowc() cannot be used for Ukrainian source text.
+            static_assert(sizeof(wchar_t) >= 4, "Methodius expects a 32-bit wchar_t");
 
-            const char* ptr = src.c_str();
-            const char* end = ptr + strlen(ptr);
+            if (src.size() >= 3
+                && static_cast<unsigned char>(src[0]) == 0xEF
+                && static_cast<unsigned char>(src[1]) == 0xBB
+                && static_cast<unsigned char>(src[2]) == 0xBF) {
+                src.erase(0, 3);
+            }
 
+            const unsigned char * ptr = reinterpret_cast<const unsigned char *>(src.data());
+            const unsigned char * end = ptr + src.size();
             wstring result;
-            int ret;
-            for (wchar_t wc; (ret = std::mbtowc(&wc, ptr, end-ptr)) > 0; ptr+=ret) {
-                result.push_back(wc);
+            result.reserve(src.size());
+
+            while (ptr < end) {
+                unsigned char lead = *ptr;
+                unsigned int codePoint = 0;
+                int length = 0;
+                if (lead <= 0x7F) {
+                    codePoint = lead;
+                    length = 1;
+                } else if ((lead & 0xE0) == 0xC0) {
+                    codePoint = lead & 0x1F;
+                    length = 2;
+                } else if ((lead & 0xF0) == 0xE0) {
+                    codePoint = lead & 0x0F;
+                    length = 3;
+                } else if ((lead & 0xF8) == 0xF0) {
+                    codePoint = lead & 0x07;
+                    length = 4;
+                } else {
+                    throw runtime_error("Invalid UTF-8 sequence.");
+                }
+
+                if (ptr + length > end) {
+                    throw runtime_error("Truncated UTF-8 sequence.");
+                }
+                for (int i = 1; i < length; i++) {
+                    if ((ptr[i] & 0xC0) != 0x80) {
+                        throw runtime_error("Invalid UTF-8 sequence.");
+                    }
+                    codePoint = (codePoint << 6) | (ptr[i] & 0x3F);
+                }
+
+                bool overlong = (length == 2 && codePoint < 0x80)
+                    || (length == 3 && codePoint < 0x800)
+                    || (length == 4 && codePoint < 0x10000);
+                bool surrogate = codePoint >= 0xD800 && codePoint <= 0xDFFF;
+                if (overlong || surrogate || codePoint > 0x10FFFF) {
+                    throw runtime_error("Invalid UTF-8 sequence.");
+                }
+
+                result.push_back(static_cast<wchar_t>(codePoint));
+                ptr += length;
             }
             return result;
         }
@@ -82,16 +130,19 @@ namespace Mefodij {
 
         wstring strToWideStr(char src) 
         {
-            return strToWideStr(string(1, src));
+            return wstring(1, static_cast<wchar_t>(static_cast<unsigned char>(src)));
         }
 
         wstring readWideFile(const char * filename)
         {
-            wifstream wif(filename);
-            wif.imbue(locale("en_US.UTF-8"));
-            wstringstream wss;
-            wss << wif.rdbuf();
-            return wss.str();
+            // Byte read plus UTF-8 decode. Wide file streams and named locales
+            // are not available in the browser filesystem.
+            ifstream in(filename, ios::in | ios::binary);
+            if (!in) {
+                throw runtime_error(string("File '") + filename + "' does not exist.");
+            }
+            string bytes((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
+            return strToWideStr(bytes);
         }
 
         bool fileExist(const char * fileName)

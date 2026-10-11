@@ -9,6 +9,30 @@ namespace Mefodij {
         context = make_shared<Context>();
     }
 
+    void Engine::setCapturePrint(bool enabled)
+    {
+        capturePrint = enabled;
+    }
+
+    const wstring & Engine::getPrintBuffer() const
+    {
+        return printBuffer;
+    }
+
+    void Engine::emitPrint(const wstring & text)
+    {
+#ifdef __EMSCRIPTEN__
+        // Wide stdout is not usable in the browser. Callers read getPrintBuffer().
+        printBuffer += text;
+#else
+        if (capturePrint) {
+            printBuffer += text;
+        } else {
+            wcout << text;
+        }
+#endif
+    }
+
     void Engine::throwError(string message)
     {
         tuple<wstring, int, int> currLoc = getLastLocation();
@@ -938,7 +962,7 @@ namespace Mefodij {
             // PRINT STATEMENT
             if (keyWord == statementPrint) {
                 evaluateStatement();
-                wcout << lastResult->toString();
+                emitPrint(lastResult->toString());
                 return;
             }
             // END OF PRINT STATEMENT
@@ -1065,6 +1089,7 @@ namespace Mefodij {
 
     shared_ptr<Atom> Engine::evaluateFile(wstring wfilename)
     {
+        printBuffer.clear();
         insertSource(wfilename);
         return evaluate();
     }
@@ -1076,12 +1101,14 @@ namespace Mefodij {
 
     shared_ptr<Atom> Engine::evaluateCode(wstring wcode)
     {
+        printBuffer.clear();
         insertSource(L"", wcode);
         return evaluate();
     }
     
     shared_ptr<Atom> Engine::evaluateCode(string code)
     {
+        printBuffer.clear();
         insertSource(L"", Tools::strToWideStr(code));
         return evaluate();
     }

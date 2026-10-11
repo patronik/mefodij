@@ -57,6 +57,13 @@ namespace Mefodij {
       // Global context
       shared_ptr<Context> context = nullptr;
 
+      // When set, друк is stored instead of written to the wide console.
+      // The browser build always stores it: wcout is not available there.
+      bool capturePrint = false;
+      wstring printBuffer;
+
+      void emitPrint(const wstring & text);
+
       static unique_ptr<BoolBoolJoiner> boolBoolJoiner;
       static unique_ptr<BoolIntJoiner> boolIntJoiner;
       static unique_ptr<BoolNullJoiner> boolNullJoiner;
@@ -137,6 +144,8 @@ namespace Mefodij {
   public:
     Engine();
     virtual ~Engine() {}
+    void setCapturePrint(bool enabled);
+    const wstring & getPrintBuffer() const;
     shared_ptr<Atom> evaluateFile(string filename);
     shared_ptr<Atom> evaluateFile(wstring wfilename);
     shared_ptr<Atom> evaluateCode(string code);

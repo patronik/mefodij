@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Мефодій</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            font-family: sans-serif;
+        }
+        body {
+            margin: 0 auto;
+            max-width: 46rem;
+            padding: 1.5rem;
+        }
+        textarea, pre {
+            box-sizing: border-box;
+            width: 100%;
+            font-family: ui-monospace, monospace;
+            font-size: 0.95rem;
+        }
+        textarea {
+            min-height: 14rem;
+        }
+        pre {
+            min-height: 4rem;
+            padding: 0.75rem;
+            white-space: pre-wrap;
+        }
+        button {
+            margin: 0.75rem 0;
+        }
+        .error {
+            color: #a32020;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мефодій</h1>
+    <p>Програма виконується інтерпретатором, зібраним у WebAssembly.</p>
+    <label for="source">Код</label>
+    <textarea id="source">друк "привіт світ\n";
+мем сума = 2 + 2 * 3;
+друк сума;</textarea>
+    <div>
+        <button id="run" type="button">Виконати</button>
+    </div>
+    <label for="output">Вивід</label>
+    <pre id="output"></pre>
+    <label for="result">Результат</label>
+    <pre id="result"></pre>
+    <label for="error">Помилка</label>
+    <pre id="error" class="error"></pre>
+    <script type="module">
+        import { loadMethodius } from "../mefodij.js";
+
+        const output = document.querySelector("#output");
+        const result = document.querySelector("#result");
+        const error = document.querySelector("#error");
+        const button = document.querySelector("#run");
+        button.disabled = true;
+        output.textContent = "Завантаження…";
+
+        const moduleUrl = new URL("../../build/wasm/mefodij.js", import.meta.url);
+        const methodius = await loadMethodius(moduleUrl.href);
+
+        button.disabled = false;
+        output.textContent = "";
+
+        async function run() {
+            button.disabled = true;
+            const evaluation = methodius.eval(document.querySelector("#source").value);
+            output.textContent = evaluation.output;
+            result.textContent = evaluation.result;
+            error.textContent = evaluation.error;
+            button.disabled = false;
+        }
+
+        button.addEventListener("click", run);
+        await run();
+    </script>
+</body>
+</html>
