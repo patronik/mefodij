@@ -53,6 +53,7 @@ namespace Mefodij {
         bool parseHexNumberLiteralAtom(shared_ptr<Atom> & atom);
         bool parseNumberLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
         bool parseArrayLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
+        bool parseObjectLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom);
         bool parseDoubleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
         bool parseSingleQuotedStringAtom(wchar_t symbol, shared_ptr<Atom> & atom);
         bool parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom);

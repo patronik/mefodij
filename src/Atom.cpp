@@ -92,6 +92,7 @@ namespace Mefodij {
 
         arrayVal.clear();
         arrayNextIndex = 0;
+        objectVal.clear();
 
         boolVal = false;
     }
@@ -148,6 +149,13 @@ namespace Mefodij {
         }
     }
 
+    void Atom::setObject(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val)
+    {
+        clearVal();
+        objectVal = val;
+        type = Keyword::typeObject;
+    }
+
     void Atom::setBool(bool val) 
     {
         clearVal();
@@ -191,7 +199,15 @@ namespace Mefodij {
             throw runtime_error("Wrong atom type");
         }
         return arrayVal;
-    }  
+    }
+
+    map<wstring, shared_ptr<Atom>, Tools::arrayCmp> Atom::getObject()
+    {
+        if (type != Keyword::typeObject) {
+            throw runtime_error("Wrong atom type");
+        }
+        return objectVal;
+    }
 
     bool Atom::getBool() 
     {
@@ -240,6 +256,42 @@ namespace Mefodij {
         arrayVal[key] = val;
     }
 
+    bool Atom::issetObjectAt(wstring key)
+    {
+        if (type != Keyword::typeObject) {
+            throw runtime_error("Method is not supported by non object.");
+        }
+
+        return objectVal.count(key) > 0;
+    }
+
+    shared_ptr<Atom> Atom::objectAt(wstring key)
+    {
+        if (type != Keyword::typeObject) {
+            throw runtime_error("Method is not supported by non object.");
+        }
+
+        if (!objectVal.count(key)) {
+            throw runtime_error(
+                "Property with key '" + Tools::wideStrToStr(key) + "' does not exist"
+            );
+        }
+
+        return objectVal.at(key);
+    }
+
+    void Atom::setObjectAt(wstring key, shared_ptr<Atom> val)
+    {
+        if (type != Keyword::typeObject) {
+            throw runtime_error("Method is not supported by non object.");
+        }
+
+        val->setKey(key);
+        val->setIsArrayElem();
+
+        objectVal[key] = val;
+    }
+
     bool Atom::toBool()
     {
         if (type == Keyword::typeBool) {
@@ -252,6 +304,8 @@ namespace Mefodij {
             return !stringVal.empty();
         } else if (type == Keyword::typeArray) {
             return !arrayVal.empty();
+        } else if (type == Keyword::typeObject) {
+            return !objectVal.empty();
         } else if (type == Keyword::typeNull) {
             return false;
         } else {
@@ -274,6 +328,12 @@ namespace Mefodij {
         } else if (type == Keyword::typeArray) {
             wstring str;
             for (auto elem: arrayVal) {
+                str += elem.second->toString();
+            }
+            return str;
+        } else if (type == Keyword::typeObject) {
+            wstring str;
+            for (auto elem: objectVal) {
                 str += elem.second->toString();
             }
             return str;
@@ -487,6 +547,32 @@ namespace Mefodij {
                     stringVal += elem.second->toString();
                 }
                 setString(stringVal);
+            } else if (typeTo == Keyword::typeObject) {
+                setObject(arrayVal);
+            } else if (typeTo == Keyword::typeNull) {
+                setNull();
+            } else {
+                throw runtime_error(
+                    "Cannot cast type '" 
+                    + Tools::wideStrToStr(type) 
+                    + "' to type '" 
+                    + Tools::wideStrToStr(typeTo) 
+                    + "'."
+                );
+            }
+        }
+
+        if (type == Keyword::typeObject) {
+            if (typeTo == Keyword::typeObject) {
+                return;
+            } else if (typeTo == Keyword::typeArray) {
+                setArray(objectVal);
+            } else if (typeTo == Keyword::typeString) {
+                wstring stringVal;
+                for (auto elem: objectVal) {
+                    stringVal += elem.second->toString();
+                }
+                setString(stringVal);
             } else if (typeTo == Keyword::typeNull) {
                 setNull();
             } else {
@@ -598,6 +684,8 @@ namespace Mefodij {
             setBool(src.boolVal);
         } else if (src.type == Keyword::typeArray) {
             setArray(src.arrayVal);
+        } else if (src.type == Keyword::typeObject) {
+            setObject(src.objectVal);
         } else if (src.type == Keyword::typeString) {
             setString(src.stringVal);
         } else if (src.type == Keyword::typeNull) {
@@ -640,6 +728,12 @@ namespace Mefodij {
                 }
             },
             {
+                Keyword::typeObject, {
+                    {Keyword::Size, &Atom::resolveObjectSize},
+                    {Keyword::Type, &Atom::resolveType},
+                }
+            },
+            {
                 Keyword::typeBool, {
                     {Keyword::Type, &Atom::resolveType},
                 }
@@ -670,6 +764,8 @@ namespace Mefodij {
             setString(Keyword::typeDouble);
         } else if (type == Keyword::typeArray) {
             setString(Keyword::typeArray);
+        } else if (type == Keyword::typeObject) {
+            setString(Keyword::typeObject);
         } else if (type == Keyword::typeString) {
             setString(Keyword::typeString);
         } else if (type == Keyword::typeBool) {
@@ -690,6 +786,33 @@ namespace Mefodij {
     {
         setInt(arrayVal.size());
         setVarRef(nullptr);
+    }
+
+    void Atom::resolveObjectSize()
+    {
+        setInt(objectVal.size());
+        setVarRef(nullptr);
+    }
+
+    void Atom::resolveObjectProperty(wstring name)
+    {
+        Atom * container = this;
+        if (varRef != nullptr) {
+            if (varRef->getType() != Keyword::typeObject) {
+                throw runtime_error("Property access requires an object.");
+            }
+            container = varRef.get();
+        } else if (type != Keyword::typeObject) {
+            throw runtime_error("Property access requires an object.");
+        }
+
+        if (!container->issetObjectAt(name)) {
+            container->setObjectAt(name, make_shared<Atom>(nullptr));
+        }
+
+        auto element = container->objectAt(name);
+        setAtom(*element);
+        setVarRef(element);
     }
 
     void Atom::resolveArrayFirst()
@@ -730,6 +853,12 @@ namespace Mefodij {
 
     void Atom::resolveMember(wstring name)
     {
+        if (type == Keyword::typeObject
+            && !(members.count(type) && members[type].count(name))) {
+            resolveObjectProperty(name);
+            return;
+        }
+
         if (!members.count(type)) {
             throw runtime_error(
                 "Atom of type '" 

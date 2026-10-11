@@ -6,13 +6,14 @@ namespace Mefodij {
   const wstring Keyword::typeDouble(L"дійсне");
   const wstring Keyword::typeString(L"строка");
   const wstring Keyword::typeArray(L"масив");
+  const wstring Keyword::typeObject(L"обєкт");
   const wstring Keyword::typeBool(L"бул");
   const wstring Keyword::typeNull(L"нал");
 
   const vector<wstring> Keyword::getTypes()
   {
     return {
-      typeInt, typeDouble, typeString, typeArray, typeBool, typeNull
+      typeInt, typeDouble, typeString, typeArray, typeObject, typeBool, typeNull
     };
   }
 

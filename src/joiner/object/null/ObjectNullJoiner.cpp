@@ -1,0 +1,23 @@
+#include "../../../../include/joiner/object/null/ObjectNullJoiner.h"
+
+namespace Mefodij {
+
+    ObjectNullJoiner::ObjectNullJoiner() : Joiner({L"=", L"==", L"!="})
+    {}
+
+    void ObjectNullJoiner::join(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
+    {
+        validate(op);
+
+        if (op == L"=") {
+            left->getVarRef()->setNull();
+            left->setNull();
+        } else if (op == L"==") {
+            left->setBool(false);
+        } else if (op == L"!=") {
+            left->setBool(true);
+        }
+
+    }
+
+}

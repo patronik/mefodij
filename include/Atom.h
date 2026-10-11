@@ -39,7 +39,10 @@ namespace Mefodij {
       int arrayNextIndex = 0; 
 
       // array of atoms (values)
-      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal; 
+      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> arrayVal;
+
+      // object properties
+      map<wstring, shared_ptr<Atom>, Tools::arrayCmp> objectVal;
 
       // Reference to variable
       shared_ptr<Atom> varRef = nullptr;
@@ -53,8 +56,10 @@ namespace Mefodij {
       void resolveAddress();
       void resolveStringSize();
       void resolveArraySize();
+      void resolveObjectSize();
       void resolveArrayFirst();
       void resolveArraySecond();
+      void resolveObjectProperty(wstring name);
 
       void initMembers();
       
@@ -72,6 +77,7 @@ namespace Mefodij {
     double getDouble();
     wstring getString();
     map<wstring, shared_ptr<Atom>, Tools::arrayCmp> getArray();
+    map<wstring, shared_ptr<Atom>, Tools::arrayCmp> getObject();
     bool getBool();
     int getCharIndex();
     int getArrayNextIndex();
@@ -87,6 +93,7 @@ namespace Mefodij {
     void setString(wstring val);
     void setStringChar(wchar_t val, int charIndex);
     void setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
+    void setObject(map<wstring, shared_ptr<Atom>, Tools::arrayCmp> val);
     void setBool(bool val);
     void setNull();
     void setAtom(const Atom & src);
@@ -95,6 +102,11 @@ namespace Mefodij {
     bool issetAt(wstring key);
     shared_ptr<Atom> elementAt(wstring key);
     void setElementAt(wstring key, shared_ptr<Atom> val);
+
+    // Object related
+    bool issetObjectAt(wstring key);
+    shared_ptr<Atom> objectAt(wstring key);
+    void setObjectAt(wstring key, shared_ptr<Atom> val);
 
     // Convertors
     bool toBool();

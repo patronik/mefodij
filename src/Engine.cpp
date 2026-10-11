@@ -203,16 +203,27 @@ namespace Mefodij {
         }
 
         shared_ptr<Atom> container = atom->getVarRef();
+        bool isObject = false;
         if (container == nullptr) {
-            if (implicitKey) {
+            if (implicitKey && atom->getType() != Keyword::typeObject) {
                 throw runtime_error("Append access requires a variable.");
             }
-            if (atom->getType() != Keyword::typeArray) {
+            if (atom->getType() == Keyword::typeObject) {
+                isObject = true;
+                container = atom;
+            } else if (atom->getType() != Keyword::typeArray) {
                 throw runtime_error("Array access requires an array or a variable.");
+            } else {
+                container = atom;
             }
-            container = atom;
+        } else if (container->getType() == Keyword::typeObject) {
+            isObject = true;
         } else if (container->getType() != Keyword::typeArray) {
             container->setArray(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
+        }
+
+        if (isObject && implicitKey) {
+            throw runtime_error("Object access requires a key.");
         }
 
         wstring arrayKey;
@@ -232,13 +243,20 @@ namespace Mefodij {
             arrayKey = keyAtom->toString();
         }
 
-        if (!container->issetAt(arrayKey)) {
-            container->setElementAt(
-                arrayKey, make_shared<Atom>(nullptr)
-            );
+        shared_ptr<Atom> element;
+        if (isObject) {
+            if (!container->issetObjectAt(arrayKey)) {
+                container->setObjectAt(arrayKey, make_shared<Atom>(nullptr));
+            }
+            element = container->objectAt(arrayKey);
+        } else {
+            if (!container->issetAt(arrayKey)) {
+                container->setElementAt(
+                    arrayKey, make_shared<Atom>(nullptr)
+                );
+            }
+            element = container->elementAt(arrayKey);
         }
-
-        auto element = container->elementAt(arrayKey);
 
         // Copy element state to atom
         atom->setAtom(*element);
@@ -253,7 +271,95 @@ namespace Mefodij {
         if (!parseCharacterSequence(readChar(), memberName)) {
             throw runtime_error("Unexpected member name.");
         }
+
+        // Ukrainian names such as ім'я keep the apostrophe in the property key.
+        while (true) {
+            wchar_t symbol = readChar(false, true);
+            if (symbol != L'\'') {
+                unreadChar(1, true);
+                break;
+            }
+            wstring rest{};
+            if (!parseCharacterSequence(readChar(false, true), rest)) {
+                unreadChar(2, true);
+                break;
+            }
+            memberName.push_back(L'\'');
+            memberName += rest;
+        }
+
         atom->resolveMember(memberName);
+    }
+
+    bool Engine::statementOpensObjectLiteral()
+    {
+        int scan = pos;
+        int depth = 1;
+        bool inSingle = false;
+        bool inDouble = false;
+        wchar_t prev = L'\0';
+
+        while (scan < (int) src.size()) {
+            wchar_t symbol = src.at(scan++);
+
+            if (!inSingle && !inDouble && symbol == L'/' && scan < (int) src.size() && src.at(scan) == L'/') {
+                scan++;
+                while (scan < (int) src.size() && src.at(scan) != L'\n') {
+                    scan++;
+                }
+                prev = L'\0';
+                continue;
+            }
+
+            if (symbol == L'\'' && !inDouble) {
+                if (!inSingle) {
+                    inSingle = true;
+                } else if (prev != L'\\') {
+                    inSingle = false;
+                }
+                prev = symbol;
+                continue;
+            }
+
+            if (symbol == L'"' && !inSingle) {
+                if (!inDouble) {
+                    inDouble = true;
+                } else if (prev != L'\\') {
+                    inDouble = false;
+                }
+                prev = symbol;
+                continue;
+            }
+
+            if (inSingle || inDouble) {
+                prev = symbol;
+                continue;
+            }
+
+            if (symbol == L'=' && scan < (int) src.size() && src.at(scan) == L'>') {
+                if (depth == 1) {
+                    return true;
+                }
+                scan++;
+                prev = L'>';
+                continue;
+            }
+
+            if (symbol == L'{') {
+                depth++;
+            } else if (symbol == L'}') {
+                depth--;
+                if (depth == 0) {
+                    return false;
+                }
+            } else if (symbol == L';' && depth == 1) {
+                return false;
+            }
+
+            prev = symbol;
+        }
+
+        return false;
     }
 
     void Engine::resolveAtomAssignment(shared_ptr<Atom> & atom)
@@ -516,8 +622,9 @@ namespace Mefodij {
         // Container statement
         evaluateStatement();
 
-        if (lastResult->getType() != Keyword::typeArray) {
-            throw runtime_error("Separator must be followed by an array.");
+        if (lastResult->getType() != Keyword::typeArray
+            && lastResult->getType() != Keyword::typeObject) {
+            throw runtime_error("Separator must be followed by an array or an object.");
         }
 
         wchar_t symbol;
@@ -527,8 +634,10 @@ namespace Mefodij {
 
         int loopBodyPos = -1;
 
-        auto array = lastResult->getArray();
-        for (auto elem: array) {
+        auto entries = lastResult->getType() == Keyword::typeObject
+            ? lastResult->getObject()
+            : lastResult->getArray();
+        for (auto elem: entries) {
             // Set element per iteration
             elementVar->setElementAt(L"0", make_shared<Atom>(elem.first));
             elementVar->setElementAt(L"1", elem.second);
@@ -937,8 +1046,19 @@ namespace Mefodij {
             return;
         }
 
-        // handle braces
-        if (symbol == L'{' || symbol == L'}') {
+        // A brace opens an object literal only when a top-level => appears
+        // before ';' or the matching '}'. Otherwise it is a code block.
+        if (symbol == L'{') {
+            if (statementOpensObjectLiteral()) {
+                unreadChar();
+                lastResult = evaluateBoolStatement();
+                return;
+            }
+            unreadChar();
+            return;
+        }
+
+        if (symbol == L'}') {
             unreadChar();
             return;
         }

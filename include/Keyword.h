@@ -13,6 +13,7 @@ namespace Mefodij {
      static const wstring typeDouble;
      static const wstring typeString;
      static const wstring typeArray;
+     static const wstring typeObject;
      static const wstring typeBool;
      static const wstring typeNull;
 

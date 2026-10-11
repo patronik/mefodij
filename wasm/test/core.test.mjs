@@ -106,6 +106,20 @@ test("arrays, casts, regex, and comments", () => {
     assert.equal(comment.result, "");
 });
 
+test("objects", () => {
+    const person = methodius.eval(
+        "мем ключ = \"вік\";\n" +
+        "мем особа = { \"ім'я\" => \"Василь\", ключ => 30 };\n" +
+        "особа.вік = 31;\n" +
+        "друк особа.ім'я;\n" +
+        "друк особа[\"вік\"];\n" +
+        "друк особа.розмір;"
+    );
+    assert.equal(person.ok, true);
+    assert.equal(person.output, "Василь313");
+    assert.equal(person.result, "3");
+});
+
 test("errors keep earlier output and do not abort the module", () => {
     const divided = methodius.eval('друк "до"; 1 / 0;');
     assert.equal(divided.ok, false);

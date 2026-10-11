@@ -18,6 +18,7 @@ namespace Mefodij {
             Keyword::typeDouble, 
             Keyword::typeString, 
             Keyword::typeArray, 
+            Keyword::typeObject,
             Keyword::typeBool, 
             Keyword::True,
             Keyword::False,

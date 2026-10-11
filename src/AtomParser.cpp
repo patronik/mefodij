@@ -309,6 +309,52 @@ namespace Mefodij {
         return true;
     }
 
+    bool AtomParser::parseObjectLiteralAtom(wchar_t symbol, shared_ptr<Atom> & atom)
+    {
+        if (symbol != L'{') {
+            return false;
+        }
+
+        atom->setObject(map<wstring, shared_ptr<Atom>, Tools::arrayCmp>{});
+
+        symbol = readChar();
+        if (symbol == L'}') {
+            return true;
+        } else {
+            unreadChar();
+        }
+
+        do {
+            shared_ptr<Atom> key = evaluateBoolExpression();
+            symbol = readChar();
+            if (symbol != L'=') {
+                throw runtime_error("Object entry requires '=>'.");
+            }
+            symbol = readChar();
+            if (symbol != L'>') {
+                throw runtime_error("Object entry requires '=>'.");
+            }
+
+            shared_ptr<Atom> value = evaluateBoolExpression();
+            if (key->getType() == Keyword::typeString) {
+                value->setKey(key->getString());
+            } else if (key->getType() == Keyword::typeInt) {
+                value->setKey(Tools::to_wstring(key->getInt()));
+            } else {
+                throw runtime_error("Only string and integer object keys are supported.");
+            }
+            atom->setObjectAt(value->getKey(), value);
+
+            symbol = readChar();
+        } while (symbol == L',');
+
+        if (symbol != L'}') {
+            throw runtime_error("Unexpected token '" + Tools::wideStrToStr(symbol) + "'.");
+        }
+
+        return true;
+    }
+
     bool AtomParser::parseAlphabeticalAtom(wchar_t symbol, shared_ptr<Atom> & atom)
     {
         // alphabetical atom
@@ -430,6 +476,7 @@ namespace Mefodij {
         parseParentheticalAtom(atomChar, atom)
         || parseAlphabeticalAtom(atomChar, atom)
         || parseArrayLiteralAtom(atomChar, atom)
+        || parseObjectLiteralAtom(atomChar, atom)
         || parseNumberLiteralAtom(atomChar, atom)
         || parseSingleQuotedStringAtom(atomChar, atom)
         || parseDoubleQuotedStringAtom(atomChar, atom);

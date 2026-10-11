@@ -47,6 +47,19 @@
 #include "joiner/string/array/StringArrayJoiner.h"
 #include "joiner/string/double/StringDoubleJoiner.h"
 #include "joiner/string/string/StringStringJoiner.h"
+#include "joiner/object/object/ObjectObjectJoiner.h"
+#include "joiner/object/int/ObjectIntJoiner.h"
+#include "joiner/object/double/ObjectDoubleJoiner.h"
+#include "joiner/object/string/ObjectStringJoiner.h"
+#include "joiner/object/array/ObjectArrayJoiner.h"
+#include "joiner/object/bool/ObjectBoolJoiner.h"
+#include "joiner/object/null/ObjectNullJoiner.h"
+#include "joiner/int/object/IntObjectJoiner.h"
+#include "joiner/double/object/DoubleObjectJoiner.h"
+#include "joiner/string/object/StringObjectJoiner.h"
+#include "joiner/array/object/ArrayObjectJoiner.h"
+#include "joiner/bool/object/BoolObjectJoiner.h"
+#include "joiner/null/object/NullObjectJoiner.h"
 
 namespace Mefodij {
 
@@ -100,6 +113,19 @@ namespace Mefodij {
       static unique_ptr<StringArrayJoiner> stringArrayJoiner;
       static unique_ptr<StringDoubleJoiner> stringDoubleJoiner;
       static unique_ptr<StringStringJoiner> stringStringJoiner;
+      static unique_ptr<ObjectObjectJoiner> objectObjectJoiner;
+      static unique_ptr<ObjectIntJoiner> objectIntJoiner;
+      static unique_ptr<ObjectDoubleJoiner> objectDoubleJoiner;
+      static unique_ptr<ObjectStringJoiner> objectStringJoiner;
+      static unique_ptr<ObjectArrayJoiner> objectArrayJoiner;
+      static unique_ptr<ObjectBoolJoiner> objectBoolJoiner;
+      static unique_ptr<ObjectNullJoiner> objectNullJoiner;
+      static unique_ptr<IntObjectJoiner> intObjectJoiner;
+      static unique_ptr<DoubleObjectJoiner> doubleObjectJoiner;
+      static unique_ptr<StringObjectJoiner> stringObjectJoiner;
+      static unique_ptr<ArrayObjectJoiner> arrayObjectJoiner;
+      static unique_ptr<BoolObjectJoiner> boolObjectJoiner;
+      static unique_ptr<NullObjectJoiner> nullObjectJoiner;
 
       void joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
       void assignToAtom(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right);
@@ -120,6 +146,7 @@ namespace Mefodij {
       void resolveStringAccess(shared_ptr<Atom> & atom);
       void resolveArrayAccess(shared_ptr<Atom> & atom);
       void resolveMemberAccess(shared_ptr<Atom> & atom);
+      bool statementOpensObjectLiteral();
       virtual void resolveCoreFunctionCall(wstring functionName, shared_ptr<Atom> & atom) override;
       virtual void resolveAtomAssignment(shared_ptr<Atom> & atom) override;
       virtual void resolveAtomAccess(shared_ptr<Atom> & atom) override;

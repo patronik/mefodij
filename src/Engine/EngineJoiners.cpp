@@ -40,6 +40,19 @@ namespace Mefodij {
     unique_ptr<StringArrayJoiner> Engine::stringArrayJoiner = make_unique<StringArrayJoiner>();
     unique_ptr<StringDoubleJoiner> Engine::stringDoubleJoiner = make_unique<StringDoubleJoiner>();
     unique_ptr<StringStringJoiner> Engine::stringStringJoiner = make_unique<StringStringJoiner>();
+    unique_ptr<ObjectObjectJoiner> Engine::objectObjectJoiner = make_unique<ObjectObjectJoiner>();
+    unique_ptr<ObjectIntJoiner> Engine::objectIntJoiner = make_unique<ObjectIntJoiner>();
+    unique_ptr<ObjectDoubleJoiner> Engine::objectDoubleJoiner = make_unique<ObjectDoubleJoiner>();
+    unique_ptr<ObjectStringJoiner> Engine::objectStringJoiner = make_unique<ObjectStringJoiner>();
+    unique_ptr<ObjectArrayJoiner> Engine::objectArrayJoiner = make_unique<ObjectArrayJoiner>();
+    unique_ptr<ObjectBoolJoiner> Engine::objectBoolJoiner = make_unique<ObjectBoolJoiner>();
+    unique_ptr<ObjectNullJoiner> Engine::objectNullJoiner = make_unique<ObjectNullJoiner>();
+    unique_ptr<IntObjectJoiner> Engine::intObjectJoiner = make_unique<IntObjectJoiner>();
+    unique_ptr<DoubleObjectJoiner> Engine::doubleObjectJoiner = make_unique<DoubleObjectJoiner>();
+    unique_ptr<StringObjectJoiner> Engine::stringObjectJoiner = make_unique<StringObjectJoiner>();
+    unique_ptr<ArrayObjectJoiner> Engine::arrayObjectJoiner = make_unique<ArrayObjectJoiner>();
+    unique_ptr<BoolObjectJoiner> Engine::boolObjectJoiner = make_unique<BoolObjectJoiner>();
+    unique_ptr<NullObjectJoiner> Engine::nullObjectJoiner = make_unique<NullObjectJoiner>();
 
     void Engine::joinAtoms(shared_ptr<Atom> left, wstring op, shared_ptr<Atom> right)
     {   
@@ -115,6 +128,32 @@ namespace Mefodij {
             Engine::nullBoolJoiner->join(left, op, right);
         } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeNull) {
             Engine::nullNullJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeObject) {
+            Engine::objectObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeInt) {
+            Engine::objectIntJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeDouble) {
+            Engine::objectDoubleJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeString) {
+            Engine::objectStringJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeArray) {
+            Engine::objectArrayJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeBool) {
+            Engine::objectBoolJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeObject && right->getType() == Keyword::typeNull) {
+            Engine::objectNullJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeInt && right->getType() == Keyword::typeObject) {
+            Engine::intObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeDouble && right->getType() == Keyword::typeObject) {
+            Engine::doubleObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeString && right->getType() == Keyword::typeObject) {
+            Engine::stringObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeArray && right->getType() == Keyword::typeObject) {
+            Engine::arrayObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeBool && right->getType() == Keyword::typeObject) {
+            Engine::boolObjectJoiner->join(left, op, right);
+        } else if (left->getType() == Keyword::typeNull && right->getType() == Keyword::typeObject) {
+            Engine::nullObjectJoiner->join(left, op, right);
         } else {
             throw runtime_error(
                 "Joiner for type " + Mefodij::Tools::wideStrToStr(left->getType())
@@ -147,7 +186,7 @@ namespace Mefodij {
                 left->setVarRef(storage->getVar(leftAtomVar->getKey()));
 
             } else {
-                throw runtime_error("Array elements cannot store references and cannot be copied by reference."); 
+                throw runtime_error("Array and object elements cannot store references and cannot be copied by reference."); 
             }
         } else {
             // perform assignment

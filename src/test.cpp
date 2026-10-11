@@ -880,6 +880,241 @@ TEST(MixedTypeMath, StringPlusBoolIsSymmetric)
     ASSERT_EQ(wstring(L"так") + L"a", right->toString());
 }
 
+TEST(ObjectTest, LiteralKeysAndNestedAccess)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем ключ = "вік";
+            мем особа = { "ім'я" => "Василь", ключ => 30, "адреса" => { "місто" => "Львів" } };
+            особа.вік = 31;
+            вихід особа.ім'я + особа["вік"] + особа.адреса.місто;
+        )"
+    );
+    ASSERT_EQ(L"Василь31Львів", result->toString());
+}
+
+TEST(ObjectTest, TypeAndSizeMembers)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = { "а" => 1, "б" => 2 };
+            вихід о.тип + о.розмір;
+        )"
+    );
+    ASSERT_EQ(L"обєкт2", result->toString());
+}
+
+TEST(ObjectTest, EmptyObjectIsFalseAndHasNoSize)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = {};
+            умова (о) {
+                вихід ні;
+            } або {
+                вихід о.розмір;
+            }
+        )"
+    );
+    ASSERT_EQ(L"0", result->toString());
+}
+
+TEST(ObjectTest, NonEmptyObjectIsTrue)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            умова ({ "а" => 1 }) {
+                вихід так;
+            } або {
+                вихід ні;
+            }
+        )"
+    );
+    ASSERT_EQ(L"так", result->toString());
+}
+
+TEST(ObjectTest, BuiltinMemberDoesNotHideBracketProperty)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = { "тип" => "поле" };
+            вихід о.тип + о["тип"];
+        )"
+    );
+    ASSERT_EQ(L"обєктполе", result->toString());
+}
+
+TEST(ObjectTest, IntegerKey)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = { 2 => "б" };
+            вихід о[2];
+        )"
+    );
+    ASSERT_EQ(L"б", result->toString());
+}
+
+TEST(ObjectTest, AssignmentReplacesObject)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = { "а" => 1 };
+            о = 5;
+            вихід о;
+        )"
+    );
+    ASSERT_EQ(L"5", result->toString());
+}
+
+TEST(ObjectTest, SharedAssignmentComparesEqual)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем а = { "а" => 1 };
+            мем б = а;
+            вихід а == б && а != { "а" => 1 };
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(ObjectTest, CrossTypeComparison)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = { "а" => 1 };
+            мем порожній = {};
+            вихід о != 1 && (о == 1) == ні && о == так && порожній == ні;
+        )"
+    );
+    ASSERT_TRUE(result->toBool());
+}
+
+TEST(ObjectTest, CastsToArrayStringAndFromArray)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем м = ["х" => 7];
+            мем о = (обєкт) м;
+            мем назад = (масив) о;
+            вихід (строка) о["х"] + (строка) назад["х"] + (строка) { "а" => 1, "б" => 2 };
+        )"
+    );
+    ASSERT_EQ(L"7712", result->toString());
+}
+
+TEST(ObjectTest, CastToNull)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем о = (нал) { "а" => 1 };
+            вихід о.тип;
+        )"
+    );
+    ASSERT_EQ(L"нал", result->toString());
+}
+
+TEST(ObjectTest, LoopYieldsKeyAndValue)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            мем текст = "";
+            мем о = { "а" => "x", "б" => "y" };
+            цикл (мем пара: о) {
+                текст = текст + пара.перший + пара.другий;
+            }
+            вихід текст;
+        )"
+    );
+    ASSERT_EQ(L"аxбy", result->toString());
+}
+
+TEST(ObjectTest, StatementObjectAndBlockStayDistinct)
+{
+    Mefodij::Engine mefodij{};
+    mefodij.setCapturePrint(true);
+    auto result = mefodij.evaluateCode(
+        LR"(
+            друк { "а" => 1 };
+            умова (так) {
+                друк "блок";
+            }
+            вихід 2;
+        )"
+    );
+    ASSERT_EQ(L"1блок", mefodij.getPrintBuffer());
+    ASSERT_EQ(L"2", result->toString());
+}
+
+TEST(ObjectTest, ReturnObjectLiteral)
+{
+    Mefodij::Engine mefodij{};
+    auto result = mefodij.evaluateCode(
+        LR"(
+            функція взяти() {
+                вихід { "а" => 4 };
+            }
+            вихід взяти();
+        )"
+    );
+    ASSERT_EQ(L"4", result->toString());
+}
+
+TEST(ObjectTest, MissingSeparatorThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+        mefodij.evaluateCode(L"мем о = { 1, 2 };"),
+        runtime_error
+    );
+}
+
+TEST(ObjectTest, ImplicitIndexThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+        mefodij.evaluateCode(L"мем о = {}; о[] = 1;"),
+        runtime_error
+    );
+}
+
+TEST(ObjectTest, InvalidCastThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+        mefodij.evaluateCode(L"(ціле) { \"а\" => 1 };"),
+        runtime_error
+    );
+}
+
+TEST(ObjectTest, PropertyReferenceThrows)
+{
+    Mefodij::Engine mefodij{};
+    EXPECT_THROW(
+        mefodij.evaluateCode(
+            LR"(
+                мем о = { "а" => 1 };
+                мем б = 2;
+                о.а = &б;
+            )"
+        ),
+        runtime_error
+    );
+}
+
 int main(int argc, char **argv) {
   init();
   ::testing::InitGoogleTest(&argc, argv);
